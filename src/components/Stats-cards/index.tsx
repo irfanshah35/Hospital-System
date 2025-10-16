@@ -139,7 +139,7 @@ const StatsCard = () => {
 
   return (
     <div>
-        <div className="flex items-center justify-between bg-[#f5f7fb] px-6 py-3">
+        <div className="flex items-center justify-between bg-[#f5f7fb] px-6 py-3 mt-20">
       <div className="flex items-center space-x-2 text-gray-700">
         <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
         <span className="text-gray-500">›</span>
