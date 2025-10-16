@@ -2,61 +2,6 @@ import React from 'react'
 
 export default function Header() {
     return (
-        // <div className="fixed top-0 left-0 z-[999] w-full min-h-[60px] bg-white shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif] rounded-none border-none p-0 active">
-        //     <div className="flex items-center w-full mx-auto px-[0.75rem] py-0">
-        //         <div className="bg-white p-2 w-[260px] transition-all duration-500 lg:float-left">
-        //             <a className="navbar-toggle"></a>
-        //             <a className="bars"></a>
-        //             <a className="navbar-brand" href="#/admin/dashboard/main">
-        //                 <img src="assets/images/logo.png" alt="Cliniva Logo" />
-        //                 <span className="logo-name">Cliniva</span>
-        //             </a>
-        //         </div>
-
-        //         <div className="navbar-collapse">
-        //             <ul className="nav-left">
-        //                 <li>
-        //                     <button className="nav-icon-btn sidemenu-collapse">
-        //                         <i className="material-icons-outlined">menu</i>
-        //                     </button>
-        //                 </li>
-        //             </ul>
-        //             <ul className="nav navbar-nav navbar-right">
-        //                 <li className="fullscreen">
-        //                     <button className="nav-icon-btn">
-        //                         <i className="material-icons-outlined">fullscreen</i>
-        //                     </button>
-        //                 </li>
-        //                 <li>
-        //                     <button className="nav-icon-btn">
-        //                         <i className="material-icons-outlined">notifications_active</i>
-        //                         <span className="notification-badge">3</span>
-        //                     </button>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <button className="nav-icon-btn lang-dropdown">
-        //                         <img src="assets/images/flags/us.svg" alt="English" height="16" />
-        //                     </button>
-        //                 </li>
-        //                 <li className="nav-item user_profile">
-        //                     <button className="user-profile-btn">
-        //                         <div className="user-profile-img">
-        //                             <span>Ella Jones</span>
-        //                             <img
-        //                                 src="assets/images/user/admin.jpg"
-        //                                 alt="User"
-        //                                 width="32"
-        //                                 height="32"
-        //                                 className="user_img"
-        //                             />
-        //                         </div>
-        //                     </button>
-        //                 </li>
-        //             </ul>
-        //         </div>
-        //     </div>
-        // </div>
-
         <nav
             className="fixed top-0 h-[68px] left-0 z-50 w-full bg-white shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif]"
         >
