@@ -190,7 +190,7 @@ export default function DoctorAppointment() {
                                                 stroke="currentColor"
                                                 stroke-width="2"
                                             >
-                                                <path strokeLinecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                                <path strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                             </svg>
 
                                         </button>
@@ -203,7 +203,7 @@ export default function DoctorAppointment() {
                                                 stroke="currentColor"
                                                 stroke-width="2"
                                             >
-                                                <path strokeLinecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                             </svg>
 
                                         </button>

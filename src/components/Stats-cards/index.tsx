@@ -36,7 +36,6 @@ const StatsCard = () => {
       color: "blue",
       icon: <DollarSign className="text-white w-6 h-6" />,
       chartData: [50, 80, 50, 78, 52, 45, 52, 30, 45, 55, 30, 40, 93, 50],
-
     },
   ];
 
@@ -150,16 +149,14 @@ const StatsCard = () => {
         </div>
 
         <div className="flex items-center space-x-6 text-blue-600 font-medium">
-          <button className="flex items-center space-x-1 hover:text-blue-800 transition">
+          <Link href="/add-patient" className="flex items-center space-x-1 hover:text-blue-800 transition">
             <UserPlus size={18} />
             <span>Add Patient</span>
-          </button>
-          <button className="flex items-center space-x-1 hover:text-blue-800 transition">
+          </Link>
+          <Link href="/appointment/appointment-calendar" className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
             <CalendarDays size={18} />
-            <Link href="/appointment/appointment-calendar">
-              <span>Appointment</span>
-            </Link>
-          </button>
+            <span>Appointment</span>
+          </Link>
         </div>
       </div>
 
@@ -202,15 +199,12 @@ const StatsCard = () => {
                   height={80}
                   width="100%"
                 />
-
-
               </div>
             </div>
           );
         })}
       </div>
     </div>
-
   );
 };
 
