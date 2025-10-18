@@ -4,9 +4,14 @@ import React from "react";
 interface HeaderProps {
   isCollapsed: boolean;
   setIsCollapsed: (value: boolean) => void;
+  shouldExpand: boolean;
 }
 
-export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
+export default function Header({
+  isCollapsed,
+  setIsCollapsed,
+  shouldExpand,
+}: HeaderProps) {
   return (
     <nav className="fixed top-0 h-[68px] left-0 z-50 w-full bg-white shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif]">
       <div className="flex items-center w-full max-w-[1400px] mx-auto py-[4px]">
@@ -24,9 +29,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
 
           <div
             className={`flex items-center gap-[10px] px-[10px] mr-4 ${
-              isCollapsed
-                ? " px-0 justify-center"
-                : "w-[244px] justify-center"
+              shouldExpand ? "w-[244px] justify-center" : "px-0 justify-center"
             } transition-all duration-300`}
           >
             <img
@@ -34,7 +37,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
               alt="Cliniva Logo"
               className="h-8 w-8"
             />
-            {!isCollapsed && (
+            {shouldExpand && (
               <span className="text-[24px] font-[400] text-gray-900">
                 Cliniva
               </span>

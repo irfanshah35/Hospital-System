@@ -2,9 +2,11 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import SideBar from "@/components/sidebar";
+import SideBar from "@/components/sidebar/patientsidebar";
 import Header from "@/components/header";
 import { useState } from "react";
+import DoctorSideBar from "@/components/sidebar/doctorsidebar";
+import AdminSideBar from "@/components/sidebar/adminsidebar";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,20 +25,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-
+  const [isHovered, setIsHovered] = useState(false);
+  const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
   return (
     <html lang="en">
       <body className={`${roboto.variable} font-roboto antialiased`}>
-        <Header isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <div className="flex flex-row">
+  <Header 
+          isCollapsed={isCollapsed} 
+          setIsCollapsed={setIsCollapsed}
+          shouldExpand={shouldExpand}
+        />        <div className="flex flex-row">
           <div
             className={`${
               isCollapsed ? "w-[60px]" : "w-[260px]"
             } transition-all duration-300`}
           >
-            <SideBar
+             <AdminSideBar
               isCollapsed={isCollapsed}
               setIsCollapsed={setIsCollapsed}
+              isHovered={isHovered}
+              setIsHovered={setIsHovered}
             />
           </div>
           <div
