@@ -11,10 +11,23 @@ import {
   Settings,
   LogOut,
   Plus,
+  Minus,
 } from "lucide-react";
 
-export default function SideBar() {
+interface SideBarProps {
+  isCollapsed: boolean;
+  setIsCollapsed: (value: boolean) => void;
+}
+
+export default function SideBar({ isCollapsed, setIsCollapsed }: SideBarProps) {
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [activeChild, setActiveChild] = useState(
+    "#/patient/appointments/upcoming"
+  );
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Determine if sidebar should be shown as expanded
+  const shouldExpand = !isCollapsed || isHovered;
 
   const sidebarMenu = [
     {
@@ -69,82 +82,120 @@ export default function SideBar() {
 
   return (
     <>
-      <aside className="w-[260px] overflow-hidden h-[calc(100dvh-60px)] fixed top-[60px] bg-white z-[9999]">
-        <div className="h-dvh overflow-y-auto min-w-full min-h-full">
+      <aside
+        className={`${
+          shouldExpand ? "w-[260px]" : "w-[60px]"
+        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] bg-white z-[9999] group transition-all duration-300`}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          if (isCollapsed) {
+            setIsCollapsed(false);
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (!isCollapsed) {
+            setIsCollapsed(true);
+          }
+        }}
+      >
+        <div className="sidebar-scroll h-full overflow-y-auto overflow-x-hidden pb-2">
           <ul>
-            <li className="sidebar-user-panel">
-              <div className="pt-[25px] pb-[10px] w-full">
-                <div className="w-[35%] max-w-[75px] mx-auto">
-                  <img
-                    alt="User Image"
-                    className="max-w-full rounded-[15%] shadow-[0_5px_25px_#0003] bg-white p-[2px]"
-                    src="/assets/sidebar/patient.jpg"
-                  />
+            {shouldExpand && (
+              <li className="sidebar-user-panel">
+                <div className="pt-[25px] pb-[10px] w-full">
+                  <div className="w-[35%] max-w-[75px] mx-auto">
+                    <img
+                      alt="User Image"
+                      className="max-w-full rounded-[15%] shadow-[0_5px_25px_#0003] bg-white p-[2px]"
+                      src="/assets/sidebar/patient.jpg"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="text-center text-[#060606]">
-                <div className="text-[14px] font-[roboto] font-medium">
-                  Cara Stevens{" "}
+                <div className="text-center text-[#060606]">
+                  <div className="text-[14px] font-[roboto] font-medium">
+                    Cara Stevens{" "}
+                  </div>
+                  <div className="font-[roboto] text-[11px]">PATIENT </div>
                 </div>
-                <div className="font-[roboto] text-[11px]">PATIENT </div>
-              </div>
-            </li>
+              </li>
+            )}
 
-            <li>
-              <div className="mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase">
-                Main
-              </div>
-            </li>
+            {shouldExpand && (
+              <li>
+                <div className="mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase">
+                  Main
+                </div>
+              </li>
+            )}
 
             {sidebarMenu.map((item, index) => (
               <li key={index}>
-                {/* Dropdown for Appointments */}
-                {item.children ? (
+                {/* Dropdown for Appointments  */}
+                {item.children && shouldExpand ? (
                   <>
                     <button
                       onClick={() => setOpenDropdown(!openDropdown)}
-                      className="relative flex items-center justify-between overflow-hidden text-black text-[14px] leading-8 cursor-pointer
-                      p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out hover:bg-[#f0f3fb] w-full">
-                      <div className="flex items-center">
+                      className={`relative flex items-center justify-between overflow-hidden pe-6 text-black text-[14px] leading-8 cursor-pointer
+  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out hover:bg-[#f0f3fb] w-full`}
+                    >
+                      <div className="flex items-center gap-2">
                         <item.icon size={18} strokeWidth={1.8} />
-                        <span className="ml-3">{item.title}</span>
-
-                        <Plus
-                          size={16}
-                          className={`transition-transform duration-300 ${
-                            openDropdown
-                              ? "rotate-45 "
-                              : "text-gray-600"
-                          }`}
-                        />
+                        <span>{item.title}</span>
                       </div>
+                      {openDropdown ? (
+                        <Minus size={16} className="text-gray-600" />
+                      ) : (
+                        <Plus size={16} className="text-gray-600" />
+                      )}
                     </button>
 
                     {openDropdown && (
-                      <ul className="ml-8 mt-1 space-y-1">
-                        {item.children.map((child, i) => (
-                          <li key={i}>
-                            <Link
-                              href={child.path}
-                              className="block text-[13px] text-gray-600 hover:text-blue-600 transition-colors">
-                              {child.title}
-                            </Link>
-                          </li>
-                        ))}
+                      <ul className="ml-6 mt-1 mb-2">
+                        {item.children.map((child, i) => {
+                          const isActive = activeChild === child.path;
+                          return (
+                            <li key={i} className="relative">
+                              <Link
+                                href={child.path}
+                                onClick={() => setActiveChild(child.path)}
+                                className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${
+                                  isActive
+                                    ? "text-[#2196f3]"
+                                    : "text-gray-700 hover:text-[#2196f3]"
+                                }`}
+                              >
+                                <span
+                                  className={`text-base ${
+                                    isActive ? "opacity-100" : "opacity-0"
+                                  }`}
+                                >
+                                  ›
+                                </span>
+                                <span>{child.title}</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </>
                 ) : (
                   <Link
-                    className={`relative flex items-center justify-content-center overflow-hidden text-black text-[14px] leading-8 cursor-pointer
+                    className={`relative flex items-center ${
+                      shouldExpand
+                        ? "justify-content-center"
+                        : "justify-center px-0"
+                    } overflow-hidden text-black text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${
                       item.title === "Logout"
-                        ? "bg-[#f44336] hover:bg-[#ea1c0d]"
+                        ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
                         : "hover:bg-[#f0f3fb]"
                     }`}
-                    href={item.path || "#"}>
+                    href={item.path || item.children?.[0]?.path || "#"}
+                  >
                     <item.icon size={18} strokeWidth={1.8} />
-                    <span className="ml-3">{item.title}</span>
+                    {shouldExpand && <span className="ml-3">{item.title}</span>}
                   </Link>
                 )}
               </li>
