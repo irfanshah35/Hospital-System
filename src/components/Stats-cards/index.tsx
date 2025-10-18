@@ -153,10 +153,10 @@ const StatsCard = () => {
             <UserPlus size={18} />
             <span>Add Patient</span>
           </Link>
-          <button className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
+          <Link href="/appointment/appointment-calendar" className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
             <CalendarDays size={18} />
             <span>Appointment</span>
-          </button>
+          </Link>
         </div>
       </div>
 
