@@ -346,7 +346,7 @@ export default function PatientRegistrationForm() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 mt-8">
+    <div className="min-h-screen bg-gray-50  px-4 sm:px-6 lg:px-8 mt-2">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Patient Registration Form</h1>
         <p className="text-gray-600 mb-8">Fill in the details to add a patient registration</p>
