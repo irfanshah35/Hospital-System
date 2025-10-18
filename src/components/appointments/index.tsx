@@ -21,6 +21,7 @@ export default function Appointments() {
 
 useEffect(() => {
   setTime(Date.now());
+  
 }, []);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#F8FAFC] p-6 rounded-xl shadow-sm">
@@ -28,7 +29,7 @@ useEffect(() => {
         <h2 className="text-lg font-semibold mb-4">Patient Chart</h2>
         <div className="flex gap-4 text-sm text-gray-500 mb-4">
           <button className="font-medium text-[#3B82F6]">Daily</button>
-          
+
           <button>Weekly</button>
           <button>Monthly</button>
         </div>
