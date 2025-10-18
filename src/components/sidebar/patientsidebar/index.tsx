@@ -17,17 +17,19 @@ import {
 interface SideBarProps {
   isCollapsed: boolean;
   setIsCollapsed: (value: boolean) => void;
+  isHovered: boolean;
+  setIsHovered: (value: boolean) => void;
 }
 
-export default function SideBar({ isCollapsed, setIsCollapsed }: SideBarProps) {
+export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsHovered }: SideBarProps) {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [activeChild, setActiveChild] = useState(
     "#/patient/appointments/upcoming"
   );
-  const [isHovered, setIsHovered] = useState(false);
 
   // Determine if sidebar should be shown as expanded
-  const shouldExpand = !isCollapsed || isHovered;
+  // Only use hover state when sidebar is collapsed
+  const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
 
   const sidebarMenu = [
     {
@@ -87,15 +89,15 @@ export default function SideBar({ isCollapsed, setIsCollapsed }: SideBarProps) {
           shouldExpand ? "w-[260px]" : "w-[60px]"
         } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] bg-white z-[9999] group transition-all duration-300`}
         onMouseEnter={() => {
-          setIsHovered(true);
+          // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
-            setIsCollapsed(false);
+            setIsHovered(true);
           }
         }}
         onMouseLeave={() => {
-          setIsHovered(false);
-          if (!isCollapsed) {
-            setIsCollapsed(true);
+          // Only collapse on hover leave when sidebar is collapsed
+          if (isCollapsed) {
+            setIsHovered(false);
           }
         }}
       >
