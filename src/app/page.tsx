@@ -10,24 +10,11 @@ export default function Home() {
 
   return (
     <>
-      <Header isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-      <div className="flex flex-row">
-        <div
-          className={`${
-            isCollapsed ? "w-[60px]" : "w-[260px]"
-          } transition-all duration-300`}
-        >
-          <SideBar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        </div>
-        <div
-          className={`flex flex-col ${
-            isCollapsed ? "w-[calc(100vw-60px)]" : "w-[calc(100vw-260px)]"
-          } transition-all duration-500`}
-        >
+  
+        <div className="flex flex-col w-[calc(100vw-260px)]">
           <StatsCard />
           <Appointments />
         </div>
-      </div>
     </>
   );
 }
