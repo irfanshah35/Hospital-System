@@ -4,12 +4,12 @@ import { Edit2, Trash2 } from 'lucide-react';
 export default function DashboardRecords() {
   const appointments = [
     { id: 1, patient: 'John Doe', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.Jacob Ryan', date: '12/05/2016', disease: 'Fever', diseaseColor: 'red' },
-    { id: 2, patient: 'Sarah S...', patientImg: '/assets/sidebar/patient.jpg', doctor: 'Dr.Rajesh', date: '12/05/2016', disease: 'Cholera', diseaseColor: 'green' },
+    { id: 2, patient: 'Sarah Smith', patientImg: '/assets/sidebar/patient.jpg', doctor: 'Dr.Rajesh', date: '12/05/2016', disease: 'Cholera', diseaseColor: 'green' },
     { id: 3, patient: 'Airi Satou', patientImg: '/assets/sidebar/patient.jpg', doctor: 'Dr.Jay Soni', date: '12/05/2016', disease: 'Jaundice', diseaseColor: 'purple' },
     { id: 4, patient: 'Angelica ...', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.John Deo', date: '12/05/2016', disease: 'Typhoid', diseaseColor: 'purple' },
-    { id: 5, patient: 'Ashton C...', patientImg: '/assets/sidebar/patient.jpg', doctor: 'Dr.Megha Trivedi', date: '12/05/2016', disease: 'Malaria', diseaseColor: 'orange' },
-    { id: 6, patient: 'Cara Ste...', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.Sarah Smith', date: '12/05/2016', disease: 'Infection', diseaseColor: 'cyan' },
-    { id: 7, patient: 'Michael ...', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.Anna Taylor', date: '12/05/2016', disease: 'Pneumonia', diseaseColor: 'blue' }
+    { id: 5, patient: 'Ashton Cox', patientImg: '/assets/sidebar/patient.jpg', doctor: 'Dr.Megha Trivedi', date: '12/05/2016', disease: 'Malaria', diseaseColor: 'orange' },
+    { id: 6, patient: 'Cara Stevens', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.Sarah Smith', date: '12/05/2016', disease: 'Infection', diseaseColor: 'cyan' },
+    { id: 7, patient: 'Michael Bro', patientImg: '/assets/patient-1.jpg', doctor: 'Dr.Anna Taylor', date: '12/05/2016', disease: 'Pneumonia', diseaseColor: 'blue' }
   ];
 
   const doctors = [
@@ -60,10 +60,10 @@ export default function DashboardRecords() {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm ">Patient Name</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold">Assigned Doctor</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold">Date</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold">Diseases</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold">Actions</th>
+                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Assigned Doctor</th>
+                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Date</th>
+                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Diseases</th>
+                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,15 +151,15 @@ export default function DashboardRecords() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Patient Name</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Doctors Team</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Date Of Operation</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Duration</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Anesthesia Type</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Follow-Up Date</th>
-                  <th className="text-center py-4 px-3 text-gray-600 font-semibold">Report</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Diseases</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold">Actions</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Patient Name</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Doctors Team</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Date Of Operation</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Duration</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Anesthesia Type</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Follow-Up Date</th>
+                  <th className="text-center py-4 px-3 text-gray-600 font-semibold md:text-sm">Report</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Diseases</th>
+                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>

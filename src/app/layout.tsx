@@ -48,7 +48,7 @@ export default function RootLayout({
             />
           </div>
           <div
-            className={`flex flex-col mt-10 ${
+            className={`flex flex-col mt-[68px] ${
               isCollapsed ? "w-[calc(100vw-60px)]" : "w-[calc(100vw-260px)]"
             }`}
           >
