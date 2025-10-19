@@ -3,7 +3,7 @@ import { Home } from 'lucide-react';
 import React, { useState } from 'react'
 
 export default function DoctorAppointment() {
-    const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 1)); // October 2025
+    const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 1)); 
     const [view, setView] = useState('month');
 
     // Sample appointment data
@@ -154,8 +154,8 @@ export default function DoctorAppointment() {
     return (
 
 
-        <div>
-            <div className="flex items-center justify-between bg-[#f5f7fb] px-6 py-3 mt-20">
+        <div className='px-4 sm:px-6 lg:px-8 py-3 bg-[#ECF0F9]'>
+            <div className="flex items-center justify-between bg-[#ECF0F9] pb-3">
                 <div className="flex items-center space-x-2 text-gray-700">
                     <h1 className="text-lg font-semibold text-gray-900">Appointment Calendar</h1>
                     <span className="text-gray-500">›</span>
@@ -168,8 +168,8 @@ export default function DoctorAppointment() {
             </div>
 
 
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="max-w-full px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen ">
+                <div className="max-w-full ">
                     <div className="bg-white rounded-xl shadow-md overflow-hidden">
                         {/* Header */}
                         <div className="px-[15px] py-[10px] border-b border-gray-200">
