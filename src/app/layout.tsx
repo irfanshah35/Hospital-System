@@ -5,6 +5,7 @@ import "./globals.css";
 import SideBar from "@/components/sidebar/patientsidebar";
 import Header from "@/components/header";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import DoctorSideBar from "@/components/sidebar/doctorsidebar";
 import AdminSideBar from "@/components/sidebar/adminsidebar";
 
@@ -27,32 +28,39 @@ export default function RootLayout({
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
+  
+  const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/signup";
 
   return (
     <html lang="en">
       <body className={`${roboto.variable} font-roboto antialiased`}>
-        <Header
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-          shouldExpand={shouldExpand}
-        />
-
-        <div className="flex flex-row">
-          <AdminSideBar
-            isCollapsed={isCollapsed}
-            setIsCollapsed={setIsCollapsed}
-            isHovered={isHovered}
-            setIsHovered={setIsHovered}
-          />
-
-          <div
-            className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
-              shouldExpand ? "pl-[260px]" : "pl-[60px]"
-            }`}
-          >
-            {children}
-          </div>
-        </div>
+        {isAuthPage ? (
+          <div className="min-h-screen">{children}</div>
+        ) : (
+          <>
+            <Header
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
+              shouldExpand={shouldExpand}
+            />
+            <div className="flex flex-row">
+              <AdminSideBar
+                isCollapsed={isCollapsed}
+                setIsCollapsed={setIsCollapsed}
+                isHovered={isHovered}
+                setIsHovered={setIsHovered}
+              />
+              <div
+                className={`flex flex-col mt-[68px] w-full transition-all duration-300 ${
+                  shouldExpand ? "pl-[260px]" : "pl-[60px]"
+                }`}
+              >
+                {children}
+              </div>
+            </div>
+          </>
+        )}
       </body>
     </html>
   );
