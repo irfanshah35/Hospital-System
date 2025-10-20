@@ -1,12 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { CalendarDays } from "lucide-react";
 
 const data = [
@@ -17,31 +11,31 @@ const data = [
 ];
 
 export default function Appointments() {
-  const [time, setTime] = useState<number>();
+ const [time, setTime] = useState<number>(Date.now());
 
-useEffect(() => {
-  setTime(Date.now());
-  
-}, []);
+  useEffect(() => {
+    setTime(Date.now());
+  }, []);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#F8FAFC] p-6 rounded-xl shadow-sm">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-xl shadow-sm">
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Patient Chart</h2>
-        <div className="flex gap-4 text-sm text-gray-500 mb-4">
-          <button className="font-medium text-[#3B82F6]">Daily</button>
-
-          <button>Weekly</button>
-          <button>Monthly</button>
+        <div className="flex justify-center gap-8 text-sm text-gray-500 mb-6">
+          <button className="font-medium text-blue-500">Daily</button>
+          <button className="hover:text-gray-700">Weekly</button>
+          <button className="hover:text-gray-700">Monthly</button>
         </div>
-        <div className="flex justify-center">
-          <ResponsiveContainer width={200} height={200}>
+        <div className="flex justify-center relative">
+          <ResponsiveContainer width={240} height={240}>
             <PieChart>
               <Pie
                 data={data}
                 dataKey="value"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={3}
+                innerRadius={70}
+                outerRadius={95}
+                paddingAngle={2}
+                labelLine={false}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
@@ -52,22 +46,36 @@ useEffect(() => {
           </ResponsiveContainer>
         </div>
 
-        <div className="text-center text-2xl font-semibold -mt-28 mb-8">
+        <div className="text-center text-3xl font-semibold -mt-36 mb-12">
           75
-          <div className="text-sm text-gray-500">Total People</div>
+          <div className="text-sm text-gray-500 font-normal mt-1">
+            Total People
+          </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-4 text-sm">
+
+        <div
+          className="grid grid-cols-2 gap-x-12 mt-[85px] gap-y-4 text-sm mx-auto"
+          style={{ maxWidth: "280px" }}
+        >
           {data.map((d) => (
-            <div key={d.name} className="flex items-center gap-1">
+            <div key={d.name} className="flex items-center gap-3">
               <span
-                className="w-3 h-3 rounded-full"
+                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: d.color }}
-              ></span>
-              {d.name} {d.value}%
+              >
+                <span className="text-white text-lg">❄️</span>
+              </span>
+              <div>
+                <div className="font-medium text-gray-900 text-sm">
+                  {d.name}
+                </div>
+                <div className="text-gray-500 text-sm">{d.value}%</div>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
       <div className="bg-white rounded-xl shadow p-6">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold">Appointments</h2>
@@ -80,9 +88,24 @@ useEffect(() => {
 
         <div className="space-y-3">
           {[
-            { name: "Eva Green", task: "Task", doctor: "Dr. Mehta", time: "09:00 AM" },
-            { name: "Bob Johnson", task: "Meeting", doctor: "Dr. Mehta", time: "10:00 AM" },
-            { name: "John Doe", task: "Follow-Up Visit", doctor: "Dr. Verma", time: "11:00 AM" },
+            {
+              name: "Eva Green",
+              task: "Task",
+              doctor: "Dr. Mehta",
+              time: "09:00 AM",
+            },
+            {
+              name: "Bob Johnson",
+              task: "Meeting",
+              doctor: "Dr. Mehta",
+              time: "10:00 AM",
+            },
+            {
+              name: "John Doe",
+              task: "Follow-Up Visit",
+              doctor: "Dr. Verma",
+              time: "11:00 AM",
+            },
           ].map((a, i) => (
             <div
               key={i}
@@ -90,7 +113,7 @@ useEffect(() => {
             >
               <div>
                 <h3 className="font-medium text-gray-900">{a.name}</h3>
-                <p className="text-sm text-[#3B82F6]">{a.task}</p>
+                <p className="text-sm text-blue-500">{a.task}</p>
                 <p className="text-xs text-gray-500">👨‍⚕️ {a.doctor}</p>
               </div>
               <div className="text-sm font-semibold text-gray-600">
@@ -100,6 +123,7 @@ useEffect(() => {
           ))}
         </div>
       </div>
+
       <div className="bg-white rounded-xl shadow p-6">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">October 2025</h2>
@@ -131,7 +155,6 @@ useEffect(() => {
           ))}
         </div>
 
-
         <div className="flex gap-4 text-sm mt-4 justify-center">
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 bg-blue-500 rounded-full"></span> Surgery
@@ -140,7 +163,8 @@ useEffect(() => {
             <span className="w-3 h-3 bg-red-500 rounded-full"></span> Polyclinic
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-3 h-3 bg-green-500 rounded-full"></span> Evaluation
+            <span className="w-3 h-3 bg-green-500 rounded-full"></span>{" "}
+            Evaluation
           </div>
         </div>
       </div>

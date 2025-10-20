@@ -12,8 +12,9 @@ export default function Home() {
     <>
       <div className="flex flex-col">
         <StatsCard />
-        <HospitalSurvey/>
         <Appointments />
+                <HospitalSurvey/>
+
         <DashboardRecords/>
       </div>
     </>
