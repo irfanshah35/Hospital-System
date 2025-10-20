@@ -3,6 +3,7 @@ import { useState } from "react";
 import Appointments from "@/components/appointments";
 import StatsCard from "@/components/Stats-cards";
 import DashboardRecords from "@/components/dashboard-records";
+import HospitalSurvey from "@/components/hospital-survey";
 
 export default function Home() {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -12,6 +13,8 @@ export default function Home() {
       <div className="flex flex-col">
         <StatsCard />
         <Appointments />
+                <HospitalSurvey/>
+
         <DashboardRecords/>
       </div>
     </>
