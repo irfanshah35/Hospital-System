@@ -12,7 +12,9 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login submitted", { username, password, role: selectedRole });
+    if (typeof window !== "undefined") window.location.href = "/"; 
   };
+
 
   return (
     <div className="h-screen bg-[#CFE1EC] flex items-center justify-center p-4">
