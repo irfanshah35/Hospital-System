@@ -46,7 +46,7 @@ export default function RootLayout({
           />
 
           <div
-            className={`flex flex-col mt-[68px] w-full transition-all duration-300 ${
+            className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
               shouldExpand ? "pl-[260px]" : "pl-[60px]"
             }`}
           >
