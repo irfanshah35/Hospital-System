@@ -62,3 +62,11 @@ aside:hover .sidebar-scroll::-webkit-scrollbar-thumb:hover {
 aside:hover .sidebar-scroll {
   scrollbar-color: #d1d1d1 transparent;
 }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
