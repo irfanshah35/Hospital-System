@@ -83,7 +83,7 @@ export default function AdminSideBar({
             },
             {
               title: "View Appointment",
-              path: "#/admin/appointment/viewAppointment",
+              path: "/appointment/view-appointment",
             },
             {
               title: "Book Appointment",
