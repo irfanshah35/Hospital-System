@@ -27,29 +27,27 @@ export default function RootLayout({
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
+
   return (
     <html lang="en">
       <body className={`${roboto.variable} font-roboto antialiased`}>
-  <Header 
-          isCollapsed={isCollapsed} 
+        <Header
+          isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
           shouldExpand={shouldExpand}
-        />        <div className="flex flex-row">
+        />
+
+        <div className="flex flex-row">
+          <AdminSideBar
+            isCollapsed={isCollapsed}
+            setIsCollapsed={setIsCollapsed}
+            isHovered={isHovered}
+            setIsHovered={setIsHovered}
+          />
+
           <div
-            className={`${
-              isCollapsed ? "w-[60px]" : "w-[260px]"
-            } transition-all duration-300`}
-          >
-             <AdminSideBar
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-              isHovered={isHovered}
-              setIsHovered={setIsHovered}
-            />
-          </div>
-          <div
-            className={`flex flex-col mt-[68px] ${
-              isCollapsed ? "w-[calc(100vw-60px)]" : "w-[calc(100vw-260px)]"
+            className={`flex flex-col mt-[68px] w-full transition-all duration-300 ${
+              shouldExpand ? "pl-[260px]" : "pl-[60px]"
             }`}
           >
             {children}
