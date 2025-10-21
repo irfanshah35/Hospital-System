@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState("admin");
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("clinivaAdmin");
@@ -11,15 +13,20 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login submitted", { username, password, role: selectedRole });
-    if (typeof window !== "undefined") window.location.href = "/"; 
-  };
 
+    // Create a dummy token and store in localStorage
+    const dummyToken = `token_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+    localStorage.setItem("authToken", dummyToken);
+    localStorage.setItem("userRole", selectedRole);
+    localStorage.setItem("username", username);
+    router.push("/");
+  };
 
   return (
     <div className="h-screen bg-[#CFE1EC] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-3xl w-full grid grid-cols-1 lg:grid-cols-6">
-        {/* Left Side - Form (3/5 width) */}
         <div className="lg:col-span-3 p-6 lg:p-12">
           <div className="max-w-md mx-auto">
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Sign in</h1>
@@ -27,37 +34,28 @@ export default function LoginPage() {
               Enter your credentials to log in
             </p>
 
-            {/* Role Selection Buttons */}
             <div className="flex justify-between mb-6">
               <button
                 onClick={() => setSelectedRole("admin")}
-                className={`px-4 py-2 bg-[#458E21] rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "admin"
-                }`}
+                className="px-4 py-2 bg-[#458E21] rounded-full font-semibold text-white transition text-sm"
               >
                 Admin
               </button>
               <button
                 onClick={() => setSelectedRole("doctor")}
-                className={`px-4 py-2 bg-[#EB872B] rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "doctor"
-                }`}
+                className="px-4 py-2 bg-[#EB872B] rounded-full font-semibold text-white transition text-sm"
               >
                 Doctor
               </button>
               <button
                 onClick={() => setSelectedRole("patient")}
-                className={`px-4 py-2 bg-[#3C6EFD] rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "patient"
-                }`}
+                className="px-4 py-2 bg-[#3C6EFD] rounded-full font-semibold text-white transition text-sm"
               >
                 Patient
               </button>
             </div>
 
-            {/* Login Form */}
             <form onSubmit={handleSubmit}>
-              {/* Username Field */}
               <fieldset className="border border-gray-300 rounded-lg p-3 mb-4">
                 <legend className="text-xs text-gray-600 px-2">
                   Username*
@@ -71,7 +69,6 @@ export default function LoginPage() {
                 />
               </fieldset>
 
-              {/* Password Field */}
               <fieldset className="border border-gray-300 rounded-lg p-3 mb-4 relative">
                 <legend className="text-xs text-gray-600 px-2">
                   Password*
@@ -92,7 +89,6 @@ export default function LoginPage() {
                 </button>
               </fieldset>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between mb-5">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -109,7 +105,6 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              {/* Login Button */}
               <button
                 type="submit"
                 className="w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg hover:opacity-90 transition mb-5 text-sm"
@@ -117,7 +112,6 @@ export default function LoginPage() {
                 Login
               </button>
 
-              {/* Sign Up Link */}
               <p className="text-center text-gray-600 mb-5 text-sm">
                 Don't have an account?{" "}
                 <a
@@ -128,7 +122,6 @@ export default function LoginPage() {
                 </a>
               </p>
 
-              {/* Social Login */}
               <div className="flex justify-center gap-3">
                 <button
                   type="button"
@@ -141,7 +134,6 @@ export default function LoginPage() {
                     height={20}
                   />
                 </button>
-
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition"
@@ -153,7 +145,6 @@ export default function LoginPage() {
                     height={20}
                   />
                 </button>
-
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition"
@@ -170,7 +161,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right Side - Image (2/5 width) */}
         <div className="lg:col-span-3 relative flex items-center justify-center w-full h-full overflow-hidden">
           <Image
             src="/assets/bg-01.png"
