@@ -22,6 +22,8 @@ export default function ViewAppointments() {
 
     const [detailDropdown, setDetailDropdown] = useState(false)
     const detailref = useRef<HTMLDivElement | null>(null);
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
 
     const appointments: Appointment[] = [
         {
@@ -166,6 +168,38 @@ export default function ViewAppointments() {
         const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
         saveAs(blob, "appointments.xlsx");
     };
+    const removeData = () => {
+        if (selectedIds.length === 0) {
+            alert("Please select at least one appointment to delete.");
+            return;
+        }
+        const confirmDelete = window.confirm(
+            `Are you sure you want to delete ${selectedIds.length} appointment(s)?`
+        );
+        if (confirmDelete) {
+            setData(data.filter((item) => !selectedIds.includes(item.id)));
+            setSelectedIds([]); // clear selection
+        }
+    }
+    const handleCheckboxChange = (id: number) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedIds(data.map((item) => item.id)); // sab IDs add karo
+        } else {
+            setSelectedIds([]); // sab unselect karo
+        }
+    };
+    useEffect(() => {
+        const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
+        if (selectAllCheckbox) {
+            selectAllCheckbox.indeterminate =
+                selectedIds.length > 0 && selectedIds.length < data.length;
+        }
+    }, [selectedIds, data]);
 
     return (
         <>
@@ -207,10 +241,21 @@ export default function ViewAppointments() {
 
                                 <div className="flex items-center">
 
+
+                                    {selectedIds.length > 0 && (
+                                        <button
+                                            onClick={removeData}
+                                            className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
+                                            title="Delete Selected"
+                                        >
+                                            <Trash2 className="w-[20px] h-[20px]" />
+                                        </button>
+                                    )}
+
                                     <div ref={detailref} className='relative'>
                                         <button onClick={() => setDetailDropdown(!detailDropdown)}
-                                            className="flex justify-center items-center w-10 h-10 rounded-full text-indigo-500 hover:bg-[#CED5E6] transition"
-                                            title="Show/Hide Columns cursor-pointer"
+                                            className="flex justify-center items-center w-10 h-10 rounded-full text-indigo-500 cursor-pointer hover:bg-[#CED5E6] transition"
+                                            title="Show/Hide Columns"
                                         >
                                             <svg className="w-[22px] h-[22px]" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" />
@@ -282,7 +327,7 @@ export default function ViewAppointments() {
                                             <tr className='ml-[24px]'>
                                                 <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     <div className="flex items-center">
-                                                        <input type="checkbox" className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]" />
+                                                        <input type="checkbox" id="selectAll" className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]" onChange={(e) => handleSelectAll(e.target.checked)} />
                                                     </div>
                                                 </th>
                                                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
@@ -300,12 +345,14 @@ export default function ViewAppointments() {
 
                                         <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""
                                             }`}>
-                                            {appointments.map((item) => (
+                                            {data.map((item) => (
                                                 <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
                                                     <td className="px-4 py-3 pl-[37px]">
                                                         <input
                                                             type="checkbox"
-                                                            className="h-[18px] w-[18px] rounded-[2px]  border-[2px] border-[#1a1b1f] checked:bg-red"
+                                                            checked={selectedIds.includes(item.id)}
+                                                            onChange={() => handleCheckboxChange(item.id)}
+                                                            className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                                         />
                                                     </td>
 
@@ -453,31 +500,31 @@ const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
                         }}
                         className="appearance-none border border-[#44474e] rounded-md text-sm text-gray-700 px-4 w-full py-3 focus:ring-1 focus:ring-[#005CBB] focus:border-[#005CBB] outline-none cursor-pointer pr-8"
                     >
-                        {itemsPerPageOptions.map((option,i) => (
+                        {itemsPerPageOptions.map((option, i) => (
                             <option key={i} value={option}>
                                 {option}
                             </option>
                         ))}
                     </select>
 
-                    
+
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                 </div>
             </div>
 
-           
+
             <div className="text-gray-600 font-medium">
                 {startItem} – {endItem} of {totalItems}
             </div>
 
-            
+
             <div className="flex items-center space-x-2">
                 <button
                     onClick={handlePrev}
                     disabled={page === 1}
                     className={`flex items-center justify-center w-9 h-9 rounded-full transition cursor-pointer ${page === 1
-                            ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
-                            : "hover:bg-[#EBEBEF] text-[#44474e]"
+                        ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
+                        : "hover:bg-[#EBEBEF] text-[#44474e]"
                         }`}
                     title="Previous page"
                 >
@@ -488,8 +535,8 @@ const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
                     onClick={handleNext}
                     disabled={page === totalPages}
                     className={`flex items-center justify-center w-9 h-9 rounded-full transition cursor-pointer ${page === totalPages
-                            ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
-                            : "hover:bg-[#EBEBEF] text-[#44474e]"
+                        ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
+                        : "hover:bg-[#EBEBEF] text-[#44474e]"
                         }`}
                     title="Next page"
                 >
