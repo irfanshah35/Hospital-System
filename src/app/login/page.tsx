@@ -1,8 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+// Extend Window interface for Google
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -10,11 +17,116 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("password123");
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
 
   // Update username when role changes
   useEffect(() => {
     setUsername(selectedRole);
   }, [selectedRole]);
+
+  useEffect(() => {
+    if (document.getElementById("google-signin-script")) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "google-signin-script";
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setIsGoogleLoaded(true);
+      initializeGoogleSignIn();
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      const existingScript = document.getElementById("google-signin-script");
+      if (existingScript) {
+        document.body.removeChild(existingScript);
+      }
+    };
+  }, []);
+
+  const initializeGoogleSignIn = () => {
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id:
+          "887906251931-h5unlhh9rkjcdailipjkotgugls25gs9.apps.googleusercontent.com",
+        callback: handleGoogleCallback,
+      });
+    }
+  };
+
+  const handleGoogleCallback = (response: any) => {
+    try {
+      // Decode JWT token to get user info
+      const base64Url = response.credential.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+
+      const userData = JSON.parse(jsonPayload);
+
+      // Store user data
+      localStorage.setItem("authToken", response.credential);
+      localStorage.setItem("userRole", selectedRole);
+      localStorage.setItem("username", userData.name || userData.email);
+      localStorage.setItem("userEmail", userData.email);
+      localStorage.setItem("userPicture", userData.picture || "");
+      localStorage.setItem("loginMethod", "google");
+
+      console.log("Google login successful:", userData);
+
+      // Redirect to home
+      router.push("/");
+    } catch (error) {
+      console.error("Error processing Google login:", error);
+    }
+  };
+
+  const createFakeGoogleWrapper = () => {
+    if (!window.google) {
+      console.error("Google Sign-In not loaded");
+      return null;
+    }
+
+    const googleLoginWrapper = document.createElement("div");
+    googleLoginWrapper.style.display = "none";
+    googleLoginWrapper.classList.add("custom-google-button");
+    document.body.appendChild(googleLoginWrapper);
+
+    window.google.accounts.id.renderButton(googleLoginWrapper, {
+      type: "icon",
+      width: 200,
+    });
+
+    const googleLoginWrapperButton = googleLoginWrapper.querySelector(
+      'div[role="button"]'
+    ) as HTMLElement;
+
+    return {
+      click: () => {
+        googleLoginWrapperButton?.click();
+      },
+    };
+  };
+
+  const handleGoogleLogin = () => {
+    if (!isGoogleLoaded) {
+      console.error("Google Sign-In not loaded yet");
+      return;
+    }
+
+    const googleWrapper = createFakeGoogleWrapper();
+    if (googleWrapper) {
+      googleWrapper.click();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +139,8 @@ export default function LoginPage() {
       localStorage.setItem("authToken", dummyToken);
       localStorage.setItem("userRole", selectedRole);
       localStorage.setItem("username", username);
-      
+      localStorage.setItem("loginMethod", "credentials");
+
       router.push("/");
     } catch (error) {
       console.error("Error storing auth data:", error);
@@ -67,7 +180,9 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setSelectedRole("patient")}
                 className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "patient" ? "bg-[#3C6EFD]" : "bg-[#3C6EFD]/70"
+                  selectedRole === "patient"
+                    ? "bg-[#3C6EFD]"
+                    : "bg-[#3C6EFD]/70"
                 }`}
               >
                 Patient
@@ -141,10 +256,19 @@ export default function LoginPage() {
                 </a>
               </p>
 
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <span className="text-gray-500 text-sm">OR</span>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+
               <div className="flex justify-center gap-3">
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition"
+                  onClick={handleGoogleLogin}
+                  disabled={!isGoogleLoaded}
+                  className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Sign in with Google"
                 >
                   <Image
                     src="/assets/google.png"
@@ -156,6 +280,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition"
+                  title="Sign in with Facebook"
                 >
                   <Image
                     src="/assets/facebook.jpg"
@@ -167,6 +292,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition"
+                  title="Sign in with Apple"
                 >
                   <Image
                     src="/assets/apple.png"
