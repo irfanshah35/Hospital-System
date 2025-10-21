@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,20 +8,30 @@ export default function LoginPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState("admin");
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("clinivaAdmin");
+  const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("password123");
+
+  // Update username when role changes
+  useEffect(() => {
+    setUsername(selectedRole);
+  }, [selectedRole]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Create a dummy token and store in localStorage
-    const dummyToken = `token_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    localStorage.setItem("authToken", dummyToken);
-    localStorage.setItem("userRole", selectedRole);
-    localStorage.setItem("username", username);
-    router.push("/");
+    try {
+      // Create a dummy token and store in localStorage
+      const dummyToken = `token_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+      localStorage.setItem("authToken", dummyToken);
+      localStorage.setItem("userRole", selectedRole);
+      localStorage.setItem("username", username);
+      
+      router.push("/");
+    } catch (error) {
+      console.error("Error storing auth data:", error);
+    }
   };
 
   return (
@@ -36,20 +46,29 @@ export default function LoginPage() {
 
             <div className="flex justify-between mb-6">
               <button
+                type="button"
                 onClick={() => setSelectedRole("admin")}
-                className="px-4 py-2 bg-[#458E21] rounded-full font-semibold text-white transition text-sm"
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
+                  selectedRole === "admin" ? "bg-[#458E21]" : "bg-[#458E21]/70"
+                }`}
               >
                 Admin
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedRole("doctor")}
-                className="px-4 py-2 bg-[#EB872B] rounded-full font-semibold text-white transition text-sm"
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
+                  selectedRole === "doctor" ? "bg-[#EB872B]" : "bg-[#EB872B]/70"
+                }`}
               >
                 Doctor
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedRole("patient")}
-                className="px-4 py-2 bg-[#3C6EFD] rounded-full font-semibold text-white transition text-sm"
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
+                  selectedRole === "patient" ? "bg-[#3C6EFD]" : "bg-[#3C6EFD]/70"
+                }`}
               >
                 Patient
               </button>
