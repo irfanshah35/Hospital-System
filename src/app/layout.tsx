@@ -37,20 +37,12 @@ export default function RootLayout({
                 setIsCollapsed={setIsCollapsed}
                 shouldExpand={shouldExpand}
               />
-              <div className="flex flex-row">
-                <AdminSideBar
-                  isCollapsed={isCollapsed}
-                  setIsCollapsed={setIsCollapsed}
-                  isHovered={isHovered}
-                  setIsHovered={setIsHovered}
-                />
-                <div
-                  className={`flex flex-col mt-[68px] w-full transition-all duration-300 ${
-                    shouldExpand ? "pl-[260px]" : "pl-[60px]"
-                  }`}
-                >
-                  {children}
-                </div>
+              <div
+                className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
+                  shouldExpand ? "pl-[260px]" : "pl-[60px]"
+                }`}
+              >
+                {children}
               </div>
             </>
           ) : (
