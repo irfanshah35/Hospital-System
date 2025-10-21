@@ -1,6 +1,8 @@
 import { CirclePlus, Download, Home, RotateCw } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState, useRef } from "react";
 import { Clock, Phone, Mail, Edit, Trash2 } from "lucide-react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 interface Appointment {
     id: number;
@@ -17,6 +19,9 @@ interface Appointment {
 }
 
 export default function ViewAppointments() {
+
+    const [detailDropdown, setDetailDropdown] = useState(false)
+    const detailref = useRef<HTMLDivElement | null>(null);
 
     const appointments: Appointment[] = [
         {
@@ -90,6 +95,78 @@ export default function ViewAppointments() {
                 "https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
         },
     ];
+
+    const checkboxItems = [
+        { label: "Checkbox", checked: true },
+        { label: "Name", checked: true },
+        { label: "Doctor", checked: true },
+        { label: "Gender", checked: true },
+        { label: "Date", checked: true },
+        { label: "Time", checked: true },
+        { label: "Mobile", checked: true },
+        { label: "Injury", checked: false },
+        { label: "Email", checked: true },
+        { label: "Appointment Status", checked: true },
+        { label: "Visit Type", checked: true },
+        { label: "Payment Status", checked: false },
+        { label: "Insurance Provider", checked: false },
+        { label: "Notes", checked: false },
+        { label: "Actions", checked: true },
+    ];
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as Node;
+            if (
+                detailref.current &&
+                !detailref.current.contains(target)
+            ) {
+                setDetailDropdown(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const [data, setData] = useState(appointments);
+    const [animate, setAnimate] = useState(false);
+
+    const handleRefresh = () => {
+        setAnimate(true);
+
+        setTimeout(() => {
+            setData([...appointments]);
+            setAnimate(false);
+        }, 300);
+    };
+
+
+    const handleDownloadXLSX = () => {
+        // Table data ko Excel format me convert karna
+        const worksheet = XLSX.utils.json_to_sheet(
+            appointments.map((item) => ({
+                Name: item.name,
+                Doctor: item.doctor,
+                Gender: item.gender,
+                Date: item.date,
+                Time: item.time,
+                Mobile: item.phone,
+                Email: item.email,
+                "Appointment Status": item.status,
+                "Visit Type": item.visitType,
+            }))
+        );
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Appointments");
+
+        // Excel file generate & download
+        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        saveAs(blob, "appointments.xlsx");
+    };
+
     return (
         <>
             <div className='px-4 sm:px-6 py-[20px] bg-[#ECF0F9] mt-0'>
@@ -107,9 +184,9 @@ export default function ViewAppointments() {
 
 
 
-                <div className="min-h-screen mt-3">
+                <div className="h-auto mt-3">
                     <div className="max-w-full ">
-                        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="bg-white rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
                             <div className="pr-[15px] pl-[20px] py-[8px] bg-[#DAE1F3] border-b border-gray-200 flex items-center">
                                 <div className='flex items-center flex-[35%]'>
@@ -130,21 +207,46 @@ export default function ViewAppointments() {
 
                                 <div className="flex items-center">
 
-                                    <button
-                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition"
-                                        title="Show/Hide Columns cursor-pointer"
-                                    >
-                                        <svg className='w-[22px] h-[22px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 4V6H15V4H9Z"></path></svg>
-                                    </button>
+                                    <div ref={detailref} className='relative'>
+                                        <button onClick={() => setDetailDropdown(!detailDropdown)}
+                                            className="flex justify-center items-center w-10 h-10 rounded-full text-indigo-500 hover:bg-[#CED5E6] transition"
+                                            title="Show/Hide Columns cursor-pointer"
+                                        >
+                                            <svg className="w-[22px] h-[22px]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" />
+                                            </svg>
+                                        </button>
 
-                                    <button
-                                        className="flex justify-center items-center w-10 h-10 rounded-full text-indigo-500 hover:bg-[#CED5E6] transition"
-                                        title="Show/Hide Columns cursor-pointer"
-                                    >
-                                        <svg className="w-[22px] h-[22px]" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" />
-                                        </svg>
-                                    </button>
+
+                                        {/* Dropdown  */}
+                                        {detailDropdown && (
+
+                                            <div className="absolute top-[40px] right-0 z-10 origin-top-right transform transition-all duration-300 ease-out overflow-x-hidden">
+                                                <div className="px-[15px] h-[300px] max-h-[320px] overflow-y-auto min-w-[218px] bg-[#efedf0] rounded-[6px] overflow-x-hidden">
+
+                                                    <span className="block text-sm px-[25px] pt-2 font-semibold text-[#212529] leading-[40px]">Show/Hide Column</span>
+                                                    <hr className="border-gray-300 my-2" />
+
+                                                    <div className="pr-2 pl-[12px]">
+                                                        {checkboxItems.map((item, index) => (
+                                                            <label
+                                                                key={index}
+                                                                className="flex items-center space-x-4 h-[40px] cursor-pointer"
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    defaultChecked={item.checked}
+                                                                    className="appearance-none h-[18px] w-[18px] ml-[20px] rounded-[2px] bg-white border border-gray-400 checked:bg-[#005CBB] checked:border-[#005CBB] checked:[&:after]:block relative after:hidden after:content-[''] after:absolute after:top-[1px] after:left-[5px] after:w-[6px] after:h-[12px] after:border-r-[2px] after:border-b-[2px] after:border-white after:rotate-45"
+                                                                />
+                                                                <span className="text-[13px] text-[#1e2939]">{item.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        )}
+                                    </div>
 
 
                                     <button
@@ -155,13 +257,14 @@ export default function ViewAppointments() {
                                     </button>
 
                                     <button
+                                        onClick={handleRefresh}
                                         className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer"
                                         title="Refresh"
                                     >
                                         <RotateCw className='w-[20px] h-[20px]' />
                                     </button>
 
-                                    <button
+                                    <button onClick={handleDownloadXLSX}
                                         className="flex justify-center items-center w-10 h-10 rounded-full text-[#2196f3] hover:bg-[#CED5E6] transition cursor-pointer"
                                         title="XLSX Download"
                                     >
@@ -195,7 +298,8 @@ export default function ViewAppointments() {
                                             </tr>
                                         </thead>
 
-                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                                            }`}>
                                             {appointments.map((item) => (
                                                 <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
                                                     <td className="px-4 py-3 pl-[37px]">
@@ -286,7 +390,113 @@ export default function ViewAppointments() {
                         </div>
                     </div>
                 </div>
+
+                <div>
+                    <Paginator />
+                </div>
+
             </div>
+
+            <style jsx>{`
+                @keyframes slideDown {
+                    0% {
+                        transform: translateY(-20px);
+                        opacity: 0;
+                    }
+                    100% {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+
+                .animate-slideDown {
+                    animation: slideDown 0.4s ease-in-out;
+                }
+            `}</style>
         </>
     )
 }
+
+
+
+
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+
+const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
+    const [page, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageOptions[0]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startItem = (page - 1) * itemsPerPage + 1;
+    const endItem = Math.min(page * itemsPerPage, totalItems);
+
+    const handlePrev = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
+    const handleNext = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+    return (
+        <div className="flex flex-wrap items-center justify-end gap-8 border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 rounded-b-xl shadow-sm">
+            <div className="flex items-center space-x-2">
+                <span className="text-gray-600 text-[12px] font-medium">Items per page:</span>
+
+
+                <div className="relative w-[84px]">
+                    <select
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                            setItemsPerPage(Number(e.target.value));
+                            setPage(1);
+                        }}
+                        className="appearance-none border border-[#44474e] rounded-md text-sm text-gray-700 px-4 w-full py-3 focus:ring-1 focus:ring-[#005CBB] focus:border-[#005CBB] outline-none cursor-pointer pr-8"
+                    >
+                        {itemsPerPageOptions.map((option,i) => (
+                            <option key={i} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+
+                    
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                </div>
+            </div>
+
+           
+            <div className="text-gray-600 font-medium">
+                {startItem} – {endItem} of {totalItems}
+            </div>
+
+            
+            <div className="flex items-center space-x-2">
+                <button
+                    onClick={handlePrev}
+                    disabled={page === 1}
+                    className={`flex items-center justify-center w-9 h-9 rounded-full transition cursor-pointer ${page === 1
+                            ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
+                            : "hover:bg-[#EBEBEF] text-[#44474e]"
+                        }`}
+                    title="Previous page"
+                >
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <button
+                    onClick={handleNext}
+                    disabled={page === totalPages}
+                    className={`flex items-center justify-center w-9 h-9 rounded-full transition cursor-pointer ${page === totalPages
+                            ? "opacity-50 cursor-not-allowed hover:bg-[#EBEBEF]"
+                            : "hover:bg-[#EBEBEF] text-[#44474e]"
+                        }`}
+                    title="Next page"
+                >
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+        </div>
+    );
+};
+
