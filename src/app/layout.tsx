@@ -2,12 +2,11 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import SideBar from "@/components/sidebar/patientsidebar";
 import Header from "@/components/header";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import DoctorSideBar from "@/components/sidebar/doctorsidebar";
 import AdminSideBar from "@/components/sidebar/adminsidebar";
+import AuthCheck from "@/components/AuthCheck"; // Import AuthCheck
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -35,32 +34,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.variable} font-roboto antialiased`}>
-        {isAuthPage ? (
-          <div className="min-h-screen">{children}</div>
-        ) : (
-          <>
-            <Header
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-              shouldExpand={shouldExpand}
-            />
-            <div className="flex flex-row">
-              <AdminSideBar
+        <AuthCheck> 
+          {isAuthPage ? (
+            <div className="min-h-screen">{children}</div>
+          ) : (
+            <>
+              <Header
                 isCollapsed={isCollapsed}
                 setIsCollapsed={setIsCollapsed}
-                isHovered={isHovered}
-                setIsHovered={setIsHovered}
+                shouldExpand={shouldExpand}
               />
-              <div
-                className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
-                  shouldExpand ? "pl-[260px]" : "pl-[60px]"
-                }`}
-              >
-                {children}
+              <div className="flex flex-row">
+                <AdminSideBar
+                  isCollapsed={isCollapsed}
+                  setIsCollapsed={setIsCollapsed}
+                  isHovered={isHovered}
+                  setIsHovered={setIsHovered}
+                />
+                <div
+                  className={`flex flex-col mt-[68px] w-full transition-all duration-300 ${
+                    shouldExpand ? "pl-[260px]" : "pl-[60px]"
+                  }`}
+                >
+                  {children}
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </AuthCheck>
       </body>
     </html>
   );
