@@ -20,17 +20,48 @@ export default function Header({
     flag: "assets/header/us.svg",
     language: "English",
   });
+
+  // User data state
+  const [userData, setUserData] = useState({
+    name: "Ella Jones",
+    photo:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWcoY3z1q3i7fyiX5wMAE7pxRFoAAWySeQWIZE2U_rG1sdbqQcK8Eci_QvIn-YxmccpBw&usqp=CAU",
+    email: "",
+  });
+
   const ref = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Load user data from localStorage
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    const userPicture = localStorage.getItem("userPicture");
+    const userEmail = localStorage.getItem("userEmail");
+    const loginMethod = localStorage.getItem("loginMethod");
+
+    if (username) {
+      setUserData({
+        name: username,
+        photo:
+          userPicture ||
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWcoY3z1q3i7fyiX5wMAE7pxRFoAAWySeQWIZE2U_rG1sdbqQcK8Eci_QvIn-YxmccpBw&usqp=CAU",
+        email: userEmail || "",
+      });
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
     localStorage.removeItem("username");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userPicture");
+    localStorage.removeItem("loginMethod");
 
     window.location.href = "/login";
   };
+
   const countries = [
     {
       language: "English",
@@ -64,6 +95,7 @@ export default function Header({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   return (
     <>
       <nav className="fixed top-0 h-auto left-0 z-50 w-full bg-white shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif]">
@@ -198,7 +230,8 @@ export default function Header({
                   }
                 `}</style>
               </div>
-              {/* countery lang code  */}
+
+              {/* country lang code  */}
               <div className="" ref={dropdownRef}>
                 <button
                   onClick={() => setCountryDropdown(!countryDropdown)}
@@ -247,19 +280,24 @@ export default function Header({
                 )}
               </div>
 
-              {/* profile code  */}
+              {/* profile code with dynamic data */}
               <div ref={profileRef}>
                 <div
                   onClick={() => setProfileDropdown(!profileDropdown)}
-                  className="w-[131px] h-[48px] flex justify-center items-center gap-2 cursor-pointer"
+                  className="w-auto max-w-[150px] h-[48px] flex justify-center items-center gap-2 cursor-pointer px-2"
                 >
-                  <span className="text-sm font-medium text-gray-800">
-                    Ella Jones
+                  <span className="text-sm font-medium text-gray-800 truncate">
+                    {userData.name}
                   </span>
                   <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWcoY3z1q3i7fyiX5wMAE7pxRFoAAWySeQWIZE2U_rG1sdbqQcK8Eci_QvIn-YxmccpBw&usqp=CAU"
-                    alt="User"
-                    className="w-8 h-8 rounded-full border border-gray-300"
+                    src={userData.photo}
+                    alt={userData.name}
+                    className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                    onError={(e) => {
+                      // Fallback image if photo fails to load
+                      e.currentTarget.src =
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWcoY3z1q3i7fyiX5wMAE7pxRFoAAWySeQWIZE2U_rG1sdbqQcK8Eci_QvIn-YxmccpBw&usqp=CAU";
+                    }}
                   />
                 </div>
 
