@@ -14,7 +14,6 @@ export default function Home() {
         <StatsCard />
         <Appointments />
                 <HospitalSurvey/>
-
         <DashboardRecords/>
       </div>
     </>

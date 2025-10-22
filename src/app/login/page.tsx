@@ -58,6 +58,22 @@ export default function LoginPage() {
     }
   };
 
+  const navigateBasedOnRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        router.push("/");
+        break;
+      case "patient":
+        router.push("/patient-dashboard");
+        break;
+      case "doctor":
+        router.push("/doctor-dashboard");
+        break;
+      default:
+        router.push("/");
+    }
+  };
+
   const handleGoogleCallback = (response: any) => {
     try {
       // Decode JWT token to get user info
@@ -82,8 +98,7 @@ export default function LoginPage() {
 
       console.log("Google login successful:", userData);
 
-      // Redirect to home
-      router.push("/");
+      navigateBasedOnRole(selectedRole);
     } catch (error) {
       console.error("Error processing Google login:", error);
     }
@@ -141,7 +156,7 @@ export default function LoginPage() {
       localStorage.setItem("username", username);
       localStorage.setItem("loginMethod", "credentials");
 
-      router.push("/");
+      navigateBasedOnRole(selectedRole);
     } catch (error) {
       console.error("Error storing auth data:", error);
     }
