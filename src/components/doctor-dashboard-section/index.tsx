@@ -43,7 +43,7 @@ const appoint = [
 
 const COLORS = ["#007aff", "#34c759", "#ff3b30"];
 
-export default function DoctorDashboard() {
+export default function DoctorDashboardSection() {
 
     const surveyData = [
         { date: "00:00", newPatients: 52, oldPatients: 32 },
