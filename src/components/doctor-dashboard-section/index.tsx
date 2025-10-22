@@ -234,7 +234,7 @@ export default function DoctorDashboardSection() {
 
                                 {/* <div className="h-32"></div> */}
 
-                                <div style={{ width: "120px", height: "120px" }}>
+                                <div className="h-32">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={BarChat}>
                                             <Tooltip cursor={false} />
