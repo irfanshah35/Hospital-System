@@ -4,6 +4,7 @@ import { useState } from "react";
 import PatientWelcomeSection from "../../components/patient-welcome-section";
 import PatientStatsCards from "../../components/PatientStatsCards"
 import PatientAppointmentsReports from "@/components/PatientAppointmentsReports";
+;
 
 export default function PatientDashboard() {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -13,6 +14,7 @@ export default function PatientDashboard() {
       <PatientWelcomeSection />
       <PatientStatsCards/>
             <PatientAppointmentsReports/>
+    
 
     </div>
   );
