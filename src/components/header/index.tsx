@@ -1,4 +1,5 @@
 "use client";
+import { useThemeStore } from "@/store/store";
 import { Flag } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { useThemeStore } from "@/store/store";
@@ -21,8 +22,6 @@ export default function Header({
     flag: "assets/header/us.svg",
     language: "English",
   });
-
-  const { headerColor } = useThemeStore();
 
   // User data state
   const [userData, setUserData] = useState({
@@ -127,14 +126,10 @@ export default function Header({
 
   return (
     <>
-      <nav
-        className={`fixed top-0 h-auto left-0 z-50 w-full ${getHeaderBgClass()} shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif] transition-colors duration-300`}
-      >
+      <nav className="fixed top-0 h-auto left-0 z-50 w-full bg-white shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif]">
         <div className="flex items-center w-full max-w-[1400px] mx-auto py-[4px]">
           <div className="p-[8px] !pr-0 flex items-center">
-            <button
-              className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center lg:hidden`}
-            >
+            <button className="text-gray-700 hover:text-gray-900 w-[48px] h-[48px] flex justify-center items-center lg:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 onClick={() => setIsCollapsed(!isCollapsed)}
@@ -149,9 +144,9 @@ export default function Header({
             <div
               className={`flex items-center gap-[10px] px-[10px] mr-4 ${
                 shouldExpand
-                  ? "w-[244px] justify-center"
+                  ? "w-[236px] justify-center"
                   : "px-0 justify-center"
-              } transition-all duration-300`}
+              } transition-all duration-300 `}
             >
               <img
                 src="assets/header/logo.png"
@@ -159,16 +154,14 @@ export default function Header({
                 className="h-8 w-8"
               />
               {shouldExpand && (
-                <span
-                  className={`text-[24px] font-[400] ${getTextColorClass()}`}
-                >
+                <span className="text-[24px] font-[400] text-gray-900">
                   Cliniva
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full pl-[8px] py-[4px]">
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center`}
               aria-label="Toggle Menu"
