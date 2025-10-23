@@ -21,6 +21,7 @@ export default function Header({
     flag: "assets/header/us.svg",
     language: "English",
   });
+  const { sidebarTheme } = useThemeStore();
 
   const { headerColor } = useThemeStore();
   // User data state
@@ -129,8 +130,8 @@ export default function Header({
       <nav
         className={`fixed top-0 h-auto left-0 z-50 w-full ${getHeaderBgClass()} shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif] transition-colors duration-300`}
       >
-        <div className="flex items-center w-full max-w-[1400px] mx-auto py-[4px]">
-          <div className="p-[8px] !pr-0 flex items-center">
+        <div className={`flex items-center w-full max-w-[1400px] mx-auto  `}>
+          <div className={`p-[8px] py-[12px] !pr-0 flex items-center ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}>
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center lg:hidden`}
             >
@@ -146,11 +147,11 @@ export default function Header({
             </button>
 
             <div
-              className={`flex items-center gap-[10px] px-[10px] mr-4 ${
+              className={`flex items-center gap-[10px] px-[10px] ${
                 shouldExpand
-                  ? "w-[244px] justify-center"
-                  : "px-0 justify-center"
-              } transition-all duration-300`}
+                  ? "w-[236px] justify-center !mr-4"
+                  : "px-0 justify-center mr-[3px]"
+              } transition-normal duration-300`}
             >
               <img
                 src="assets/header/logo.png"
@@ -159,7 +160,7 @@ export default function Header({
               />
               {shouldExpand && (
                 <span
-                  className={`text-[24px] font-[400] ${getTextColorClass()}`}
+                  className={`text-[24px] font-[400]`}
                 >
                   Cliniva
                 </span>
@@ -167,7 +168,7 @@ export default function Header({
             </div>
           </div>
 
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full pl-[8px]">
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center`}
               aria-label="Toggle Menu"
