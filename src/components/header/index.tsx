@@ -130,7 +130,7 @@ export default function Header({
       <nav
         className={`fixed top-0 h-auto left-0 z-50 w-full ${getHeaderBgClass()} shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif] transition-colors duration-300`}
       >
-        <div className={`flex items-center w-full max-w-[1400px] mx-auto  `}>
+        <div className={`flex items-center w-full mx-auto  `}>
           <div className={`p-[8px] py-[12px] !pr-0 flex items-center ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}>
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center lg:hidden`}

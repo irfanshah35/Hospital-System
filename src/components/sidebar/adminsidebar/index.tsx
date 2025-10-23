@@ -288,7 +288,7 @@ export default function AdminSideBar({
     <>
       <aside
         className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
-          } overflow-x-hidden overflow-y-hidden h-full fixed top-[56px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}
+          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-56px)] fixed top-[56px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
