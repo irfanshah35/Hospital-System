@@ -21,6 +21,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { useThemeStore } from "@/store/store";
 
 interface AdminSideBarProps {
   isCollapsed: boolean;
@@ -40,7 +41,7 @@ export default function AdminSideBar({
 
   // Only use hover state when sidebar is collapsed
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
-
+const { sidebarTheme } = useThemeStore();
   const toggleDropdown = (title: string) => {
     if (openDropdowns.includes(title)) {
       setOpenDropdowns(openDropdowns.filter((item) => item !== title));
@@ -288,7 +289,7 @@ export default function AdminSideBar({
       <aside
         className={`${
           shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] bg-white z-[9999] group transition-all duration-300`}
+        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1f2937] text-white" : "bg-white text-gray-800"}`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
