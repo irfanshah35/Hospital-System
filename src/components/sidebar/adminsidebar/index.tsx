@@ -288,7 +288,7 @@ export default function AdminSideBar({
     <>
       <aside
         className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
-          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-60px)] fixed top-[60px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1f2937] text-white" : "bg-white text-gray-800"}`}
+          } overflow-x-hidden overflow-y-hidden h-full fixed top-[56px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -329,7 +329,7 @@ export default function AdminSideBar({
               <React.Fragment key={sectionIndex}>
                 {shouldExpand && (
                   <li>
-                    <div className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${sidebarTheme === "dark" ? "text-gray-400" : "text-gray-500"
+                    <div className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${sidebarTheme === "dark" ? "text-[#9babf1]" : "text-black"
                       }`}>
                       {section.section}
                     </div>
@@ -342,10 +342,10 @@ export default function AdminSideBar({
                       <>
                         <button
                           onClick={() => toggleDropdown(item.title)}
-                          className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer
+                          className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
 p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
 ${sidebarTheme === "dark"
-                              ? "text-gray-200 hover:bg-[#151A25]"
+                              ? "text-[#b2b6bf]  hover:bg-[#151A25]"
                               : "text-gray-800 hover:bg-[#f0f3fb]"
                             } w-full`}
                         >
@@ -422,7 +422,9 @@ ${sidebarTheme === "dark"
                           p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out hover:bg-[#f0f3fb]`}
                         href={(item as any).path || "#"}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className={`flex items-center  gap-2 ${
+                          sidebarTheme === "dark" ? 'text-[#b2b6bf]' : ''
+                        }`}>
                           <item.icon size={18} strokeWidth={1.8} />
                           {shouldExpand && <span>{item.title}</span>}
                         </div>
