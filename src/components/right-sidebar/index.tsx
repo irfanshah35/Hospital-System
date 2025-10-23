@@ -7,13 +7,12 @@ import { useThemeStore } from "@/store/store";
 const RightSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [layout, setLayout] = useState("light");
-  const [theme, setTheme] = useState("white");
   const [rtl, setRtl] = useState(false);
 
-  const { sidebarTheme, setSidebarTheme } = useThemeStore();
+  const { sidebarTheme, setSidebarTheme, headerColor, setHeaderColor } = useThemeStore();
 
   const themes = [
-    { name: "white", color: "bg-white border" },
+    { name: "white", color: "bg-white border-2" },
     { name: "black", color: "bg-black" },
     { name: "purple", color: "bg-purple-600" },
     { name: "orange", color: "bg-orange-500" },
@@ -83,8 +82,8 @@ const RightSidebar = () => {
             </div>
           </div>
 
-          {/* ✅ Sidebar Menu Color — linked to Zustand */}
-          <div className="px-[25px] pt-[20px] pb-[15px]">
+          {/* ✅ Sidebar Menu Color */}
+          <div className="px-[25px] pt-[20px] pb-[15px] border-b border-[#dee2e6]">
             <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
               Sidebar Menu Color
             </p>
@@ -118,24 +117,27 @@ const RightSidebar = () => {
             </div>
           </div>
 
-          {/* --- Color Theme & RTL (unchanged) --- */}
-          <div className="p-4 border-b">
-            <p className="font-medium mb-3">Color Theme</p>
+          {/* ✅ NEW: Header Color Theme */}
+          <div className="p-4 border-b border-[#dee2e6]">
+            <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
+              Header Color
+            </p>
             <ul className="flex flex-wrap gap-3">
               {themes.map((t) => (
                 <li
                   key={t.name}
-                  className={`w-7 h-7 rounded-full shadow-[4px_3px_6px_#0003] cursor-pointer border-2 ${
-                    theme === t.name
-                      ? "border-blue-600"
-                      : "border-transparent"
+                  className={`w-8 h-8 rounded-full shadow-md cursor-pointer border-2 transition-all ${
+                    headerColor === t.name
+                      ? "border-blue-600 scale-110"
+                      : "border-gray-300"
                   } ${t.color}`}
-                  onClick={() => setTheme(t.name)}
+                  onClick={() => setHeaderColor(t.name)}
                 ></li>
               ))}
             </ul>
           </div>
 
+          {/* RTL Layout */}
           <div className="p-4 mb-[50px]">
             <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
               RTL Layout
@@ -172,7 +174,7 @@ const RightSidebar = () => {
         </div>
       </div>
 
-      {/* Floating Toggle Button (same) */}
+      {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`fixed top-[40%] transition-all duration-300 ease-in-out flex items-center justify-center text-white rounded-l-[12px] shadow-[0_3px_10px_#00000026]
