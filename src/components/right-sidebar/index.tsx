@@ -25,7 +25,7 @@ const RightSidebar = () => {
   return (
     <>
       <div
-        className={`fixed top-[56px] z-[9999] right-0 h-screen bg-white border-l border-gray-200 transition-all duration-300 ease-in-out ${
+        className={`fixed top-[60px] z-[9999] right-0 h-screen bg-white border-l border-gray-200 transition-all duration-300 ease-in-out ${
           isOpen ? "w-[245px] h-auto" : "w-0"
         } overflow-auto scrollbar-hide shadow-lg`}
       >
