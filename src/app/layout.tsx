@@ -9,6 +9,7 @@ import AdminSideBar from "@/components/sidebar/adminsidebar";
 import DoctorSideBar from "@/components/sidebar/doctorsidebar";
 import SideBar from "@/components/sidebar/patientsidebar";
 import AuthCheck from "@/components/AuthCheck";
+import RightSidebar from "@/components/right-sidebar";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -103,7 +104,9 @@ export default function RootLayout({
                 >
                   {children}
                 </div>
+                 <RightSidebar />
               </div>
+              
             </>
           )}
         </AuthCheck>
