@@ -51,7 +51,7 @@ export default function DashboardRecords() {
         {/* Appointments Section */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 h-[700px] overflow-y-auto flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Appointments</h2>
+            <h2 className="text-2xl font-bold">Appointments</h2>
             <button className="text-blue-600 font-semibold hover:text-blue-700">View All</button>
           </div>
 
@@ -59,11 +59,11 @@ export default function DashboardRecords() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm ">Patient Name</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Assigned Doctor</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Date</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Diseases</th>
-                  <th className="text-left py-4 px-2 text-gray-600 font-semibold md:text-sm">Actions</th>
+                  <th className="text-left py-4 px-2 font-semibold md:text-sm ">Patient Name</th>
+                  <th className="text-left py-4 px-2 font-semibold md:text-sm">Assigned Doctor</th>
+                  <th className="text-left py-4 px-2 font-semibold md:text-sm">Date</th>
+                  <th className="text-left py-4 px-2 font-semibold md:text-sm">Diseases</th>
+                  <th className="text-left py-4 px-2 font-semibold md:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,7 +78,7 @@ export default function DashboardRecords() {
                     <td className="py-4 px-2">
                       <span className="text-blue-600 font-medium">{apt.doctor}</span>
                     </td>
-                    <td className="py-4 px-2 text-gray-600">{apt.date}</td>
+                    <td className="py-4 px-2">{apt.date}</td>
                     <td className="py-4 px-2">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getDiseaseColorClass(apt.diseaseColor)}`}>
                         {apt.disease}
@@ -104,13 +104,13 @@ export default function DashboardRecords() {
         {/* Doctor Status Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 h-[700px] overflow-y-auto">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-800">Doctor Status</h2>
+            <h2 className="text-2xl font-bold">Doctor Status</h2>
             <button className="text-blue-600 font-semibold hover:text-blue-700">View All</button>
           </div>
 
             <div className='flex items-center justify-between border-b border-gray-100 last:border-0'>
-                  <div className="text-left p-2 text-gray-600 font-semibold  w-1/2">Doctor Name</div>
-                  <div className="text-right p-2 text-gray-600 font-semibold w-1/2">Status</div>
+                  <div className="text-left p-2 font-semibold  w-1/2">Doctor Name</div>
+                  <div className="text-right p-2 font-semibold w-1/2">Status</div>
             </div>
 
           <div className="space-y-4">
@@ -123,7 +123,7 @@ export default function DashboardRecords() {
                   </div>
                   <div>
                     <div className="font-semibold text-blue-600">{doc.name}</div>
-                    <div className="text-sm text-gray-500">{doc.qualification}</div>
+                    <div className="text-sm">{doc.qualification}</div>
                   </div>
                 </div>
                 <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
@@ -143,7 +143,7 @@ export default function DashboardRecords() {
       <div className="max-w-7xl mx-auto mt-6">
         <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Operations</h2>
+            <h2 className="text-2xl font-bold">Operations</h2>
             <button className="text-blue-600 font-semibold hover:text-blue-700">View All</button>
           </div>
 
@@ -151,15 +151,15 @@ export default function DashboardRecords() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Patient Name</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Doctors Team</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Date Of Operation</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Duration</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Anesthesia Type</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Follow-Up Date</th>
-                  <th className="text-center py-4 px-3 text-gray-600 font-semibold md:text-sm">Report</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Diseases</th>
-                  <th className="text-left py-4 px-3 text-gray-600 font-semibold md:text-sm">Actions</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Patient Name</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Doctors Team</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Date Of Operation</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Duration</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Anesthesia Type</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Follow-Up Date</th>
+                  <th className="text-center py-4 px-3 font-semibold md:text-sm">Report</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Diseases</th>
+                  <th className="text-left py-4 px-3 font-semibold md:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -188,10 +188,10 @@ export default function DashboardRecords() {
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-3 text-gray-600">{op.date}</td>
-                    <td className="py-4 px-3 text-gray-600">{op.duration}</td>
-                    <td className="py-4 px-3 text-gray-600">{op.anesthesia}</td>
-                    <td className="py-4 px-3 text-gray-600">{op.followUp}</td>
+                    <td className="py-4 px-3">{op.date}</td>
+                    <td className="py-4 px-3">{op.duration}</td>
+                    <td className="py-4 px-3">{op.anesthesia}</td>
+                    <td className="py-4 px-3">{op.followUp}</td>
                     <td className="py-4 px-3">
                       <div className="flex justify-center">
                         <button className="text-red-500 hover:text-red-600 transition">

@@ -203,16 +203,16 @@ export default function ViewAppointments() {
 
     return (
         <>
-            <div className='px-4 sm:px-6 py-[20px] bg-[#ECF0F9] mt-0'>
-                <div className="flex items-center justify-between bg-[#ECF0F9] relative top-[-5px]">
-                    <div className="flex items-center space-x-2 text-gray-700">
-                        <h1 className="text-[20px] font-semibold text-gray-900">View Appointment</h1>
-                        <span className="text-[20px] text-black font-bold">›</span>
-                        <Home size={18} className="text-gray-500" />
-                        <span className="text-gray-500">›</span>
-                        <span className="text-gray-600 text-sm">Appointment</span>
-                        <span className="text-gray-500">›</span>
-                        <span className="text-gray-600 text-sm">View</span>
+            <div className='px-4 sm:px-6 py-[20px] mt-0'>
+                <div className="flex items-center justify-between relative top-[-5px]">
+                    <div className="flex items-center space-x-2 ">
+                        <h1 className="text-[20px] font-semibold">View Appointment</h1>
+                        <span className="text-[20px]  font-bold">›</span>
+                        <Home size={18} className="" />
+                        <span className="">›</span>
+                        <span className=" text-sm">Appointment</span>
+                        <span className="">›</span>
+                        <span className=" text-sm">View</span>
                     </div>
                 </div>
 
@@ -220,10 +220,10 @@ export default function ViewAppointments() {
 
                 <div className="h-auto mt-3">
                     <div className="max-w-full ">
-                        <div className="bg-white rounded-t-xl shadow-md overflow-hidden">
+                        <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
-                            <div className="pr-[15px] pl-[20px] py-[8px] bg-[#DAE1F3] border-b border-gray-200 flex items-center">
-                                <div className='flex items-center flex-[35%]'>
+                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+                                <div className='flex items-center flex-[35%] bg-'>
                                     <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Appointment</h1>
                                     <label className='relative'>
                                         <input
@@ -231,7 +231,7 @@ export default function ViewAppointments() {
                                             type="text"
                                             placeholder="Search"
                                             aria-label="Search box"
-                                            className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium text-[#0000008a] px-[50px] py-2 focus:outline-none"
+                                            className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium  px-[50px] py-2 focus:outline-none"
                                         ></input>
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search-icon lucide-search w-6 h-6"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg>
@@ -323,30 +323,30 @@ export default function ViewAppointments() {
                             <div className='overflow-auto scrollbar-hide'>
                                 <div className="overflow-x-auto scrollbar-hide">
                                     <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                        <thead className="bg-white">
                                             <tr className='ml-[24px]'>
                                                 <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     <div className="flex items-center">
                                                         <input type="checkbox" id="selectAll" className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]" onChange={(e) => handleSelectAll(e.target.checked)} />
                                                     </div>
                                                 </th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment Status</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Type</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Doctor</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Time</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Appointment Status</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Visit Type</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                                             </tr>
                                         </thead>
 
                                         <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""
                                             }`}>
                                             {data.map((item) => (
-                                                <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                                <tr key={item.id} className="transition-colors duration-150">
                                                     <td className="px-4 py-3 pl-[37px]">
                                                         <input
                                                             type="checkbox"
@@ -365,14 +365,14 @@ export default function ViewAppointments() {
                                                                 alt={item.name}
                                                             />
                                                             <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                                                <div className="text-sm font-medium text-gray-900">
+                                                                <div className="text-sm font-medium">
                                                                     {item.name}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-4 text-sm whitespace-nowrap text-gray-900">{item.doctor}</td>
+                                                    <td className="px-4 text-sm whitespace-nowrap">{item.doctor}</td>
 
                                                     <td className="px-4 whitespace-nowrap">
                                                         <span
@@ -385,23 +385,23 @@ export default function ViewAppointments() {
                                                         </span>
                                                     </td>
 
-                                                    <td className="px-4 text-sm text-gray-500">{item.date}</td>
+                                                    <td className="px-4 text-sm">{item.date}</td>
 
-                                                    <td className="px-4 text-sm text-gray-500">
+                                                    <td className="px-4 text-sm">
                                                         <div className="flex items-center">
                                                             <Clock className="w-4 h-4 text-[#6f42c1] mr-2" />
                                                             <span>{item.time}</span>
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-4 text-sm text-gray-500">
+                                                    <td className="px-4 text-sm">
                                                         <div className="flex items-center">
                                                             <Phone className="w-4 h-4 text-[#198754] mr-2" />
                                                             <span>{item.phone}</span>
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-4 text-sm text-gray-500">
+                                                    <td className="px-4 text-sm">
                                                         <div className="flex items-center">
                                                             <Mail className="w-4 h-4 text-red-500 mr-2" />
                                                             <span>{item.email}</span>
@@ -416,7 +416,7 @@ export default function ViewAppointments() {
                                                         </span>
                                                     </td>
 
-                                                    <td className="px-4 text-sm text-gray-500">{item.visitType}</td>
+                                                    <td className="px-4 text-sm">{item.visitType}</td>
 
                                                     <td className="px-4 text-sm font-medium">
                                                         <div className="flex space-x-2">
@@ -486,9 +486,9 @@ const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
     };
 
     return (
-        <div className="flex flex-wrap items-center justify-end gap-8 border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 rounded-b-xl shadow-sm">
-            <div className="flex items-center space-x-2">
-                <span className="text-gray-600 text-[12px] font-medium">Items per page:</span>
+        <div className="flex flex-wrap items-center justify-end gap-8 border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 rounded-b-xl shadow-sm ">
+            <div className="flex items-center space-x-2 ">
+                <span className="text-white text-[12px] font-medium">Items per page:</span>
 
 
                 <div className="relative w-[84px]">
@@ -498,7 +498,7 @@ const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
                             setItemsPerPage(Number(e.target.value));
                             setPage(1);
                         }}
-                        className="appearance-none border border-[#44474e] rounded-md text-sm text-gray-700 px-4 w-full py-3 focus:ring-1 focus:ring-[#005CBB] focus:border-[#005CBB] outline-none cursor-pointer pr-8"
+                        className="appearance-none border border-[#44474e] rounded-md text-sm px-4 w-full py-3 focus:ring-1 focus:ring-[#005CBB] focus:border-[#005CBB] outline-none cursor-pointer pr-8"
                     >
                         {itemsPerPageOptions.map((option, i) => (
                             <option key={i} value={option}>
@@ -508,12 +508,12 @@ const Paginator = ({ totalItems = 80, itemsPerPageOptions = [10, 25, 50] }) => {
                     </select>
 
 
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4  pointer-events-none" />
                 </div>
             </div>
 
 
-            <div className="text-gray-600 font-medium">
+            <div className=" font-medium">
                 {startItem} – {endItem} of {totalItems}
             </div>
 
