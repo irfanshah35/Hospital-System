@@ -4,10 +4,13 @@ import { User, Scissors, UserPlus, DollarSign, Home, CalendarDays } from "lucide
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import Link from "next/link";
+import { useThemeStore } from "@/store/store";
+
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const StatsCard = () => {
+  const { websiteTheme } = useThemeStore();
   const stats = [
     {
       title: "Appointments",
@@ -47,6 +50,7 @@ const StatsCard = () => {
   };
 
   const getChartOptions = (color: string): ApexOptions => ({
+    
     chart: {
       type: "area",
       height: 80,
@@ -139,23 +143,23 @@ const StatsCard = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between bg-[#f5f7fb] px-6 py-3 mt-8">
-        <div className="flex items-center space-x-2 text-gray-700">
-          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-          <span className="text-gray-500">›</span>
+      <div className={`flex items-center justify-between  px-6 py-3 mt-8 ${websiteTheme === 'dark' ? 'text-[#96A2B4]' : 'light-theme'}`}>
+        <div className="flex items-center space-x-2 ">
+          <h1 className="text-lg font-semibold ">Dashboard</h1>
+          <span className="">›</span>
           <Home size={18} className="text-gray-500" />
-          <span className="text-gray-500">›</span>
-          <span className="text-gray-600">Dashboard</span>
+          <span className="">›</span>
+          <span className="">Dashboard</span>
         </div>
 
-        <div className="flex items-center space-x-6 text-blue-600 font-medium">
+        <div className="flex items-center space-x-6 font-medium">
           <Link href="/add-patient" className="flex items-center space-x-1 hover:text-blue-800 transition">
             <UserPlus size={18} />
-            <span>Add Patient</span>
+            <span className="text-blue-600">Add Patient</span>
           </Link>
           <Link href="/appointment/appointment-calendar" className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
             <CalendarDays size={18} />
-            <span>Appointment</span>
+            <span className="text-blue-600">Appointment</span>
           </Link>
         </div>
       </div>

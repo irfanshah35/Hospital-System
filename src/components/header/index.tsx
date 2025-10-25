@@ -282,7 +282,7 @@ export default function Header({
               <div ref={profileRef}>
                 <div
                   onClick={() => setProfileDropdown(!profileDropdown)}
-                  className="w-auto max-w-[150px] h-[48px] flex justify-center items-center gap-2 cursor-pointer px-2"
+                  className="w-auto max-w-[150px] h-[48px] flex justify-center items-center gap-2 cursor-pointer px-2 text-white"
                 >
                   <span
                     className={`text-sm font-medium ${getTextColorClass()} truncate`}

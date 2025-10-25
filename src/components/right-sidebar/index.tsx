@@ -1,15 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Check, Settings } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
 const RightSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [layout, setLayout] = useState("light");
   const [rtl, setRtl] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const { sidebarTheme, setSidebarTheme, headerColor, setHeaderColor } = useThemeStore();
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setIsOpen]);
+
+  const {
+    sidebarTheme,
+    setSidebarTheme,
+    headerColor,
+    setHeaderColor,
+    websiteTheme,
+    setWebsiteTheme,
+  } = useThemeStore();
 
   const themes = [
     { name: "white", color: "bg-white border-2" },
@@ -22,59 +48,64 @@ const RightSidebar = () => {
   ];
 
   return (
+
+
     <>
       <div
-        className={`fixed top-[60px] z-[9999] right-0 h-screen bg-white border-l border-gray-200 transition-all duration-300 ease-in-out ${
-          isOpen ? "w-[245px] h-auto" : "w-0"
-        } overflow-auto scrollbar-hide shadow-lg`}
+        ref={sidebarRef}
+        className={`fixed top-[60px] z-[9999] right-0 h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${isOpen ? "w-[245px] h-auto" : "w-0"
+          } overflow-auto scrollbar-hide shadow-lg text-white`}
       >
-        <div className="fade show active bg-white text-gray-800 w-full">
+        <div className="fade show active bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 w-full">
           {/* --- Title --- */}
-          <div className="flex items-center justify-center px-5 py-[18px] text-[#3f4254] text-[16px] font-medium tracking-[0.3px] border-b border-black/5 bg-gradient-to-r from-[#f8f9fa] to-[#f1f2f6] shadow-[0_1px_3px_#0000000d] relative">
+          <div className="flex items-center justify-center px-5 py-[18px] dark:text-gray-300 text-[16px] font-medium tracking-[0.3px] border-b border-black/5 dark:border-gray-600 bg-[var(--tableHeaderBg)] shadow-[0_1px_3px_#0000000d] relative"
+          style={{ color: "var(--text-primary)" }}>
             Setting Panel
           </div>
 
-          {/* --- Layout Select --- */}
-          <div className="p-4 border-b border-[#dee2e6]">
+          {/* --- Website Theme Select --- */}
+          <div className="p-4 border-b border-[#dee2e6] dark:border-gray-600">
             <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
-              Select Layout
+              Website Theme
             </p>
             <div className="flex flex-col justify-center items-center gap-4">
-              {/* Light Layout */}
+              {/* Light Theme */}
               <div className="flex flex-col items-center w-[180px]">
                 <label>
                   <input
                     type="radio"
-                    name="layout"
+                    name="websiteTheme"
                     value="light"
-                    checked={layout === "light"}
-                    onChange={() => setLayout("light")}
+                    checked={websiteTheme === "light"}
+                    onChange={() => setWebsiteTheme("light")}
                     className="hidden peer"
                   />
                   <img
                     src="/assets/rightSidebar/light.png"
-                    alt="Light Layout"
-                    className="cursor-pointer rounded-md border border-gray-200 peer-checked:ring-2 peer-checked:ring-blue-500"
+                    alt="Light Theme"
+                    className="cursor-pointer rounded-md border border-gray-200 dark:border-gray-600 peer-checked:ring-2 peer-checked:ring-blue-500"
                   />
                 </label>
-                <div className="mt-1 text-sm font-medium text-center">Light</div>
+                <div className="mt-1 text-sm font-medium text-center">
+                  Light
+                </div>
               </div>
 
-              {/* Dark Layout */}
+              {/* Dark Theme */}
               <div className="flex flex-col items-center w-[180px]">
                 <label>
                   <input
                     type="radio"
-                    name="layout"
+                    name="websiteTheme"
                     value="dark"
-                    checked={layout === "dark"}
-                    onChange={() => setLayout("dark")}
+                    checked={websiteTheme === "dark"}
+                    onChange={() => setWebsiteTheme("dark")}
                     className="hidden peer"
                   />
                   <img
                     src="/assets/rightSidebar/dark.png"
-                    alt="Dark Layout"
-                    className="cursor-pointer rounded-md border border-gray-200 peer-checked:ring-2 peer-checked:ring-blue-500"
+                    alt="Dark Theme"
+                    className="cursor-pointer rounded-md border border-gray-200 dark:border-gray-600 peer-checked:ring-2 peer-checked:ring-blue-500"
                   />
                 </label>
                 <div className="mt-1 text-sm font-medium text-center">Dark</div>
@@ -83,18 +114,17 @@ const RightSidebar = () => {
           </div>
 
           {/* ✅ Sidebar Menu Color */}
-          <div className="px-[25px] pt-[20px] pb-[15px] border-b border-[#dee2e6]">
+          <div className="px-[25px] pt-[20px] pb-[15px] border-b border-[#dee2e6] dark:border-gray-600">
             <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
               Sidebar Menu Color
             </p>
             <div className="flex">
               <button
                 onClick={() => setSidebarTheme("light")}
-                className={`px-4 py-2 flex outline-none rounded-l-md text-sm ${
-                  sidebarTheme === "light"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700"
-                } transition`}
+                className={`px-4 py-2 flex outline-none rounded-l-md text-sm ${sidebarTheme === "light"
+                  ? "bg-blue-600 text-white"
+                  : "bg-[var(--tableHeaderBg)] "
+                  } transition`}
               >
                 {sidebarTheme === "light" && (
                   <Check className="w-5 h-5 mr-2 text-white" />
@@ -103,22 +133,23 @@ const RightSidebar = () => {
               </button>
               <button
                 onClick={() => setSidebarTheme("dark")}
-                className={`px-4 py-2 flex outline-none rounded-r-md text-sm ${
-                  sidebarTheme === "dark"
+                className={`px-4 py-2 flex outline-none rounded-r-md text-sm transition
+    ${sidebarTheme === "dark"
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700"
-                } transition`}
+                    : "bg-[var(--tableHeaderBg)]"
+                  }`}
               >
                 {sidebarTheme === "dark" && (
-                  <Check className="w-5 h-5 mr-2 !text-white" />
+                  <Check className="w-5 h-5 mr-2 text-white" />
                 )}
                 Dark
               </button>
+
             </div>
           </div>
 
-          {/* ✅ NEW: Header Color Theme */}
-          <div className="p-4 border-b border-[#dee2e6]">
+          {/* ✅ Header Color Theme */}
+          <div className="p-4 border-b border-[#dee2e6] dark:border-gray-600">
             <p className="font-medium text-[14px] pb-2 mb-3 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:top-7 after:w-[40px] after:h-[2px] after:bg-[#6777ef] after:rounded-[2px]">
               Header Color
             </p>
@@ -126,11 +157,10 @@ const RightSidebar = () => {
               {themes.map((t) => (
                 <li
                   key={t.name}
-                  className={`w-8 h-8 rounded-full shadow-md cursor-pointer border-2 transition-all ${
-                    headerColor === t.name
-                      ? "border-blue-600 scale-110"
-                      : "border-gray-300"
-                  } ${t.color}`}
+                  className={`w-8 h-8 rounded-full shadow-md cursor-pointer border-2 transition-all ${headerColor === t.name
+                    ? "border-blue-600 scale-110"
+                    : "border-gray-300 dark:border-gray-600"
+                    } ${t.color}`}
                   onClick={() => setHeaderColor(t.name)}
                 ></li>
               ))}
@@ -150,21 +180,23 @@ const RightSidebar = () => {
                   onChange={() => setRtl(!rtl)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition"></div>
-                <div className="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-all peer-checked:translate-x-5"></div>
+                <div className="w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full peer peer-checked:bg-blue-600 transition"></div>
+                <div className="absolute left-0.5 top-0.5 bg-white dark:bg-gray-300 w-5 h-5 rounded-full transition-all peer-checked:translate-x-5"></div>
               </label>
               <div className="flex gap-2 text-sm">
                 <span
-                  className={`${
-                    !rtl ? "text-blue-600 font-medium" : "text-gray-600"
-                  }`}
+                  className={`${!rtl
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-600 dark:text-gray-400"
+                    }`}
                 >
                   LTR
                 </span>
                 <span
-                  className={`${
-                    rtl ? "text-blue-600 font-medium" : "text-gray-600"
-                  }`}
+                  className={`${rtl
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-600 dark:text-gray-400"
+                    }`}
                 >
                   RTL
                 </span>

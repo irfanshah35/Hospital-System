@@ -1,6 +1,9 @@
 import React from "react";
+import { useThemeStore } from "@/store/store";
 
 export default function UpcomingSurgeries() {
+  const { websiteTheme } = useThemeStore();
+
   const todoItems = [
     {
       id: 1,
@@ -52,7 +55,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.Jay Soni",
       degree: "(MBBS,MD)",
       status: "Available",
-      statusColor: "bg-teal-100 text-teal-700",
+      statusColor:
+        "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -60,7 +64,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.Sarah Smith",
       degree: "(BDS,MDS)",
       status: "Absent",
-      statusColor: "bg-orange-100 text-orange-600",
+      statusColor:
+        "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300",
       image: "/assets/sidebar/patient.jpg",
     },
     {
@@ -68,7 +73,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.Megha Trivi",
       degree: "(BHMS)",
       status: "Available",
-      statusColor: "bg-teal-100 text-teal-700",
+      statusColor:
+        "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -76,7 +82,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.John Deo",
       degree: "(MBBS,MS)",
       status: "Available",
-      statusColor: "bg-teal-100 text-teal-700",
+      statusColor:
+        "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
       image: "/assets/sidebar/patient.jpg",
     },
     {
@@ -84,7 +91,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.Jacob Ryan",
       degree: "(MBBS,MD)",
       status: "Absent",
-      statusColor: "bg-orange-100 text-orange-600",
+      statusColor:
+        "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -92,7 +100,8 @@ export default function UpcomingSurgeries() {
       name: "Dr.Jay Soni",
       degree: "(MBBS)",
       status: "Available",
-      statusColor: "bg-teal-100 text-teal-700",
+      statusColor:
+        "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
       image: "/assets/sidebar/patient.jpg",
     },
   ];
@@ -112,7 +121,8 @@ export default function UpcomingSurgeries() {
       dateTime: "15 June 2024 | 09:00-11:30",
       doctor: "Dr. Sarah Johnson",
       status: "Scheduled",
-      statusColor: "bg-blue-100 text-blue-600",
+      statusColor:
+        "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -123,7 +133,8 @@ export default function UpcomingSurgeries() {
       dateTime: "15 June 2024 | 13:00-14:30",
       doctor: "Dr. Michael Chen",
       status: "Urgent",
-      statusColor: "bg-red-100 text-red-600",
+      statusColor:
+        "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300",
       image: "/assets/sidebar/patient.jpg",
     },
     {
@@ -134,7 +145,8 @@ export default function UpcomingSurgeries() {
       dateTime: "16 June 2024 | 10:00-12:30",
       doctor: "Dr. James Miller",
       status: "Scheduled",
-      statusColor: "bg-blue-100 text-blue-600",
+      statusColor:
+        "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -145,7 +157,8 @@ export default function UpcomingSurgeries() {
       dateTime: "16 June 2024 | 14:00-15:00",
       doctor: "Dr. Lisa Wong",
       status: "Delayed",
-      statusColor: "bg-yellow-100 text-yellow-600",
+      statusColor:
+        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-300",
       image: "/assets/sidebar/patient.jpg",
     },
     {
@@ -156,7 +169,8 @@ export default function UpcomingSurgeries() {
       dateTime: "17 June 2024 | 08:30-11:00",
       doctor: "Dr. Angela Roberts",
       status: "Scheduled",
-      statusColor: "bg-blue-100 text-blue-600",
+      statusColor:
+        "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300",
       image: "/assets/patient-1.jpg",
     },
     {
@@ -167,7 +181,8 @@ export default function UpcomingSurgeries() {
       dateTime: "17 June 2024 | 12:00-13:30",
       doctor: "Dr. Kevin Patel",
       status: "Urgent",
-      statusColor: "bg-red-100 text-red-600",
+      statusColor:
+        "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300",
       image: "/assets/sidebar/patient.jpg",
     },
   ];
@@ -175,13 +190,23 @@ export default function UpcomingSurgeries() {
   const maxPatients = 120;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div
+      className={`min-h-screen p-6 ${
+        websiteTheme === "dark" ? "dark-theme" : "light-theme"
+      }`}
+      style={{
+        backgroundColor: "var(--background)",
+        color: "var(--text-primary)",
+      }}
+    >
       {/* Top Three Cards */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         {/* Todo List Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-base font-bold text-gray-900">Todo List</h3>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">
+              Todo List
+            </h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
               View All
             </button>
@@ -191,10 +216,10 @@ export default function UpcomingSurgeries() {
             {todoItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 py-6 border-b border-gray-100 last:border-0"
+                className="flex items-center gap-3 py-6 border-b border-[var(--border-color)] last:border-0"
               >
                 <svg
-                  className="w-5 h-5 text-gray-300"
+                  className="w-5 h-5 text-[var(--text-secondary)]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -208,9 +233,9 @@ export default function UpcomingSurgeries() {
                 </svg>
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-gray-300"
+                  className="w-4 h-4 rounded border-[var(--border-color)] bg-[var(--header-bg)]"
                 />
-                <span className="text-sm text-gray-700 flex-1">
+                <span className="text-sm text-[var(--text-primary)] flex-1">
                   {item.task}
                 </span>
                 <span
@@ -225,27 +250,29 @@ export default function UpcomingSurgeries() {
         </div>
 
         {/* Doctor Status Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-base font-bold text-gray-900">Doctor Status</h3>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">
+              Doctor Status
+            </h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
               View All
             </button>
           </div>
 
           <div className="space-y-0">
-            <div className="flex items-center py-3 border-b border-gray-200">
-              <span className="text-xs font-semibold text-gray-900 flex-1">
+            <div className="flex items-center py-3 border-b border-[var(--border-color)]">
+              <span className="text-xs font-semibold text-[var(--text-primary)] flex-1">
                 Doctor Name
               </span>
-              <span className="text-xs font-semibold text-gray-900">
+              <span className="text-xs font-semibold text-[var(--text-primary)]">
                 Status
               </span>
             </div>
             {doctorStatus.map((doctor) => (
               <div
                 key={doctor.id}
-                className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0"
+                className="flex items-center gap-3 py-3 border-b border-[var(--border-color)] last:border-0"
               >
                 <img
                   src={doctor.image}
@@ -256,7 +283,9 @@ export default function UpcomingSurgeries() {
                   <div className="text-sm font-semibold text-blue-600">
                     {doctor.name}
                   </div>
-                  <div className="text-xs text-gray-500">{doctor.degree}</div>
+                  <div className="text-xs text-[var(--text-secondary)]">
+                    {doctor.degree}
+                  </div>
                 </div>
                 <span
                   className={`px-3 py-1 rounded-md text-xs font-medium ${doctor.statusColor}`}
@@ -269,14 +298,14 @@ export default function UpcomingSurgeries() {
         </div>
 
         {/* Number Of Patients Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5">
-          <h3 className="text-base font-bold text-gray-900 mb-4">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">
             Number Of Patients
           </h3>
 
           <div className="relative h-64">
             {/* Y-axis labels */}
-            <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-400">
+            <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-[var(--text-secondary)]">
               <span>120</span>
               <span>100</span>
               <span>80</span>
@@ -287,7 +316,7 @@ export default function UpcomingSurgeries() {
             </div>
 
             {/* Chart area */}
-            <div className="ml-8 h-full flex items-end justify-around pb-8 border-l border-b border-gray-200">
+            <div className="ml-8 h-full flex items-end justify-around pb-8 border-l border-b border-[var(--border-color)]">
               {patientData.days.map((day, index) => (
                 <div
                   key={day}
@@ -316,7 +345,9 @@ export default function UpcomingSurgeries() {
                       }}
                     ></div>
                   </div>
-                  <span className="text-xs text-gray-500 mt-2">{day}</span>
+                  <span className="text-xs text-[var(--text-secondary)] mt-2">
+                    {day}
+                  </span>
                 </div>
               ))}
             </div>
@@ -326,11 +357,11 @@ export default function UpcomingSurgeries() {
           <div className="flex justify-center gap-6 mt-2">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-indigo-500 rounded"></div>
-              <span className="text-xs text-gray-600">Male</span>
+              <span className="text-xs text-[var(--text-primary)]">Male</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-gray-400 rounded"></div>
-              <span className="text-xs text-gray-600">Female</span>
+              <span className="text-xs text-[var(--text-primary)]">Female</span>
             </div>
           </div>
         </div>
@@ -339,9 +370,9 @@ export default function UpcomingSurgeries() {
       {/* Bottom Section - Table and Feedback Card */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Upcoming Surgeries Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-5">
+        <div className="lg:col-span-2 bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-base font-bold text-gray-900">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">
               Upcoming Surgeries & Procedures
             </h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
@@ -352,20 +383,20 @@ export default function UpcomingSurgeries() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-900">
+                <tr className="border-b border-[var(--border-color)]">
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-[var(--text-primary)]">
                     Patient
                   </th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-900">
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-[var(--text-primary)]">
                     Surgery Type
                   </th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-900">
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-[var(--text-primary)]">
                     Date & Time
                   </th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-900">
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-[var(--text-primary)]">
                     Doctor
                   </th>
-                  <th className="text-center py-3 px-3 text-xs font-semibold text-gray-900">
+                  <th className="text-center py-3 px-3 text-xs font-semibold text-[var(--text-primary)]">
                     Status
                   </th>
                 </tr>
@@ -374,7 +405,7 @@ export default function UpcomingSurgeries() {
                 {surgeries.map((surgery) => (
                   <tr
                     key={surgery.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition"
+                    className="border-b border-[var(--border-color)] hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     <td className="py-2 px-3">
                       <div className="flex items-center gap-2">
@@ -384,22 +415,22 @@ export default function UpcomingSurgeries() {
                           className="w-10 h-10 rounded-full object-cover"
                         />
                         <div>
-                          <div className="text-sm font-semibold text-gray-900">
+                          <div className="text-sm font-semibold text-[var(--text-primary)]">
                             {surgery.patient}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-secondary)]">
                             {surgery.patientId}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-3 text-sm text-gray-700">
+                    <td className="py-3 px-3 text-sm text-[var(--text-primary)]">
                       {surgery.surgery}
                     </td>
-                    <td className="py-3 px-3 text-sm text-gray-700">
+                    <td className="py-3 px-3 text-sm text-[var(--text-primary)]">
                       {surgery.dateTime}
                     </td>
-                    <td className="py-3 px-3 text-sm text-gray-700">
+                    <td className="py-3 px-3 text-sm text-[var(--text-primary)]">
                       {surgery.doctor}
                     </td>
                     <td className="py-3 px-3">
@@ -419,8 +450,8 @@ export default function UpcomingSurgeries() {
         </div>
 
         {/* Patient Feedback Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 flex flex-col">
-          <h3 className="text-base font-bold text-gray-900 mb-6">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 flex flex-col border border-[var(--border-color)]">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-6">
             Patient Feedback
           </h3>
 
@@ -432,7 +463,9 @@ export default function UpcomingSurgeries() {
                 <svg
                   key={star}
                   className={`w-6 h-6 ${
-                    star === 5 ? "text-gray-300" : "text-yellow-400"
+                    star === 5
+                      ? "text-gray-300 dark:text-gray-600"
+                      : "text-yellow-400"
                   }`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
@@ -441,7 +474,9 @@ export default function UpcomingSurgeries() {
                 </svg>
               ))}
             </div>
-            <div className="text-sm text-gray-500">Overall Rating</div>
+            <div className="text-sm text-[var(--text-secondary)]">
+              Overall Rating
+            </div>
           </div>
 
           {/* Donut Chart */}
@@ -498,13 +533,13 @@ export default function UpcomingSurgeries() {
               </svg>
 
               {/* Percentage labels */}
-              <div className="absolute top-12 right-8 text-xs font-semibold text-gray-700">
+              <div className="absolute top-12 right-8 text-xs font-semibold text-[var(--text-primary)]">
                 58.4%
               </div>
-              <div className="absolute bottom-16 right-4 text-xs font-semibold text-gray-700">
+              <div className="absolute bottom-16 right-4 text-xs font-semibold text-[var(--text-primary)]">
                 33.0%
               </div>
-              <div className="absolute top-8 left-16 text-xs font-semibold text-gray-700">
+              <div className="absolute top-8 left-16 text-xs font-semibold text-[var(--text-primary)]">
                 8.6%
               </div>
             </div>
@@ -514,15 +549,17 @@ export default function UpcomingSurgeries() {
           <div className="flex justify-center gap-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-xs text-gray-600">Excellent</span>
+              <span className="text-xs text-[var(--text-primary)]">
+                Excellent
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span className="text-xs text-gray-600">Good</span>
+              <span className="text-xs text-[var(--text-primary)]">Good</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-xs text-gray-600">Poor</span>
+              <span className="text-xs text-[var(--text-primary)]">Poor</span>
             </div>
           </div>
         </div>

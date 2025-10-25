@@ -18,13 +18,13 @@ export default function Appointments() {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-xl shadow-sm">
+    <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-xl shadow-sm `}>
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Patient Chart</h2>
-        <div className="flex justify-center gap-8 text-sm text-gray-500 mb-6">
+        <div className="flex justify-center gap-8 text-sm mb-6">
           <button className="font-medium text-blue-500">Daily</button>
-          <button className="hover:text-gray-700">Weekly</button>
-          <button className="hover:text-gray-700">Monthly</button>
+          <button className="text-blue-500">Weekly</button>
+          <button className="text-blue-500">Monthly</button>
         </div>
         <div className="flex justify-center relative">
           <ResponsiveContainer width={240} height={240}>
@@ -66,10 +66,10 @@ export default function Appointments() {
                 <span className="text-white text-lg">❄️</span>
               </span>
               <div>
-                <div className="font-medium text-gray-900 text-sm">
+                <div className="font-medium  text-sm">
                   {d.name}
                 </div>
-                <div className="text-gray-500 text-sm">{d.value}%</div>
+                <div className="text-sm">{d.value}%</div>
               </div>
             </div>
           ))}
@@ -79,7 +79,7 @@ export default function Appointments() {
       <div className="bg-white rounded-xl shadow p-6">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold">Appointments</h2>
-          <span className="text-sm text-gray-500">October 2025</span>
+          <span className="text-sm ">October 2025</span>
         </div>
 
         <p className="text-sm text-orange-500 font-medium mb-3">
@@ -109,12 +109,12 @@ export default function Appointments() {
           ].map((a, i) => (
             <div
               key={i}
-              className="flex justify-between items-center border rounded-lg p-3 hover:bg-gray-50 transition"
+              className="flex justify-between items-center border rounded-lg p-3  transition"
             >
               <div>
-                <h3 className="font-medium text-gray-900">{a.name}</h3>
+                <h3 className="font-medium">{a.name}</h3>
                 <p className="text-sm text-blue-500">{a.task}</p>
-                <p className="text-xs text-gray-500">👨‍⚕️ {a.doctor}</p>
+                <p className="text-xs">👨‍⚕️ {a.doctor}</p>
               </div>
               <div className="text-sm font-semibold text-gray-600">
                 {a.time}
@@ -127,10 +127,10 @@ export default function Appointments() {
       <div className="bg-white rounded-xl shadow p-6">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">October 2025</h2>
-          <CalendarDays className="w-5 h-5 text-gray-500" />
+          <CalendarDays className="w-5 h-5" />
         </div>
 
-        <div className="grid grid-cols-7 text-center text-gray-500 text-sm mb-2">
+        <div className="grid grid-cols-7 text-center text-sm mb-2">
           <span>M</span>
           <span>T</span>
           <span>W</span>
@@ -140,14 +140,14 @@ export default function Appointments() {
           <span>S</span>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center text-gray-700">
+        <div className="grid grid-cols-7 gap-2 text-center ">
           {Array.from({ length: 31 }, (_, i) => (
             <div
               key={i}
               className={`py-2 rounded-lg ${
                 i + 1 === 16
                   ? "border border-blue-500 text-blue-600"
-                  : "hover:bg-gray-100"
+                  : ""
               }`}
             >
               {i + 1}

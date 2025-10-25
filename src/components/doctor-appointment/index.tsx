@@ -154,16 +154,16 @@ export default function DoctorAppointment() {
     return (
 
 
-        <div className='px-4 sm:px-6 lg:px-8 py-3 bg-[#ECF0F9]'>
-            <div className="flex items-center justify-between bg-[#ECF0F9] pb-3">
-                <div className="flex items-center space-x-2 text-gray-700">
-                    <h1 className="text-lg font-semibold text-gray-900">Appointment Calendar</h1>
-                    <span className="text-gray-500">›</span>
-                    <Home size={18} className="text-gray-500" />
-                    <span className="text-gray-500">›</span>
-                    <span className="text-gray-600">Appointment</span>
-                    <span className="text-gray-500">›</span>
-                    <span className="text-gray-600">Calendar</span>
+        <div className='px-4 sm:px-6 lg:px-8 py-3 '>
+            <div className="flex items-center justify-between pb-3">
+                <div className="flex items-center space-x-2">
+                    <h1 className="text-lg font-semibold">Appointment Calendar</h1>
+                    <span className="">›</span>
+                    <Home size={18} className="" />
+                    <span className="">›</span>
+                    <span className="">Appointment</span>
+                    <span className="">›</span>
+                    <span className="">Calendar</span>
                 </div>
             </div>
 
@@ -259,7 +259,7 @@ export default function DoctorAppointment() {
                                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                                         <div
                                             key={day}
-                                            className=" p-[15px] text-center text-sm font-medium text-[#666666] border-r border-gray-200 last:border-r-0"
+                                            className=" p-[15px] text-center text-sm font-medium border-r border-gray-200 last:border-r-0"
                                         >
                                             <span className='p-[2px] px-1'>{day}</span>
                                         </div>
@@ -280,8 +280,8 @@ export default function DoctorAppointment() {
                                                         className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm ${dayInfo.type === 'today'
                                                             ? 'bg-blue-600 text-white'
                                                             : dayInfo.type === 'other'
-                                                                ? 'text-gray-400'
-                                                                : 'text-gray-700'
+                                                                ? 'text-gray-700'
+                                                                : 'text-gray-400'
                                                             }`}
                                                     >
                                                         {dayInfo.day}

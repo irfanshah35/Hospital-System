@@ -1,4 +1,5 @@
 "use client"
+import { useThemeStore } from '@/store/store';
 import { CalendarDays, ChevronRight, Clock4, DollarSign, MoreVertical, TrendingUp } from 'lucide-react'
 import React from 'react'
 import {
@@ -45,6 +46,8 @@ const COLORS = ["#007aff", "#34c759", "#ff3b30"];
 
 export default function DoctorDashboardSection() {
 
+    const { websiteTheme } = useThemeStore();
+
     const surveyData = [
         { date: "00:00", newPatients: 52, oldPatients: 32 },
         { date: "01:00", newPatients: 48, oldPatients: 30 },
@@ -77,27 +80,28 @@ export default function DoctorDashboardSection() {
     };
     return (
         <>
-            <div className='pt-[20px] pl-[25px] bg-[#EFF2FA]'>
+            <div className={`pt-[20px] pl-[25px] ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+            style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
                 <div className="block-header flex items-center justify-between mt-3 mb-3">
                     <div className="w-full">
-                        <ul className="flex flex-wrap items-center gap-1 text-gray-700">
+                        <ul className="flex flex-wrap items-center gap-1 ">
                             <li>
-                                <h4 className="text-[20px] font-medium text-[#444]">Doctor Dashboard</h4>
+                                <h4 className="text-[20px] font-medium text-[var(--text-primary)]">Doctor Dashboard</h4>
                             </li>
-                            <li className="flex flex-wrap items-center gap-2 text-gray-700">
-                                <ChevronRight className='h-[16ox] w-[16px] font-bold' />
+                            <li className="flex flex-wrap items-center gap-2">
+                                <ChevronRight className='h-[16px] w-[16px] font-bold text-[var(--text-secondary)]' />
                             </li>
-                            <li className="flex items-center text-sm text-gray-500">
+                            <li className="flex items-center text-sm">
                                 <a className="flex items-center hover:text-gray-800 transition-colors">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
                                         fill="none"
-                                        stroke="black"
+                                        stroke="currentColor"
                                         strokeWidth="2"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        className="w-[18ox] h-[18px]"
+                                        className="w-[18px] h-[18px] text-[var(--text-primary)]"
                                     >
                                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                         <polyline points="9 22 9 12 15 12 15 22" />
@@ -105,10 +109,10 @@ export default function DoctorDashboardSection() {
 
                                 </a>
                             </li>
-                            <li className="flex flex-wrap items-center gap-2 text-gray-700">
-                                <ChevronRight className='h-[16ox] w-[16px] font-bold' />
+                            <li className="flex flex-wrap items-center gap-2 ">
+                                <ChevronRight className='h-[16px] w-[16px] font-bold text-[var(--text-secondary)]' />
                             </li>
-                            <li className=" text-[#444] font-medium">Dashboard</li>
+                            <li className="font-medium text-[var(--text-primary)]">Dashboard</li>
                         </ul>
                     </div>
                 </div>
@@ -121,17 +125,17 @@ export default function DoctorDashboardSection() {
                     <div className="w-full lg:w-8/12 order-2 lg:order-1 mt-[22px] mb-6 lg:mb-0">
 
 
-                        <div className="bg-white rounded-lg shadow p-[16px]">
+                        <div className="bg-[var(--header-bg)] rounded-lg shadow p-[16px] border border-[var(--border-color)]">
                             <div className="flex items-center gap-6">
                                 <div className="w-full md:w-8/12 mb-6 md:mb-0">
-                                    <p className="font-medium text-sm mb-[18px]">Welcome back</p>
+                                    <p className="font-medium text-sm mb-[18px] text-[var(--text-secondary)]">Welcome back</p>
                                     <div className="font-medium text-[25px] text-[#2195F3] mb-2">DR. Sarah Smith!</div>
-                                    <p className="font-medium text-[14px] mb-6">Gynecologist, MBBS, MD</p>
+                                    <p className="font-medium text-[14px] mb-6 text-[var(--text-secondary)]">Gynecologist, MBBS, MD</p>
 
                                     <div className="grid grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
                                         <div className="flex flex-wrap justify-center mb-5">
-                                            <div className="w-full max-w-[220px] p-4 bg-[#dfdcf6] rounded-[10px] break-words">
-                                                <span className="text-sm font-medium whitespace-normal break-words text-[#555555]">
+                                            <div className="w-full max-w-[220px] p-4 bg-[#dfdcf6] dark:bg-[#2d3748] rounded-[10px] break-words">
+                                                <span className="text-sm font-medium whitespace-normal break-words text-[var(--text-secondary)]">
                                                     Appointments
                                                 </span>
                                                 <h5 className="mb-0 text-[#0d6efd] text-[20px] font-medium">12+</h5>
@@ -140,15 +144,15 @@ export default function DoctorDashboardSection() {
                                         </div>
 
                                         <div className="flex flex-wrap justify-center mb-5">
-                                            <div className="w-full max-w-[220px] p-4 bg-[#ffd4d1] rounded-[10px] break-words">
-                                                <span className="text-sm font-medium whitespace-normal break-words text-[#555555]">Surgeries</span>
+                                            <div className="w-full max-w-[220px] p-4 bg-[#ffd4d1] dark:bg-[#3a2a2a] rounded-[10px] break-words">
+                                                <span className="text-sm font-medium whitespace-normal break-words text-[var(--text-secondary)]">Surgeries</span>
                                                 <h5 className=" mb-0 text-[#dc3545] text-[20px] font-medium">3+</h5>
                                             </div>
                                         </div>
 
                                         <div className="flex flex-wrap justify-center mb-5">
-                                            <div className="w-full max-w-[220px] p-4 bg-[#cdffcf] rounded-[10px] break-words">
-                                                <span className="text-sm font-medium whitespace-normal break-words text-[#555555]">Room Visit</span>
+                                            <div className="w-full max-w-[220px] p-4 bg-[#cdffcf] dark:bg-[#2a3a2a] rounded-[10px] break-words">
+                                                <span className="text-sm font-medium whitespace-normal break-words text-[var(--text-secondary)]">Room Visit</span>
                                                 <h5 className="mb-0 text-[#198754] text-[20px] font-medium">12+</h5>
                                             </div>
                                         </div>
@@ -165,12 +169,12 @@ export default function DoctorDashboardSection() {
                         <div className="grid grid-cols-3 gap-6 mt-6">
                             {/* 🩺 Appointments Card */}                           
 
-                            <div className="bg-white rounded-lg shadow p-4 w-full max-w-[250px] mx-auto">
+                            <div className="bg-[var(--header-bg)] rounded-lg shadow p-4 w-full max-w-[250px] mx-auto border border-[var(--border-color)]">
                                 {/* Header */}
                                 <div className="flex justify-between items-center mb-3">
                                     <div>
-                                        <h6 className="m-0 font-semibold">Appointments</h6>
-                                        <p className="text-[#96a2b4] m-0 text-sm">Today's Summary</p>
+                                        <h6 className="m-0 font-semibold text-[var(--text-primary)]">Appointments</h6>
+                                        <p className="text-[var(--text-secondary)] m-0 text-sm">Today's Summary</p>
                                     </div>
                                     <span className="bg-[#ff87074d] p-1 rounded-full flex items-center justify-center">
                                         <Clock4 className="w-5 h-5 text-[#ff8707]" />
@@ -206,25 +210,25 @@ export default function DoctorDashboardSection() {
                                 <div className="mt-3 space-y-1">
                                     <div className="flex items-center">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#42a5f5] mr-2"></span>
-                                        <span className="text-sm text-[#212529]">Scheduled: 28</span>
+                                        <span className="text-sm text-[var(--text-primary)]">Scheduled: 28</span>
                                     </div>
                                     <div className="flex items-center">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#66bb6a] mr-2"></span>
-                                        <span className="text-sm text-[#212529]">Completed: 24</span>
+                                        <span className="text-sm text-[var(--text-primary)]">Completed: 24</span>
                                     </div>
                                     <div className="flex items-center">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#ef5350] mr-2"></span>
-                                        <span className="text-sm text-[#212529]">Cancelled: 4</span>
+                                        <span className="text-sm text-[var(--text-primary)]">Cancelled: 4</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 📈 Performance Card */}
-                            <div className="bg-white rounded-lg shadow p-4 py-8 ">
+                            <div className="bg-[var(--header-bg)] rounded-lg shadow p-4 py-8 border border-[var(--border-color)]">
                                 <div className="flex justify-between items-center mb-3">
                                     <div>
-                                        <h6 className="m-0 font-semibold">Performance</h6>
-                                        <p className="text-[#96a2b4] m-0 text-sm">Daily metrics</p>
+                                        <h6 className="m-0 font-semibold text-[var(--text-primary)]">Performance</h6>
+                                        <p className="text-[var(--text-secondary)] m-0 text-sm">Daily metrics</p>
                                     </div>
                                     <span className='bg-[#4caf501a] p-[1px] rounded-full'>
 
@@ -245,21 +249,21 @@ export default function DoctorDashboardSection() {
 
                                 <div className="mt-2 flex">
                                     <div className="flex flex-col break-words">
-                                        <span className="text-[#212529] text-[12px] whitespace-normal break-words">Avg. Consultation</span>
+                                        <span className="text-[var(--text-secondary)] text-[12px] whitespace-normal break-words">Avg. Consultation</span>
                                         <span className="text-[20px] font-semibold text-[#4caf50] mt-[5px]">18 min</span>
                                     </div>
                                     <div className="flex flex-col break-words">
-                                        <span className="text-[12px] whitespace-normal break-words">Patients/Day</span>
+                                        <span className="text-[12px] whitespace-normal break-words text-[var(--text-secondary)]">Patients/Day</span>
                                         <span className="text-[20px] font-semibold text-[#4caf50] mt-[5px]">24</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 💰 Revenue Card */}
-                            <div className="bg-white rounded-lg shadow p-4">
+                            <div className="bg-[var(--header-bg)] rounded-lg shadow p-4 border border-[var(--border-color)]">
                                 <div className="flex justify-between items-center mb-2">
                                     <div>
-                                        <h6 className="m-0 font-semibold">Today's Revenue</h6>
+                                        <h6 className="m-0 font-semibold text-[var(--text-primary)]">Today's Revenue</h6>
                                         <h3 className="font-medium text-[27px] mt-[10px] text-[#2196f3]">$4,250</h3>
                                     </div>
                                     <span className="bg-[#2196f31a] p-[1px] rounded-full">
@@ -318,34 +322,34 @@ export default function DoctorDashboardSection() {
                                 <div className="flex flex-col gap-1">
                                     <div className="flex items-center mb-1">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#4caf50] mr-2"></span>
-                                        <span className='text-[#212529] text-[12px] whitespace-normal break-words'>Walk-ins: $1,850</span>
+                                        <span className='text-[var(--text-primary)] text-[12px] whitespace-normal break-words'>Walk-ins: $1,850</span>
                                     </div>
                                     <div className="flex items-center mb-1">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#2196f3] mr-2"></span>
-                                        <span className='text-[#212529] text-[12px] whitespace-normal break-words'>Follow-ups: $1,200</span>
+                                        <span className='text-[var(--text-primary)] text-[12px] whitespace-normal break-words'>Follow-ups: $1,200</span>
                                     </div>
                                     <div className="flex items-center">
                                         <span className="w-[10px] h-[10px] rounded-full bg-[#9c27b0] mr-2"></span>
-                                        <span className='text-[#212529] text-[12px] whitespace-normal break-words'>Online: $1,200</span>
+                                        <span className='text-[var(--text-primary)] text-[12px] whitespace-normal break-words'>Online: $1,200</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
 
-                        <div className="bg-white rounded-lg shadow mt-6 px-4 pb-4 pt-3">
-                            <div className="lg:col-span-2 bg-white rounded-2xl h-fit">
-                                <div className="flex justify-between items-center bg-white
-                                border-b-[1px] border-[#523f690f] pb-2">
+                        <div className="bg-[var(--header-bg)] rounded-lg shadow mt-6 px-4 pb-4 pt-3 border border-[var(--border-color)]">
+                            <div className="lg:col-span-2 bg-[var(--header-bg)] rounded-2xl h-fit">
+                                <div className="flex justify-between items-center bg-[var(--header-bg)]
+                                border-b-[1px] border-[var(--border-color)] pb-2">
                                     <div>
-                                        <h2 className="text-lg font-semibold text-gray-800">Patients Survey</h2>
+                                        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Patients Survey</h2>
                                     </div>
 
                                     <button
-                                        className=" rounded-full hover:bg-gray-100 transition-colors"
+                                        className=" rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         aria-label="More options"
                                     >
-                                        <MoreVertical className="w-5 h-5 text-gray-600" />
+                                        <MoreVertical className="w-5 h-5 text-[var(--text-secondary)]" />
                                     </button>
                                 </div>
 
@@ -427,53 +431,35 @@ export default function DoctorDashboardSection() {
 
 
                     <div className="w-full lg:w-4/12 order-1 lg:order-2 mt-[22px] pr-[25px] mb-6 lg:mb-0">
-                        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                        <div className="bg-[var(--header-bg)] rounded-lg shadow p-6 flex flex-col items-center border border-[var(--border-color)]">
                             <img src="/assets/doctorDashboard/doctor.jpg" className="rounded-full mb-3 w-[150px] h-[150px] object-cover" />
                             <h4 className="text-[#0d6efd] font-medium text-[calc(1.275rem+0.3vw)] mb-1">Dr. Ashton Cox</h4>
-                            <p className="text-[#96a2b4] text-center text-[14px] mb-[10px]">Orthopedics – Restar Hospital</p>
-                            <hr className="w-full my-4 text-[#96a2b4]" />
+                            <p className="text-[var(--text-secondary)] text-center text-[14px] mb-[10px]">Orthopedics – Restar Hospital</p>
+                            <hr className="w-full my-4 border-[var(--border-color)]" />
                             <div className="w-full">
-                                <div className="rounded-[16px] flex items-center p-4 mb-4 bg-white shadow-[0_8px_32px_#1f26871a]">
+                                <div className="rounded-[16px] flex items-center p-4 mb-4 bg-[var(--header-bg)] shadow-[0_8px_32px_#1f26871a] border border-[var(--border-color)]">
                                     <div>
-                                        <h6 className="font-semibold">3,897 Patients</h6>
-                                        <p className="text-gray-500">8,000 Patients Limit</p>
+                                        <h6 className="font-semibold text-[var(--text-primary)]">3,897 Patients</h6>
+                                        <p className="text-[var(--text-secondary)]">8,000 Patients Limit</p>
                                     </div>
                                     <div className="h-20 w-[150px]">
 
                                     </div>
                                 </div>
-                                {/* <div className="flex flex-wrap -mx-2">
-                                    <div className="w-full md:w-1/2 px-2 mb-4">
-                                        <div className="bg-blue-50 text-center rounded-md p-4">
-                                            <p className="label">Surgery</p>
-                                            <h4 className="value font-bold">578</h4>
-                                            <p className="label mt-3">Patients</p>
-                                            <h4 className="value font-bold">4,257</h4>
-                                        </div>
-                                    </div>
-                                    <div className="w-full md:w-1/2 px-2 mb-4">
-                                        <div className="bg-orange-50 text-center rounded-md p-4">
-                                            <p className="label">Consultation</p>
-                                            <h4 className="value font-bold">387</h4>
-                                            <p className="label mt-3">Appointment</p>
-                                            <h4 className="value font-bold">1,243</h4>
-                                        </div>
-                                    </div>
-                                </div> */}
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-[12px]">
-                                    <div className="bg-blue-50 text-center rounded-[16px] py-4">
-                                        <p className="label text-sm text-[#666666] whitespace-normal break-words">Surgery</p>
-                                        <h4 className="value font-bold text-xl text-gray-900 mb-2">578</h4>
-                                        <p className="label text-sm text-[#666666] mt-4 whitespace-normal break-words">Patients</p>
-                                        <h4 className="value font-bold text-xl text-gray-900">4,257</h4>
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 text-center rounded-[16px] py-4 border border-[var(--border-color)]">
+                                        <p className="label text-sm text-[var(--text-secondary)] whitespace-normal break-words">Surgery</p>
+                                        <h4 className="value font-bold text-xl text-[var(--text-primary)] mb-2">578</h4>
+                                        <p className="label text-sm text-[var(--text-secondary)] mt-4 whitespace-normal break-words">Patients</p>
+                                        <h4 className="value font-bold text-xl text-[var(--text-primary)]">4,257</h4>
                                     </div>
 
-                                    <div className="bg-orange-50 text-center rounded-[16px] py-4">
-                                        <p className="label text-sm text-[#666666] whitespace-normal break-words">Consultation</p>
-                                        <h4 className="value font-bold text-xl text-gray-900 mb-2">387</h4>
-                                        <p className="label text-sm text-[#666666] mt-4 whitespace-normal break-words">Appointment</p>
-                                        <h4 className="value font-bold text-xl text-gray-900">1,243</h4>
+                                    <div className="bg-orange-50 dark:bg-orange-900/20 text-center rounded-[16px] py-4 border border-[var(--border-color)]">
+                                        <p className="label text-sm text-[var(--text-secondary)] whitespace-normal break-words">Consultation</p>
+                                        <h4 className="value font-bold text-xl text-[var(--text-primary)] mb-2">387</h4>
+                                        <p className="label text-sm text-[var(--text-secondary)] mt-4 whitespace-normal break-words">Appointment</p>
+                                        <h4 className="value font-bold text-xl text-[var(--text-primary)]">1,243</h4>
                                     </div>
                                 </div>
 
@@ -482,22 +468,22 @@ export default function DoctorDashboardSection() {
 
 
 
-                        <div className="bg-white rounded-xl shadow-[0_8px_32px_#1f26871a] mt-6 p-4 w-full max-w-sm">
+                        <div className="bg-[var(--header-bg)] rounded-xl shadow-[0_8px_32px_#1f26871a] mt-6 p-4 w-full max-w-sm border border-[var(--border-color)]">
                             {/* Header */}
                             <div className="flex justify-between items-center mb-3">
-                                <h2 className="text-lg font-semibold text-gray-800">October 2025</h2>
-                                <CalendarDays className="w-5 h-5 text-gray-500" />
+                                <h2 className="text-lg font-semibold text-[var(--text-primary)]">October 2025</h2>
+                                <CalendarDays className="w-5 h-5 text-[var(--text-secondary)]" />
                             </div>
 
                             {/* Weekdays */}
-                            <div className="grid grid-cols-7 text-center text-gray-500 text-sm mb-2">
+                            <div className="grid grid-cols-7 text-center text-[var(--text-secondary)] text-sm mb-2">
                                 {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
                                     <span key={i}>{d}</span>
                                 ))}
                             </div>
 
                             {/* Dates */}
-                            <div className="grid grid-cols-7 gap-2 text-center text-gray-700">
+                            <div className="grid grid-cols-7 gap-2 text-center text-[var(--text-primary)]">
                                 {Array.from({ length: 31 }, (_, i) => {
                                     const day = i + 1;
                                     const dayEvents = events[day] || [];
@@ -506,7 +492,7 @@ export default function DoctorDashboardSection() {
                                             key={i}
                                             className={`py-1 rounded-lg flex flex-col items-center justify-center ${day === 22
                                                 ? "border border-blue-500 text-blue-600 font-semibold"
-                                                : "hover:bg-gray-100"
+                                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
                                                 }`}
                                         >
                                             <span>{day}</span>
@@ -524,7 +510,7 @@ export default function DoctorDashboardSection() {
                             </div>
 
                             {/* Legend */}
-                            <div className="flex flex-wrap gap-4 text-sm mt-4 justify-center">
+                            <div className="flex flex-wrap gap-4 text-sm mt-4 justify-center text-[var(--text-primary)]">
                                 <div className="flex items-center gap-1">
                                     <span className="w-3 h-3 bg-blue-500 rounded-full"></span> Surgery
                                 </div>
