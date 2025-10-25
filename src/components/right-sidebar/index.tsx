@@ -1,12 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Check, Settings } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
 const RightSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [rtl, setRtl] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setIsOpen]);
 
   const {
     sidebarTheme,
@@ -28,15 +48,18 @@ const RightSidebar = () => {
   ];
 
   return (
+
+
     <>
       <div
-        className={`fixed top-[60px] z-[9999] right-0 h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${
-          isOpen ? "w-[245px] h-auto" : "w-0"
-        } overflow-auto scrollbar-hide shadow-lg`}
+        ref={sidebarRef}
+        className={`fixed top-[60px] z-[9999] right-0 h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${isOpen ? "w-[245px] h-auto" : "w-0"
+          } overflow-auto scrollbar-hide shadow-lg text-white`}
       >
         <div className="fade show active bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 w-full">
           {/* --- Title --- */}
-          <div className="flex items-center justify-center px-5 py-[18px] text-[#3f4254] dark:text-gray-300 text-[16px] font-medium tracking-[0.3px] border-b border-black/5 dark:border-gray-600 bg-gradient-to-r from-[#f8f9fa] to-[#f1f2f6] dark:from-gray-800 dark:to-gray-700 shadow-[0_1px_3px_#0000000d] relative">
+          <div className="flex items-center justify-center px-5 py-[18px] dark:text-gray-300 text-[16px] font-medium tracking-[0.3px] border-b border-black/5 dark:border-gray-600 bg-[var(--tableHeaderBg)] shadow-[0_1px_3px_#0000000d] relative"
+          style={{ color: "var(--text-primary)" }}>
             Setting Panel
           </div>
 
@@ -98,11 +121,10 @@ const RightSidebar = () => {
             <div className="flex">
               <button
                 onClick={() => setSidebarTheme("light")}
-                className={`px-4 py-2 flex outline-none rounded-l-md text-sm ${
-                  sidebarTheme === "light"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                } transition`}
+                className={`px-4 py-2 flex outline-none rounded-l-md text-sm ${sidebarTheme === "light"
+                  ? "bg-blue-600 text-white"
+                  : "bg-[var(--tableHeaderBg)] "
+                  } transition`}
               >
                 {sidebarTheme === "light" && (
                   <Check className="w-5 h-5 mr-2 text-white" />
@@ -111,17 +133,18 @@ const RightSidebar = () => {
               </button>
               <button
                 onClick={() => setSidebarTheme("dark")}
-                className={`px-4 py-2 flex outline-none rounded-r-md text-sm ${
-                  sidebarTheme === "dark"
+                className={`px-4 py-2 flex outline-none rounded-r-md text-sm transition
+    ${sidebarTheme === "dark"
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                } transition`}
+                    : "bg-[var(--tableHeaderBg)]"
+                  }`}
               >
                 {sidebarTheme === "dark" && (
-                  <Check className="w-5 h-5 mr-2 !text-white" />
+                  <Check className="w-5 h-5 mr-2 text-white" />
                 )}
                 Dark
               </button>
+
             </div>
           </div>
 
@@ -134,11 +157,10 @@ const RightSidebar = () => {
               {themes.map((t) => (
                 <li
                   key={t.name}
-                  className={`w-8 h-8 rounded-full shadow-md cursor-pointer border-2 transition-all ${
-                    headerColor === t.name
-                      ? "border-blue-600 scale-110"
-                      : "border-gray-300 dark:border-gray-600"
-                  } ${t.color}`}
+                  className={`w-8 h-8 rounded-full shadow-md cursor-pointer border-2 transition-all ${headerColor === t.name
+                    ? "border-blue-600 scale-110"
+                    : "border-gray-300 dark:border-gray-600"
+                    } ${t.color}`}
                   onClick={() => setHeaderColor(t.name)}
                 ></li>
               ))}
@@ -163,20 +185,18 @@ const RightSidebar = () => {
               </label>
               <div className="flex gap-2 text-sm">
                 <span
-                  className={`${
-                    !rtl
-                      ? "text-blue-600 font-medium"
-                      : "text-gray-600 dark:text-gray-400"
-                  }`}
+                  className={`${!rtl
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-600 dark:text-gray-400"
+                    }`}
                 >
                   LTR
                 </span>
                 <span
-                  className={`${
-                    rtl
-                      ? "text-blue-600 font-medium"
-                      : "text-gray-600 dark:text-gray-400"
-                  }`}
+                  className={`${rtl
+                    ? "text-blue-600 font-medium"
+                    : "text-gray-600 dark:text-gray-400"
+                    }`}
                 >
                   RTL
                 </span>

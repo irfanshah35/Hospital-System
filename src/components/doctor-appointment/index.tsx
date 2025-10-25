@@ -259,7 +259,7 @@ export default function DoctorAppointment() {
                                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                                         <div
                                             key={day}
-                                            className=" p-[15px] text-center text-sm font-medium text-[#666666] border-r border-gray-200 last:border-r-0"
+                                            className=" p-[15px] text-center text-sm font-medium border-r border-gray-200 last:border-r-0"
                                         >
                                             <span className='p-[2px] px-1'>{day}</span>
                                         </div>
@@ -280,8 +280,8 @@ export default function DoctorAppointment() {
                                                         className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm ${dayInfo.type === 'today'
                                                             ? 'bg-blue-600 text-white'
                                                             : dayInfo.type === 'other'
-                                                                ? 'text-gray-400'
-                                                                : 'text-gray-700'
+                                                                ? 'text-gray-700'
+                                                                : 'text-gray-400'
                                                             }`}
                                                     >
                                                         {dayInfo.day}
