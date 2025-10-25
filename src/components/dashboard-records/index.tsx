@@ -164,7 +164,7 @@ export default function DashboardRecords() {
               </thead>
               <tbody>
                 {operations.map((op) => (
-                  <tr key={op.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                  <tr key={op.id} className="border-b border-gray-100 transition">
                     <td className="py-4 px-3">
                       <div className="flex items-center gap-3">
                         <img src={op.patientImg} alt={op.patient} className="w-10 h-10 rounded-full object-cover" />
