@@ -18,7 +18,7 @@ export default function Appointments() {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-xl shadow-sm">
+    <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-xl shadow-sm `}>
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Patient Chart</h2>
         <div className="flex justify-center gap-8 text-sm text-gray-500 mb-6">

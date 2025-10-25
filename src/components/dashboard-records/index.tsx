@@ -46,7 +46,7 @@ export default function DashboardRecords() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Appointments Section */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 h-[700px] overflow-y-auto flex flex-col">

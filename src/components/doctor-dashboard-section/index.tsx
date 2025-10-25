@@ -1,4 +1,5 @@
 "use client"
+import { useThemeStore } from '@/store/store';
 import { CalendarDays, ChevronRight, Clock4, DollarSign, MoreVertical, TrendingUp } from 'lucide-react'
 import React from 'react'
 import {
@@ -45,6 +46,8 @@ const COLORS = ["#007aff", "#34c759", "#ff3b30"];
 
 export default function DoctorDashboardSection() {
 
+    const { websiteTheme } = useThemeStore();
+
     const surveyData = [
         { date: "00:00", newPatients: 52, oldPatients: 32 },
         { date: "01:00", newPatients: 48, oldPatients: 30 },
@@ -77,17 +80,18 @@ export default function DoctorDashboardSection() {
     };
     return (
         <>
-            <div className='pt-[20px] pl-[25px] bg-[#EFF2FA]'>
+            <div className={`pt-[20px] pl-[25px] ${websiteTheme === 'dark' ? 'dark-theme  !text-[#96A2B4]' : 'light-theme'}`}
+            style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
                 <div className="block-header flex items-center justify-between mt-3 mb-3">
                     <div className="w-full">
-                        <ul className="flex flex-wrap items-center gap-1 text-gray-700">
+                        <ul className="flex flex-wrap items-center gap-1 ">
                             <li>
-                                <h4 className="text-[20px] font-medium text-[#444]">Doctor Dashboard</h4>
+                                <h4 className="text-[20px] font-medium ">Doctor Dashboard</h4>
                             </li>
-                            <li className="flex flex-wrap items-center gap-2 text-gray-700">
+                            <li className="flex flex-wrap items-center gap-2">
                                 <ChevronRight className='h-[16ox] w-[16px] font-bold' />
                             </li>
-                            <li className="flex items-center text-sm text-gray-500">
+                            <li className="flex items-center text-sm">
                                 <a className="flex items-center hover:text-gray-800 transition-colors">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -105,10 +109,10 @@ export default function DoctorDashboardSection() {
 
                                 </a>
                             </li>
-                            <li className="flex flex-wrap items-center gap-2 text-gray-700">
-                                <ChevronRight className='h-[16ox] w-[16px] font-bold' />
+                            <li className="flex flex-wrap items-center gap-2 ">
+                                <ChevronRight className='h-[16px] w-[16px] font-bold' />
                             </li>
-                            <li className=" text-[#444] font-medium">Dashboard</li>
+                            <li className=" font-medium">Dashboard</li>
                         </ul>
                     </div>
                 </div>

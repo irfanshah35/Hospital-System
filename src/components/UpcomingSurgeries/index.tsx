@@ -175,7 +175,8 @@ export default function UpcomingSurgeries() {
   const maxPatients = 120;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className={`min-h-screen  p-6`}
+    style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Top Three Cards */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         {/* Todo List Card */}

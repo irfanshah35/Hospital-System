@@ -1,7 +1,10 @@
 import React from "react";
 import { FileText } from "lucide-react";
+import { useThemeStore } from "@/store/store";
 
 export default function DoctorAppointmentsSection() {
+
+  const { websiteTheme } = useThemeStore();
   const taskHours = [
     { name: "Patient Diagnosis", completed: 33, color: "bg-red-500" },
     { name: "Surgical Procedure", completed: 25, color: "bg-blue-500" },
@@ -175,7 +178,8 @@ export default function DoctorAppointmentsSection() {
   const expectedHours = 10000;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className={`min-h-screen p-6 ${websiteTheme === 'dark' ? 'dark-theme  !text-[#96A2B4]' : 'light-theme'}`}
+    style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Top Three Cards */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         {/* Task Hours Card */}
@@ -264,7 +268,7 @@ export default function DoctorAppointmentsSection() {
 
         {/* Emergency Cases Card */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative">
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 flex justify-between items-center p-5 border-b border-red-100">
+          <div className=" flex justify-between items-center p-5 border-b border-red-100">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-red-500 rounded-lg flex items-center justify-center">
                 <svg
