@@ -203,16 +203,16 @@ export default function ViewAppointments() {
 
     return (
         <>
-            <div className='px-4 sm:px-6 py-[20px] bg-[#ECF0F9] mt-0'>
-                <div className="flex items-center justify-between bg-[#ECF0F9] relative top-[-5px]">
-                    <div className="flex items-center space-x-2 text-gray-700">
-                        <h1 className="text-[20px] font-semibold text-gray-900">View Appointment</h1>
-                        <span className="text-[20px] text-black font-bold">›</span>
-                        <Home size={18} className="text-gray-500" />
-                        <span className="text-gray-500">›</span>
-                        <span className="text-gray-600 text-sm">Appointment</span>
-                        <span className="text-gray-500">›</span>
-                        <span className="text-gray-600 text-sm">View</span>
+            <div className='px-4 sm:px-6 py-[20px] mt-0'>
+                <div className="flex items-center justify-between relative top-[-5px]">
+                    <div className="flex items-center space-x-2 ">
+                        <h1 className="text-[20px] font-semibold">View Appointment</h1>
+                        <span className="text-[20px]  font-bold">›</span>
+                        <Home size={18} className="" />
+                        <span className="">›</span>
+                        <span className=" text-sm">Appointment</span>
+                        <span className="">›</span>
+                        <span className=" text-sm">View</span>
                     </div>
                 </div>
 
@@ -222,7 +222,7 @@ export default function ViewAppointments() {
                     <div className="max-w-full ">
                         <div className="bg-white rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
-                            <div className="pr-[15px] pl-[20px] py-[8px] bg-[#DAE1F3] border-b border-gray-200 flex items-center">
+                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
                                 <div className='flex items-center flex-[35%]'>
                                     <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Appointment</h1>
                                     <label className='relative'>
@@ -323,7 +323,7 @@ export default function ViewAppointments() {
                             <div className='overflow-auto scrollbar-hide'>
                                 <div className="overflow-x-auto scrollbar-hide">
                                     <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                        <thead className="bg-white">
                                             <tr className='ml-[24px]'>
                                                 <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     <div className="flex items-center">
