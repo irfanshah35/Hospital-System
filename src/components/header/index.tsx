@@ -1,5 +1,4 @@
 "use client";
-import { Flag } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { useThemeStore } from "@/store/store";
 
@@ -18,12 +17,13 @@ export default function Header({
   const [countryDropdown, setCountryDropdown] = useState(false);
   const [notificationDropdown, setNotificationDropdown] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
-    flag: "assets/header/us.svg",
+    flag: "/assets/header/us.svg",
     language: "English",
+    code: "en",
   });
   const { sidebarTheme } = useThemeStore();
-
   const { headerColor } = useThemeStore();
+
   // User data state
   const [userData, setUserData] = useState({
     name: "Ella Jones",
@@ -60,22 +60,75 @@ export default function Header({
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPicture");
     localStorage.removeItem("loginMethod");
-
     window.location.href = "/login";
+  };
+
+  // Language change function
+  const changeLanguage = (langCode: string) => {
+    console.log("Attempting to change language to:", langCode);
+
+    // Method 1: Direct Google Translate API
+    if (window.google && window.google.translate) {
+      const selectField = document.querySelector(
+        ".goog-te-combo"
+      ) as HTMLSelectElement;
+      if (selectField) {
+        selectField.value = langCode;
+        selectField.dispatchEvent(new Event("change"));
+        console.log("Language changed via Google Translate");
+        return;
+      }
+    }
+
+    // Method 2: Try to find the iframe
+    const translateFrame = document.querySelector(
+      ".goog-te-menu-frame"
+    ) as HTMLIFrameElement;
+    if (translateFrame && translateFrame.contentDocument) {
+      const iframeSelect = translateFrame.contentDocument.querySelector(
+        ".goog-te-combo"
+      ) as HTMLSelectElement;
+      if (iframeSelect) {
+        iframeSelect.value = langCode;
+        iframeSelect.dispatchEvent(new Event("change"));
+        console.log("Language changed via iframe");
+        return;
+      }
+    }
+
+    // Method 3: Use Google Translate cookie method
+    setGoogleTranslateCookie(langCode);
+    window.location.reload();
+  };
+
+  // Set Google Translate cookie directly
+  const setGoogleTranslateCookie = (langCode: string) => {
+    const domain = window.location.hostname;
+    const cookieValue = `googtrans=/auto/${langCode}`;
+    document.cookie = `${cookieValue}; path=/; domain=${domain}`;
+    console.log("Translation cookie set:", cookieValue);
   };
 
   const countries = [
     {
       language: "English",
-      flag: "assets/header/us.svg",
+      flag: "/assets/header/us.svg",
+      code: "en",
     },
     {
       language: "Spanish",
-      flag: "assets/header/spain.svg",
+      flag: "/assets/header/spain.svg",
+      code: "es",
     },
     {
       language: "German",
-      flag: "assets/header/germany.svg",
+      flag: "/assets/header/germany.svg",
+      code: "de",
+    },
+    {
+      language: "اردو",
+      flag: "/assets/pak.png",
+      code: "ur",
     },
   ];
 
@@ -85,7 +138,6 @@ export default function Header({
       if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setCountryDropdown(false);
       }
-
       if (profileRef.current && !profileRef.current.contains(target)) {
         setProfileDropdown(false);
       }
@@ -125,19 +177,31 @@ export default function Header({
     return headerColor === "white" ? "text-gray-700" : "text-white";
   };
 
+  // Check if Google Translate is loaded
+  const isTranslateLoaded = () => {
+    return !!(window.google && window.google.translate);
+  };
+
   return (
     <>
       <nav
         className={`fixed top-0 h-auto left-0 z-50 w-full ${getHeaderBgClass()} shadow-[3px_0_10px_#b7c0ce33] font-['Roboto',_sans-serif] transition-colors duration-300`}
       >
-        <div className={`flex items-center w-full mx-auto  `}>
-          <div className={`p-[8px] py-[12px] !pr-0 flex items-center ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}>
+        <div className={`flex items-center w-full mx-auto`}>
+          {/* Logo Section */}
+          <div
+            className={`p-[8px] py-[12px] !pr-0 flex items-center ${
+              sidebarTheme === "dark"
+                ? "bg-[#1A202E] text-white"
+                : "bg-white text-gray-800"
+            }`}
+          >
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center lg:hidden`}
+              onClick={() => setIsCollapsed(!isCollapsed)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                onClick={() => setIsCollapsed(!isCollapsed)}
                 className="w-6 h-6 relative left-[2px] top-[1px]"
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -154,13 +218,15 @@ export default function Header({
               } transition-normal duration-300`}
             >
               <img
-                src="assets/header/logo.png"
+                src="/assets/header/logo.png"
                 alt="Cliniva Logo"
                 className="h-8 w-8"
               />
               {shouldExpand && (
                 <span
-                  className={`text-[24px] font-[400]`}
+                  className={`text-[24px] font-[400] ${
+                    sidebarTheme === "dark" ? "text-white" : "text-gray-800"
+                  }`}
                 >
                   Cliniva
                 </span>
@@ -168,7 +234,9 @@ export default function Header({
             </div>
           </div>
 
+          {/* Main Header Content */}
           <div className="flex items-center justify-between w-full pl-[8px]">
+            {/* Collapse Button for Desktop */}
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center`}
               aria-label="Toggle Menu"
@@ -184,7 +252,9 @@ export default function Header({
               </svg>
             </button>
 
+            {/* Header Icons */}
             <div className="flex items-center">
+              {/* Fullscreen Toggle */}
               <button
                 onClick={() => {
                   if (!document.fullscreenElement) {
@@ -204,7 +274,7 @@ export default function Header({
                 </svg>
               </button>
 
-              {/* notification code  */}
+              {/* Notifications */}
               <div ref={ref}>
                 <button
                   onClick={() => setNotificationDropdown(!notificationDropdown)}
@@ -236,8 +306,8 @@ export default function Header({
                 )}
               </div>
 
-              {/* country lang code  */}
-              <div className="" ref={dropdownRef}>
+              {/* Language Selector */}
+              <div ref={dropdownRef}>
                 <button
                   onClick={() => setCountryDropdown(!countryDropdown)}
                   className={`gap-2 ${getTextColorClass()} hover:opacity-80 flex justify-center items-center w-[48px] h-[48px] cursor-pointer`}
@@ -251,7 +321,7 @@ export default function Header({
                 </button>
                 {countryDropdown && (
                   <div className="absolute top-[50px] right-0 z-10">
-                    <div className="noti-list bg-[#efedf0] shadow-md rounded-[4px] w-[175px] overflow-hidden">
+                    <div className="noti-list bg-white shadow-lg rounded-[8px] w-[180px] overflow-hidden border border-gray-200">
                       <div className="menu">
                         <div className="user_dw_menu flex flex-col">
                           {countries.map((country, i) => (
@@ -260,15 +330,28 @@ export default function Header({
                               onClick={() => {
                                 setSelectedCountry(country);
                                 setCountryDropdown(false);
+                                changeLanguage(country.code);
                               }}
-                              className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-[#DEDCDF] transition-colors text-gray-700 text-sm font-medium cursor-pointer"
+                              className={`flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer ${
+                                selectedCountry.code === country.code
+                                  ? "bg-blue-50 text-blue-600"
+                                  : ""
+                              }`}
                             >
                               <img
                                 src={country.flag}
                                 alt={country.language}
                                 className="h-4 w-auto"
                               />
-                              {country.language}
+                              <span
+                                className={
+                                  country.code === "ur"
+                                    ? "text-right flex-1"
+                                    : ""
+                                }
+                              >
+                                {country.language}
+                              </span>
                             </button>
                           ))}
                         </div>
@@ -278,11 +361,11 @@ export default function Header({
                 )}
               </div>
 
-              {/* profile code with dynamic data */}
+              {/* Profile Dropdown */}
               <div ref={profileRef}>
                 <div
                   onClick={() => setProfileDropdown(!profileDropdown)}
-                  className="w-auto max-w-[150px] h-[48px] flex justify-center items-center gap-2 cursor-pointer px-2 text-white"
+                  className="w-auto max-w-[150px] h-[48px] flex justify-center items-center gap-2 cursor-pointer px-2"
                 >
                   <span
                     className={`text-sm font-medium ${getTextColorClass()} truncate`}
@@ -302,12 +385,12 @@ export default function Header({
 
                 {profileDropdown && (
                   <div className="absolute top-[50px] right-0 z-10">
-                    <div className="noti-list bg-[#efedf0] shadow-md rounded-lg w-[200px] overflow-hidden">
+                    <div className="noti-list bg-white shadow-lg rounded-[8px] w-[200px] overflow-hidden border border-gray-200">
                       <div className="menu">
                         <div className="user_dw_menu flex flex-col">
-                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-[#DEDCDF] transition-colors text-gray-700 text-sm font-medium cursor-pointer">
+                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer">
                             <svg
-                              className="w-[18px] h-[18px]"
+                              className="w-[18px] h-[18px] text-gray-600"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="currentColor"
@@ -317,9 +400,9 @@ export default function Header({
                             Account
                           </button>
 
-                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-[#DEDCDF] transition-colors text-gray-700 text-sm font-medium cursor-pointer">
+                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer">
                             <svg
-                              className="w-[18px] h-[18px]"
+                              className="w-[18px] h-[18px] text-gray-600"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="currentColor"
@@ -328,9 +411,10 @@ export default function Header({
                             </svg>
                             Inbox
                           </button>
-                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-[#DEDCDF] transition-colors text-gray-700 text-sm font-medium cursor-pointer">
+
+                          <button className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer">
                             <svg
-                              className="w-[18px] h-[18px]"
+                              className="w-[18px] h-[18px] text-gray-600"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="currentColor"
@@ -340,13 +424,15 @@ export default function Header({
                             Settings
                           </button>
 
+                          <div className="border-t border-gray-200"></div>
+
                           <button
                             onClick={handleLogout}
-                            className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-[#DEDCDF] transition-colors text-gray-700 text-sm font-medium cursor-pointer"
+                            className="flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-red-50 transition-colors text-red-600 text-sm font-medium cursor-pointer"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className="w-5 h-5 text-gray-700"
+                              className="w-5 h-5 text-red-600"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -374,6 +460,7 @@ export default function Header({
   );
 }
 
+// Notification Component
 const Notification = () => {
   const notifications = [
     {
@@ -392,36 +479,37 @@ const Notification = () => {
       action: "Download",
     },
     {
-      title: "Patient report generated",
-      time: "1 hour ago",
-      action: "Download",
+      title: "New message received",
+      time: "2 hours ago",
+      action: "Read",
     },
     {
-      title: "Patient report generated",
-      time: "1 hour ago",
-      action: "Download",
+      title: "Appointment reminder",
+      time: "5 hours ago",
+      action: "View",
     },
   ];
+
   return (
     <>
-      <div className="absolute top-[50px] right-[10px] w-[325px] bg-white shadow-xl !rounded-[6px] border border-gray-200 overflow-hidden">
+      <div className="absolute top-[50px] right-[10px] w-[325px] bg-white shadow-xl rounded-[8px] border border-gray-200 overflow-hidden">
         <div className="flex justify-between items-center px-[15px] py-[18px] bg-[#6777ef] text-white">
           <h6 className="text-[16px] font-medium">Notifications</h6>
-          <a className="text-[12px] cursor-pointer font-medium hover:underline">
+          <button className="text-[12px] cursor-pointer font-medium hover:underline">
             Mark all as read
-          </a>
+          </button>
         </div>
 
-        <div className="max-h-[350px] overflow-y-auto scrollbar-hide">
+        <div className="max-h-[350px] overflow-y-auto">
           <div className="divide-y divide-gray-100">
             {notifications.map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-[24px] p-[10px] px-[18px] mb-[3px] hover:bg-[#F5F5F5] transition-colors cursor-pointer"
+                className="flex items-center gap-[15px] p-[12px] px-[18px] hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                <span className="flex items-center justify-center w-9 h-9 rounded-full text-green-600">
+                <span className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600">
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
@@ -433,7 +521,7 @@ const Notification = () => {
                   <p className="text-sm font-medium text-gray-800">
                     {item.title}
                   </p>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                     <svg
                       className="w-3 h-3"
                       xmlns="http://www.w3.org/2000/svg"
@@ -441,11 +529,11 @@ const Notification = () => {
                       fill="currentColor"
                     >
                       <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM13 12H17V14H11V7H13V12Z"></path>
-                    </svg>{" "}
+                    </svg>
                     {item.time}
                   </p>
-                  <button className="mt-2 text-[11px] min-w-[50px] border-[1px] border-[#74777f] text-blue-600 px-[6px] rounded-[12px] hover-bg-[#74777f] hover-text-white font-medium hover:bg-blue-100 cursor-pointer">
-                    <span className="relative top-[1px]">{item.action}</span>
+                  <button className="mt-2 text-[11px] border border-gray-300 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-50 transition-colors cursor-pointer">
+                    {item.action}
                   </button>
                 </div>
               </div>
@@ -453,10 +541,10 @@ const Notification = () => {
           </div>
         </div>
 
-        <div className="px-[15px] py-[12px] !bg-[#EFEDF0] text-center">
-          <a className="cursor-pointer text-[#007bff] text-[14px] font-medium hover:underline">
-            Read All Notifications
-          </a>
+        <div className="px-[15px] py-[12px] bg-gray-50 text-center border-t border-gray-200">
+          <button className="cursor-pointer text-blue-600 text-[14px] font-medium hover:underline">
+            View All Notifications
+          </button>
         </div>
       </div>
     </>
