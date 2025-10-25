@@ -109,7 +109,7 @@ export default function Appointments() {
           ].map((a, i) => (
             <div
               key={i}
-              className="flex justify-between items-center border rounded-lg p-3 hover:bg-gray-50 transition"
+              className="flex justify-between items-center border rounded-lg p-3  transition"
             >
               <div>
                 <h3 className="font-medium">{a.name}</h3>
@@ -147,7 +147,7 @@ export default function Appointments() {
               className={`py-2 rounded-lg ${
                 i + 1 === 16
                   ? "border border-blue-500 text-blue-600"
-                  : "hover:bg-gray-100"
+                  : ""
               }`}
             >
               {i + 1}
