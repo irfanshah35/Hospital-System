@@ -2,10 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { useThemeStore } from "@/store/store";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const PatientStatsCards = () => {
+  const { websiteTheme } = useThemeStore();
+
   // Resting Heart Rate Chart Options
   const restingHeartRateOptions: ApexOptions = {
     chart: {
@@ -46,13 +49,13 @@ const PatientStatsCards = () => {
     xaxis: {
       categories: ["Mon", "Tue", "Wed", "Thu"],
       labels: {
-        style: { colors: "#9E9E9E", fontSize: "12px" },
+        style: { colors: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "12px" },
       },
       axisBorder: { show: false },
       axisTicks: { show: false },
       title: {
         text: "Weekday",
-        style: { color: "#9E9E9E", fontSize: "12px", fontWeight: 400 },
+        style: { color: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "12px", fontWeight: 400 },
         offsetY: 10,
       },
     },
@@ -61,16 +64,16 @@ const PatientStatsCards = () => {
       max: 90,
       tickAmount: 5,
       labels: {
-        style: { colors: "#9E9E9E", fontSize: "11px" },
+        style: { colors: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "11px" },
       },
       title: {
         text: "Heart Rate",
-        style: { color: "#9E9E9E", fontSize: "11px", fontWeight: 400 },
+        style: { color: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "11px", fontWeight: 400 },
         rotate: -90,
       },
     },
     grid: {
-      borderColor: "#E8E8E8",
+      borderColor: websiteTheme === 'dark' ? '#334155' : '#E8E8E8',
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
@@ -83,6 +86,7 @@ const PatientStatsCards = () => {
     },
     tooltip: {
       enabled: true,
+      theme: websiteTheme === 'dark' ? 'dark' : 'light',
       y: { formatter: (val) => `${val} bpm` },
     },
   };
@@ -129,13 +133,13 @@ const PatientStatsCards = () => {
     xaxis: {
       categories: ["Tue", "Wed"],
       labels: {
-        style: { colors: "#9E9E9E", fontSize: "12px" },
+        style: { colors: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "12px" },
       },
       axisBorder: { show: false },
       axisTicks: { show: false },
       title: {
         text: "Weekday",
-        style: { color: "#9E9E9E", fontSize: "12px", fontWeight: 400 },
+        style: { color: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "12px", fontWeight: 400 },
         offsetY: 10,
       },
     },
@@ -144,16 +148,16 @@ const PatientStatsCards = () => {
       max: 135,
       tickAmount: 5,
       labels: {
-        style: { colors: "#9E9E9E", fontSize: "11px" },
+        style: { colors: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "11px" },
       },
       title: {
         text: "Heart Rate",
-        style: { color: "#9E9E9E", fontSize: "11px", fontWeight: 400 },
+        style: { color: websiteTheme === 'dark' ? '#96A2B4' : '#9E9E9E', fontSize: "11px", fontWeight: 400 },
         rotate: -90,
       },
     },
     grid: {
-      borderColor: "#E8E8E8",
+      borderColor: websiteTheme === 'dark' ? '#334155' : '#E8E8E8',
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
@@ -166,6 +170,7 @@ const PatientStatsCards = () => {
     },
     tooltip: {
       enabled: true,
+      theme: websiteTheme === 'dark' ? 'dark' : 'light',
       y: { formatter: (val) => `${val} bpm` },
     },
   };
@@ -218,16 +223,17 @@ const PatientStatsCards = () => {
   ];
 
   return (
-    <div className="p-6">
+    <div className={`p-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+         style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Resting Heart Rate Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col h-[450px]">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-6 flex flex-col h-[450px] border border-[var(--border-color)]">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">
             Resting Heart Rate
           </h3>
-          <p className="text-gray-900 mb-4">
+          <p className="text-[var(--text-primary)] mb-4">
             <span className="text-base font-semibold">72 bmp</span>{" "}
-            <span className="text-xs text-gray-400">(Average)</span>
+            <span className="text-xs text-[var(--text-secondary)]">(Average)</span>
           </p>
           <div className="flex-1 -mx-3">
             <Chart
@@ -240,13 +246,13 @@ const PatientStatsCards = () => {
         </div>
 
         {/* Performance Heart Rate Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col h-[450px]">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-6 flex flex-col h-[450px] border border-[var(--border-color)]">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">
             Performance Heart Rate
           </h3>
-          <p className="text-gray-900 mb-4">
+          <p className="text-[var(--text-primary)] mb-4">
             <span className="text-base font-semibold">129 bmp</span>{" "}
-            <span className="text-xs text-gray-400">(Average)</span>
+            <span className="text-xs text-[var(--text-secondary)]">(Average)</span>
           </p>
           <div className="flex-1 -mx-3">
             <Chart
@@ -259,20 +265,20 @@ const PatientStatsCards = () => {
         </div>
 
         {/* Medications Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col h-[450px]">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-6 flex flex-col h-[450px] border border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Medications</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Medications</h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
               View All
             </button>
           </div>
 
           {/* Table Header */}
-          <div className="grid grid-cols-2 pb-3 mb-3 border-b border-gray-200">
-            <span className="text-sm font-semibold text-gray-900">
+          <div className="grid grid-cols-2 pb-3 mb-3 border-b border-[var(--border-color)]">
+            <span className="text-sm font-semibold text-[var(--text-primary)]">
               Medicine
             </span>
-            <span className="text-sm font-semibold text-gray-900 text-right">
+            <span className="text-sm font-semibold text-[var(--text-primary)] text-right">
               Dosage
             </span>
           </div>
@@ -287,11 +293,11 @@ const PatientStatsCards = () => {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-md">{med.icon}</span>
-                    <span className="text-xs text-gray-700 leading-tight">
+                    <span className="text-xs text-[var(--text-primary)] leading-tight">
                       {med.name}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-700 text-right">
+                  <span className="text-xs text-[var(--text-primary)] text-right">
                     {med.dosage}
                   </span>
                 </div>

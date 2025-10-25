@@ -1,14 +1,17 @@
 "use client";
 
 import { Heart, Droplet, Activity, TrendingUp, TrendingDown } from "lucide-react";
+import { useThemeStore } from "@/store/store";
 
 const PatientWelcomeSection = () => {
+  const { websiteTheme } = useThemeStore();
+
   const healthMetrics = [
     {
       title: "Blood Pressure",
       value: "110/70",
       icon: <Heart className="w-8 h-8" />,
-      iconBg: "bg-red-100",
+      iconBg: "bg-red-100 dark:bg-red-900/30",
       iconColor: "text-red-500",
       trend: "up",
       trendValue: "10% Higher Then Last Month",
@@ -18,7 +21,7 @@ const PatientWelcomeSection = () => {
       title: "Blood Pressure",
       value: "650",
       icon: <Heart className="w-8 h-8" />,
-      iconBg: "bg-red-100",
+      iconBg: "bg-red-100 dark:bg-red-900/30",
       iconColor: "text-red-500",
       trend: "down",
       trendValue: "0.7% Less Then Last Month",
@@ -28,7 +31,7 @@ const PatientWelcomeSection = () => {
       title: "Glucose Level",
       value: "88-75",
       icon: <Droplet className="w-8 h-8" />,
-      iconBg: "bg-yellow-100",
+      iconBg: "bg-yellow-100 dark:bg-yellow-900/30",
       iconColor: "text-yellow-500",
       trend: "up",
       trendValue: "12% Higher Then Last Month",
@@ -38,7 +41,7 @@ const PatientWelcomeSection = () => {
       title: "Blood Count",
       value: "9,456/mL",
       icon: <Activity className="w-8 h-8" />,
-      iconBg: "bg-pink-100",
+      iconBg: "bg-pink-100 dark:bg-pink-900/30",
       iconColor: "text-pink-500",
       trend: "down",
       trendValue: "22% Less Then Last Month",
@@ -47,9 +50,10 @@ const PatientWelcomeSection = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className={`p-6 space-y-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+         style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Welcome Card */}
-      <div className="bg-white rounded-2xl shadow-sm p-8">
+      <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-8 border border-[var(--border-color)]">
         <div className="flex items-center gap-8">
           {/* Doctor Illustrations - Reduced width */}
           <div className="flex-shrink-0">
@@ -58,9 +62,9 @@ const PatientWelcomeSection = () => {
 
           {/* Welcome Text */}
           <div className="flex-1">
-            <p className="text-gray-600 text-sm mb-1">Welcome back</p>
+            <p className="text-[var(--text-secondary)] text-sm mb-1">Welcome back</p>
             <h2 className="text-3xl font-bold text-blue-500 mb-3">Cara Stevens!</h2>
-            <p className="text-gray-700 leading-relaxed">
+            <p className="text-[var(--text-primary)] leading-relaxed">
               We would like to take this opportunity to welcome you to our practice and to thank you for choosing our physicians to participate in your healthcare. We look forward to providing you with personalized, comprehensive health care focusing on wellness and prevention.
             </p>
           </div>
@@ -73,7 +77,7 @@ const PatientWelcomeSection = () => {
       {/* Health Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {healthMetrics.map((metric, index) => (
-          <div key={index} className="bg-white rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow">
+          <div key={index} className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow border border-[var(--border-color)]">
             {/* Icon and Value in same row */}
             <div className="flex items-center justify-between mb-3">
               <div className={`w-12 h-12 ${metric.iconBg} rounded-xl flex items-center justify-center ${metric.iconColor}`}>
@@ -85,7 +89,7 @@ const PatientWelcomeSection = () => {
             </div>
 
             {/* Metric Title */}
-            <h3 className="text-gray-800 font-semibold mb-2 text-sm">{metric.title}</h3>
+            <h3 className="text-[var(--text-primary)] font-semibold mb-2 text-sm">{metric.title}</h3>
 
             {/* Trend Indicator */}
             <div className="flex items-center gap-1">

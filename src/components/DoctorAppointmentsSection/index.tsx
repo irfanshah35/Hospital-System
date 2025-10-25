@@ -71,7 +71,7 @@ export default function DoctorAppointmentsSection() {
       name: "John Doe",
       condition: "Cardiac Arrest",
       time: "10 min ago",
-      bgColor: "bg-red-50",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
       textColor: "text-red-600",
     },
     {
@@ -79,7 +79,7 @@ export default function DoctorAppointmentsSection() {
       name: "Sarah Smith",
       condition: "Severe Trauma",
       time: "25 min ago",
-      bgColor: "bg-orange-50",
+      bgColor: "bg-orange-50 dark:bg-orange-900/20",
       textColor: "text-orange-600",
     },
     {
@@ -87,7 +87,7 @@ export default function DoctorAppointmentsSection() {
       name: "Mike Johnson",
       condition: "Stroke",
       time: "45 min ago",
-      bgColor: "bg-red-50",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
       textColor: "text-red-600",
     },
     {
@@ -95,7 +95,7 @@ export default function DoctorAppointmentsSection() {
       name: "Emily Davis",
       condition: "Severe Burns",
       time: "1 hr ago",
-      bgColor: "bg-orange-50",
+      bgColor: "bg-orange-50 dark:bg-orange-900/20",
       textColor: "text-orange-600",
     },
     {
@@ -103,7 +103,7 @@ export default function DoctorAppointmentsSection() {
       name: "David Wilson",
       condition: "Multiple Fractures",
       time: "1 hr 20 min ago",
-      bgColor: "bg-red-50",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
       textColor: "text-red-600",
     },
   ];
@@ -178,24 +178,24 @@ export default function DoctorAppointmentsSection() {
   const expectedHours = 10000;
 
   return (
-    <div className={`min-h-screen p-6 ${websiteTheme === 'dark' ? 'dark-theme  !text-[#96A2B4]' : 'light-theme'}`}
+    <div className={`min-h-screen p-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
     style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Top Three Cards */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         {/* Task Hours Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Task Hours</h3>
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
+          <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Task Hours</h3>
 
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-[var(--text-primary)]">
                 {totalHours} Hours
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-[var(--text-secondary)]">
                 Expected: {expectedHours}
               </span>
             </div>
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden flex">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
               {taskHours.map((task, index) => (
                 <div
                   key={index}
@@ -207,11 +207,11 @@ export default function DoctorAppointmentsSection() {
           </div>
 
           <div className="space-y-6">
-            <div className="flex justify-between pb-2 border-b border-gray-200">
-              <span className="text-sm font-semibold text-gray-900">
+            <div className="flex justify-between pb-2 border-b border-[var(--border-color)]">
+              <span className="text-sm font-semibold text-[var(--text-primary)]">
                 Task Name
               </span>
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-[var(--text-primary)]">
                 Completed
               </span>
             </div>
@@ -219,9 +219,9 @@ export default function DoctorAppointmentsSection() {
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${task.color}`}></div>
-                  <span className="text-sm text-gray-700">{task.name}</span>
+                  <span className="text-sm text-[var(--text-primary)]">{task.name}</span>
                 </div>
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
                   {task.completed}%
                 </span>
               </div>
@@ -230,9 +230,9 @@ export default function DoctorAppointmentsSection() {
         </div>
 
         {/* Appointments Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Appointments</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Appointments</h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
               View All
             </button>
@@ -242,7 +242,7 @@ export default function DoctorAppointmentsSection() {
             {appointments.map((apt) => (
               <div
                 key={apt.id}
-                className="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-0"
+                className="flex items-center gap-3 pb-3 border-b border-[var(--border-color)] last:border-0"
               >
                 <img
                   src={apt.image}
@@ -250,16 +250,16 @@ export default function DoctorAppointmentsSection() {
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900 text-sm">
+                  <div className="font-semibold text-[var(--text-primary)] text-sm">
                     {apt.name}
                   </div>
-                  <div className="text-xs text-gray-400">{apt.condition}</div>
+                  <div className="text-xs text-[var(--text-secondary)]">{apt.condition}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-[var(--text-primary)]">
                     {apt.date}
                   </div>
-                  <div className="text-xs text-gray-400">{apt.time}</div>
+                  <div className="text-xs text-[var(--text-secondary)]">{apt.time}</div>
                 </div>
               </div>
             ))}
@@ -267,8 +267,8 @@ export default function DoctorAppointmentsSection() {
         </div>
 
         {/* Emergency Cases Card */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative">
-          <div className=" flex justify-between items-center p-5 border-b border-red-100">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg overflow-hidden relative border border-[var(--border-color)]">
+          <div className="flex justify-between items-center p-5 border-b border-red-100 dark:border-red-900/30">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-red-500 rounded-lg flex items-center justify-center">
                 <svg
@@ -283,7 +283,7 @@ export default function DoctorAppointmentsSection() {
                   />
                 </svg>
               </div>
-              <h3 className="text-base font-bold text-gray-900">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">
                 Emergency Cases
               </h3>
             </div>
@@ -299,7 +299,7 @@ export default function DoctorAppointmentsSection() {
                 className="flex items-start justify-between"
               >
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm mb-1">
+                  <div className="font-semibold text-[var(--text-primary)] text-sm mb-1">
                     {emergency.name}
                   </div>
                   <div
@@ -308,12 +308,12 @@ export default function DoctorAppointmentsSection() {
                     {emergency.condition}
                   </div>
                 </div>
-                <span className="text-xs text-gray-500">{emergency.time}</span>
+                <span className="text-xs text-[var(--text-secondary)]">{emergency.time}</span>
               </div>
             ))}
           </div>
 
-          <button className="w-full mt-4 text-blue-600 text-sm font-semibold hover:text-blue-700">
+          <button className="w-full mt-4 text-blue-600 text-sm font-semibold hover:text-blue-700 p-4">
             View All Emergency Cases
           </button>
         </div>
@@ -322,9 +322,9 @@ export default function DoctorAppointmentsSection() {
       {/* Bottom Section - Table and Chart */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Appointments Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-5">
+        <div className="lg:col-span-2 bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 border border-[var(--border-color)]">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Appointments</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Appointments</h3>
             <button className="text-blue-600 text-sm font-semibold hover:text-blue-700">
               View All
             </button>
@@ -333,23 +333,23 @@ export default function DoctorAppointmentsSection() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-4 px-3 text-sm font-semibold text-gray-900">
+                <tr className="border-b border-[var(--border-color)]">
+                  <th className="text-left py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Patient Name
                   </th>
-                  <th className="text-left py-4 px-3 text-sm font-semibold text-gray-900">
+                  <th className="text-left py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Gender
                   </th>
-                  <th className="text-left py-4 px-3 text-sm font-semibold text-gray-900">
+                  <th className="text-left py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Last Visit
                   </th>
-                  <th className="text-left py-4 px-3 text-sm font-semibold text-gray-900">
+                  <th className="text-left py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Diseases
                   </th>
-                  <th className="text-center py-4 px-3 text-sm font-semibold text-gray-900">
+                  <th className="text-center py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Report
                   </th>
-                  <th className="text-center py-4 px-3 text-sm font-semibold text-gray-900">
+                  <th className="text-center py-4 px-3 text-sm font-semibold text-[var(--text-primary)]">
                     Details
                   </th>
                 </tr>
@@ -358,7 +358,7 @@ export default function DoctorAppointmentsSection() {
                 {patientAppointments.map((patient) => (
                   <tr
                     key={patient.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition"
+                    className="border-b border-[var(--border-color)] hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     <td className="py-1 px-3">
                       <div className="flex items-center gap-3">
@@ -367,15 +367,15 @@ export default function DoctorAppointmentsSection() {
                           alt={patient.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm text-[var(--text-primary)]">
                           {patient.name}
                         </span>
                       </div>
                     </td>
-                    <td className="py-4 px-3 text-sm text-gray-700">
+                    <td className="py-4 px-3 text-sm text-[var(--text-primary)]">
                       {patient.gender}
                     </td>
-                    <td className="py-4 px-3 text-sm text-gray-700">
+                    <td className="py-4 px-3 text-sm text-[var(--text-primary)]">
                       {patient.lastVisit}
                     </td>
                     <td className="py-4 px-3">
@@ -407,8 +407,8 @@ export default function DoctorAppointmentsSection() {
         </div>
 
         {/* Appointment Review Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 flex flex-col">
-          <h3 className="text-base font-bold text-gray-900 mb-4">
+        <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-5 flex flex-col border border-[var(--border-color)]">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">
             Appointment Review
           </h3>
 
@@ -481,8 +481,8 @@ export default function DoctorAppointmentsSection() {
               </svg>
 
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xs text-gray-500 mb-1">Total</span>
-                <span className="text-3xl font-bold text-gray-900">249</span>
+                <span className="text-xs text-[var(--text-secondary)] mb-1">Total</span>
+                <span className="text-3xl font-bold text-[var(--text-primary)]">249</span>
               </div>
             </div>
           </div>
@@ -490,19 +490,19 @@ export default function DoctorAppointmentsSection() {
           <div className="flex justify-center gap-4 mb-4">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
-              <span className="text-xs text-gray-600">Face To Face</span>
+              <span className="text-xs text-[var(--text-primary)]">Face To Face</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-              <span className="text-xs text-gray-600">E-Consult</span>
+              <span className="text-xs text-[var(--text-primary)]">E-Consult</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-              <span className="text-xs text-gray-600">Available</span>
+              <span className="text-xs text-[var(--text-primary)]">Available</span>
             </div>
           </div>
 
-          <button className="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-full font-semibold text-sm hover:bg-blue-50 transition">
+          <button className="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-full font-semibold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
             Modify Availability
           </button>
         </div>
