@@ -9,6 +9,7 @@ import {
   Settings,
   MessageSquare,
 } from "lucide-react";
+import { useThemeStore } from "@/store/store";
 
 interface DoctorSideBarProps {
   isCollapsed: boolean;
@@ -24,9 +25,14 @@ export default function DoctorSideBar({
   setIsHovered,
 }: DoctorSideBarProps) {
   const [activePath, setActivePath] = useState("#/doctor/dashboard");
+  const { sidebarTheme, websiteTheme } = useThemeStore();
 
   // Only use hover state when sidebar is collapsed
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
+
+  // Check if we should use white text/icons (when sidebar is dark OR website is dark)
+  const shouldUseWhiteTheme =
+    sidebarTheme === "dark" || websiteTheme === "dark";
 
   const sidebarMenu = [
     {
@@ -66,7 +72,9 @@ export default function DoctorSideBar({
       <aside
         className={`${
           shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] bg-white z-[9999] group transition-all duration-300`}
+        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${
+          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+        } z-[9999] group transition-all duration-300`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -93,7 +101,11 @@ export default function DoctorSideBar({
                     />
                   </div>
                 </div>
-                <div className="text-center text-[#060606]">
+                <div
+                  className={`text-center ${
+                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                  }`}
+                >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Ashton Cox
                   </div>
@@ -104,7 +116,11 @@ export default function DoctorSideBar({
 
             {shouldExpand && (
               <li>
-                <div className="mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase">
+                <div
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
+                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                  }`}
+                >
                   Main
                 </div>
               </li>
@@ -119,14 +135,28 @@ export default function DoctorSideBar({
                       shouldExpand
                         ? "justify-content-center"
                         : "justify-center px-0"
-                    } overflow-hidden text-black text-[14px] leading-8 cursor-pointer
+                    } overflow-hidden ${
+                      shouldUseWhiteTheme ? "text-white" : "text-black"
+                    } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-                      isActive ? "bg-[#f0f3fb]" : "hover:bg-[#f0f3fb]"
+                      isActive
+                        ? shouldUseWhiteTheme
+                          ? "bg-[#2D3748]"
+                          : "bg-[#f0f3fb]"
+                        : shouldUseWhiteTheme
+                        ? "hover:bg-[#2D3748]"
+                        : "hover:bg-[#f0f3fb]"
                     }`}
                     href={item.path}
                     onClick={() => setActivePath(item.path)}
                   >
-                    <item.icon size={18} strokeWidth={1.8} />
+                    <item.icon
+                      size={18}
+                      strokeWidth={1.8}
+                      className={
+                        shouldUseWhiteTheme ? "text-white" : "text-black"
+                      }
+                    />
                     {shouldExpand && <span className="ml-3">{item.title}</span>}
                   </Link>
                 </li>
