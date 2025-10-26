@@ -37,7 +37,7 @@ export default function AdminSideBar({
   setIsHovered,
 }: AdminSideBarProps) {
   const [openDropdowns, setOpenDropdowns] = useState<string[]>(["Dashboard"]);
-  const [activeChild, setActiveChild] = useState("#/admin/dashboard/main");
+  const [activeChild, setActiveChild] = useState("/admin/dashboard");
   const { sidebarTheme, websiteTheme } = useThemeStore();
 
   // Only use hover state when sidebar is collapsed
@@ -62,22 +62,7 @@ export default function AdminSideBar({
         {
           title: "Dashboard",
           icon: LayoutDashboard,
-          children: [
-            { title: "Dashboard 1", path: "#/admin/dashboard/main" },
-            { title: "Dashboard 2", path: "#/admin/dashboard/dashboard2" },
-            {
-              title: "Doctor Dashboard",
-              path: "#/admin/dashboard/doctor-dashboard",
-            },
-            {
-              title: "Patient Dashboard",
-              path: "#/admin/dashboard/patient-dashboard",
-            },
-            {
-              title: "Nurse Dashboard",
-              path: "#/admin/dashboard/nurse-dashboard",
-            },
-          ],
+          path: "/admin/dashboard",
         },
         {
           title: "Appointments",
@@ -85,19 +70,19 @@ export default function AdminSideBar({
           children: [
             {
               title: "Appointment Calendar",
-              path: "#/admin/appointment/appointment-calendar",
+              path: "/admin/appointment/appointment-calendar",
             },
             {
               title: "View Appointment",
-              path: "/appointment/view-appointment",
+              path: "/admin/appointment/view-appointment",
             },
             {
               title: "Book Appointment",
-              path: "#/admin/appointment/bookAppointment",
+              path: "/admin/appointment/book-appointment",
             },
             {
               title: "Edit Appointment",
-              path: "#/admin/appointment/edit-ppointment",
+              path: "/admin/appointment/edit-appointment",
             },
           ],
         },
@@ -105,44 +90,77 @@ export default function AdminSideBar({
           title: "Doctors",
           icon: UserCog,
           children: [
-            { title: "All Doctors", path: "#/admin/doctors/allDoctors" },
-            { title: "Add Doctor", path: "#/admin/doctors/add-doctor" },
-            { title: "Edit Doctor", path: "#/admin/doctors/edit-doctor" },
+            {
+              title: "All Doctors",
+              // path: "/admin/doctors/all-doctors"
+            },
+            {
+              title: "Add Doctor",
+              // path: "/admin/doctors/add-doctor"
+            },
+            {
+              title: "Edit Doctor",
+              // path: "/admin/doctors/edit-doctor"
+            },
             {
               title: "Assign Department",
-              path: "#/admin/doctors/assign-department",
+              // path: "/admin/doctors/assign-department",
             },
             {
               title: "Shift Management",
-              path: "#/admin/doctors/shift-management",
+              // path: "/admin/doctors/shift-management",
             },
-            { title: "Doctor Profile", path: "#/admin/doctors/doctor-profile" },
+            {
+              title: "Doctor Profile",
+              // path: "/admin/doctors/doctor-profile"
+            },
           ],
         },
         {
           title: "Staff",
           icon: Users,
           children: [
-            { title: "All Staff", path: "#/admin/staff/all-staff" },
-            { title: "Add Staff", path: "#/admin/staff/add-staff" },
-            { title: "Edit Staff", path: "#/admin/staff/edit-staff" },
-            { title: "Staff Profile", path: "#/admin/staff/staff-profile" },
+            {
+              title: "All Staff",
+              // path: "/admin/staff/all-staff"
+            },
+            {
+              title: "Add Staff",
+              // path: "/admin/staff/add-staff"
+            },
+            {
+              title: "Edit Staff",
+              // path: "/admin/staff/edit-staff"
+            },
+            {
+              title: "Staff Profile",
+              // path: "/admin/staff/staff-profile"
+            },
           ],
         },
         {
           title: "Patients",
           icon: User,
           children: [
-            { title: "All Patients", path: "#/admin/patients/all-patients" },
-            { title: "Add Patient", path: "#/admin/patients/add-patient" },
-            { title: "Edit Patient", path: "#/admin/patients/edit-patient" },
+            {
+              title: "All Patients",
+              // path: "/admin/patients/all-patients"
+            },
+            {
+              title: "Add Patient",
+              // path: "/admin/patients/add-patient"
+            },
+            {
+              title: "Edit Patient",
+              // path: "/admin/patients/edit-patient"
+            },
             {
               title: "Patient Records",
-              path: "#/admin/patients/patient-records",
+              // path: "/admin/patients/patient-records",
             },
             {
               title: "Patient Profile",
-              path: "#/admin/patients/patient-profile",
+              // path: "/admin/patients/patient-profile",
             },
           ],
         },
@@ -150,22 +168,40 @@ export default function AdminSideBar({
           title: "Room Allotment",
           icon: Hotel,
           children: [
-            { title: "Alloted Rooms", path: "#/admin/room/all-rooms" },
-            { title: "New Allotment", path: "#/admin/room/add-allotment" },
-            { title: "Edit Allotment", path: "#/admin/room/edit-allotment" },
+            {
+              title: "Alloted Rooms",
+              // path: "/admin/room/all-rooms"
+            },
+            {
+              title: "New Allotment",
+              // path: "/admin/room/add-allotment"
+            },
+            {
+              title: "Edit Allotment",
+              // path: "/admin/room/edit-allotment"
+            },
             {
               title: "Rooms By Department",
-              path: "#/admin/room/rooms-by-department",
+              // path: "/admin/room/rooms-by-department",
             },
-            { title: "Add Room", path: "#/admin/room/add-room" },
+            {
+              title: "Add Room",
+              // path: "/admin/room/add-room"
+            },
           ],
         },
         {
           title: "Records",
           icon: FileText,
           children: [
-            { title: "Birth Records", path: "#/admin/records/birth" },
-            { title: "Death Records", path: "#/admin/records/death" },
+            {
+              title: "Birth Records",
+              // path: "/admin/records/birth"
+            },
+            {
+              title: "Death Records",
+              // path: "/admin/records/death"
+            },
           ],
         },
         {
@@ -174,38 +210,74 @@ export default function AdminSideBar({
           children: [
             {
               title: "Ambulance Call List",
-              path: "#/admin/ambulance/call-list",
+              // path: "/admin/ambulance/call-list",
             },
-            { title: "Ambulance List", path: "#/admin/ambulance/list" },
+            {
+              title: "Ambulance List",
+              // path: "/admin/ambulance/list"
+            },
           ],
         },
         {
           title: "Pharmacy",
           icon: Pill,
           children: [
-            { title: "Medicine List", path: "#/admin/pharmacy/medicine-list" },
-            { title: "Add Medicine", path: "#/admin/pharmacy/add-medicine" },
+            {
+              title: "Medicine List",
+              // path: "/admin/pharmacy/medicine-list"
+            },
+            {
+              title: "Add Medicine",
+              // path: "/admin/pharmacy/add-medicine"
+            },
           ],
         },
         {
           title: "Blood Bank",
           icon: Droplet,
           children: [
-            { title: "Blood Stock", path: "#/admin/blood-bank/blood-stock" },
-            { title: "Blood Donor", path: "#/admin/blood-bank/blood-donor" },
-            { title: "Blood Issued", path: "#/admin/blood-bank/blood-issued" },
+            {
+              title: "Blood Stock",
+              // path: "/admin/blood-bank/blood-stock"
+            },
+            {
+              title: "Blood Donor",
+              // path: "/admin/blood-bank/blood-donor"
+            },
+            {
+              title: "Blood Issued",
+              // path: "/admin/blood-bank/blood-issued"
+            },
           ],
         },
         {
           title: "Accounts",
           icon: DollarSign,
           children: [
-            { title: "Bill List", path: "#/admin/accounts/bill-list" },
-            { title: "Add Bill", path: "#/admin/accounts/add-bill" },
-            { title: "Income", path: "#/admin/accounts/income" },
-            { title: "Expenses", path: "#/admin/accounts/expenses" },
-            { title: "Income Report", path: "#/admin/accounts/income-report" },
-            { title: "Invoice", path: "#/admin/accounts/invoice" },
+            {
+              title: "Bill List",
+              // path: "/admin/accounts/bill-list"
+            },
+            {
+              title: "Add Bill",
+              // path: "/admin/accounts/add-bill"
+            },
+            {
+              title: "Income",
+              // path: "/admin/accounts/income"
+            },
+            {
+              title: "Expenses",
+              // path: "/admin/accounts/expenses"
+            },
+            {
+              title: "Income Report",
+              // path: "/admin/accounts/income-report"
+            },
+            {
+              title: "Invoice",
+              // path: "/admin/accounts/invoice"
+            },
           ],
         },
         {
@@ -214,11 +286,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Department List",
-              path: "#/admin/departments/department-list",
+              // path: "/admin/departments/department-list",
             },
             {
               title: "Add Department",
-              path: "#/admin/departments/add-department",
+              // path: "/admin/departments/add-department",
             },
           ],
         },
@@ -228,9 +300,12 @@ export default function AdminSideBar({
           children: [
             {
               title: "Item Stock List",
-              path: "#/admin/inventory/item-stock-list",
+              // path: "/admin/inventory/item-stock-list",
             },
-            { title: "Issued Items", path: "#/admin/inventory/issued-items" },
+            {
+              title: "Issued Items",
+              // path: "/admin/inventory/issued-items"
+            },
           ],
         },
         {
@@ -239,34 +314,40 @@ export default function AdminSideBar({
           children: [
             {
               title: "Leave Requests",
-              path: "#/admin/human-resources/leave-requests",
+              // path: "/admin/human-resources/leave-requests",
             },
             {
               title: "Leave Balance",
-              path: "#/admin/human-resources/leave-balance",
+              // path: "/admin/human-resources/leave-balance",
             },
             {
               title: "Leave Types",
-              path: "#/admin/human-resources/leave-types",
+              // path: "/admin/human-resources/leave-types",
             },
-            { title: "Holidays", path: "#/admin/human-resources/holidays" },
+            {
+              title: "Holidays",
+              // path: "/admin/human-resources/holidays"
+            },
             {
               title: "Today's Attendance",
-              path: "#/admin/human-resources/todays-attendance",
+              // path: "/admin/human-resources/todays-attendance",
             },
             {
               title: "Employee Attendance",
-              path: "#/admin/human-resources/emp-attendance",
+              // path: "/admin/human-resources/emp-attendance",
             },
             {
               title: "Attendance Sheet",
-              path: "#/admin/human-resources/attendance-sheet",
+              // path: "/admin/human-resources/attendance-sheet",
             },
             {
               title: "Employee Salary",
-              path: "#/admin/human-resources/employee-salary",
+              // path: "/admin/human-resources/employee-salary",
             },
-            { title: "Payslip", path: "#/admin/human-resources/payslip" },
+            {
+              title: "Payslip",
+              // path: "/admin/human-resources/payslip"
+            },
           ],
         },
         {
@@ -275,13 +356,19 @@ export default function AdminSideBar({
           children: [
             {
               title: "Patient Insurance",
-              path: "#/admin/insurance/patient-insurance",
+              // path: "/admin/insurance/patient-insurance",
             },
-            { title: "New Claim", path: "#/admin/insurance/new-claim" },
-            { title: "Claim Status", path: "#/admin/insurance/claim-status" },
+            {
+              title: "New Claim",
+              // path: "/admin/insurance/new-claim"
+            },
+            {
+              title: "Claim Status",
+              // path: "/admin/insurance/claim-status"
+            },
             {
               title: "Insurance Provider",
-              path: "#/admin/insurance/insurance-provider",
+              // path: "/admin/insurance/insurance-provider",
             },
           ],
         },
@@ -408,40 +495,40 @@ ${
                           </div>
                         </button>
 
-                        {openDropdowns.includes(item.title) && (
-                          <ul className="ml-6 mt-1 mb-2">
-                            {item.children.map((child, i) => {
-                              const isActive = activeChild === child.path;
-                              return (
-                                <li key={i} className="relative">
-                                  <Link
-                                    href={child.path}
-                                    onClick={() => setActiveChild(child.path)}
-                                    className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
-    ${
-      isActive
-        ? shouldUseWhiteTheme
-          ? "text-white bg-[#2D3748]"
-          : "text-black bg-[#f0f3fb]"
-        : shouldUseWhiteTheme
-        ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
-        : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
-    }`}
-                                  >
-                                    <span
-                                      className={`text-base transition-opacity ${
-                                        isActive ? "opacity-100" : "opacity-0"
-                                      }`}
-                                    >
-                                      ›
-                                    </span>
-                                    <span>{child.title}</span>
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
+                     {openDropdowns.includes(item.title) && (
+  <ul className="ml-6 mt-1 mb-2">
+    {item.children.map((child: any, i) => {
+      const isActive = activeChild === child.path;
+      return (
+        <li key={i} className="relative">
+          <Link
+            href={child.path || "#"}
+            onClick={() => child.path && setActiveChild(child.path)}
+            className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
+              ${
+                isActive
+                  ? shouldUseWhiteTheme
+                    ? "text-white bg-[#2D3748]"
+                    : "text-black bg-[#f0f3fb]"
+                  : shouldUseWhiteTheme
+                  ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+                  : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+              }`}
+          >
+            <span
+              className={`text-base transition-opacity ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              ›
+            </span>
+            <span>{child.title}</span>
+          </Link>
+        </li>
+      );
+    })}
+  </ul>
+)}
                       </>
                     ) : (
                       <Link
@@ -487,7 +574,7 @@ ${
               <Link
                 className="relative flex items-center justify-center overflow-hidden text-white text-[14px] leading-8 cursor-pointer
                   p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out bg-[#f44336] hover:bg-[#ea1c0d]"
-                href="#/logout"
+                href="/logout"
               >
                 <LogOut size={18} strokeWidth={1.8} />
                 {shouldExpand && <span className="ml-3">Logout</span>}
