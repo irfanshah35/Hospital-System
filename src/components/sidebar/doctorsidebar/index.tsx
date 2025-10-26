@@ -58,7 +58,7 @@ export default function DoctorSideBar({
     {
       title: "Settings",
       icon: Settings,
-      path: "#/doctor/settings",
+      path: "/doctor/settings",
     },
     {
       title: "Chat",
