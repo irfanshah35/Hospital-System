@@ -24,7 +24,7 @@ export default function DoctorSideBar({
   isHovered,
   setIsHovered,
 }: DoctorSideBarProps) {
-  const [activePath, setActivePath] = useState("#/doctor/dashboard");
+  const [activePath, setActivePath] = useState("/doctor/dashboard");
   const { sidebarTheme, websiteTheme } = useThemeStore();
 
   // Only use hover state when sidebar is collapsed
@@ -38,32 +38,32 @@ export default function DoctorSideBar({
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      path: "#/doctor/dashboard",
+      path: "/doctor/dashboard",
     },
     {
       title: "Appointments",
       icon: ClipboardList,
-      path: "#/doctor/appointments",
+      // path: "#/doctor/appointments",
     },
     {
       title: "Doctors",
       icon: UserCog,
-      path: "#/doctor/doctors",
+      // path: "#/doctor/doctors",
     },
     {
       title: "Patients",
       icon: User,
-      path: "#/doctor/patients",
+      // path: "#/doctor/patients",
     },
     {
       title: "Settings",
       icon: Settings,
-      path: "/doctor/settings",
+      // path: "/doctor/settings",
     },
     {
       title: "Chat",
       icon: MessageSquare,
-      path: "#/doctor/chat",
+      // path: "#/doctor/chat",
     },
   ];
 
@@ -147,8 +147,8 @@ export default function DoctorSideBar({
                         ? "hover:bg-[#2D3748]"
                         : "hover:bg-[#f0f3fb]"
                     }`}
-                    href={item.path}
-                    onClick={() => setActivePath(item.path)}
+                    href={item.path || "#"}
+                    onClick={() => item.path && setActivePath(item.path)}
                   >
                     <item.icon
                       size={18}
