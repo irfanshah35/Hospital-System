@@ -13,6 +13,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { useThemeStore } from "@/store/store";
 
 interface SideBarProps {
   isCollapsed: boolean;
@@ -26,10 +27,14 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
   const [activeChild, setActiveChild] = useState(
     "#/patient/appointments/upcoming"
   );
+  const { sidebarTheme, websiteTheme } = useThemeStore();
 
   // Determine if sidebar should be shown as expanded
   // Only use hover state when sidebar is collapsed
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
+
+  // Check if we should use white text/icons (when sidebar is dark OR website is dark)
+  const shouldUseWhiteTheme = sidebarTheme === "dark" || websiteTheme === "dark";
 
   const sidebarMenu = [
     {
@@ -87,7 +92,9 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
       <aside
         className={`${
           shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] bg-white z-[9999] group transition-all duration-300`}
+        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${
+          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+        } z-[9999] group transition-all duration-300`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -114,7 +121,7 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                     />
                   </div>
                 </div>
-                <div className="text-center text-[#060606]">
+                <div className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"}`}>
                   <div className="text-[14px] font-[roboto] font-medium">
                     Cara Stevens{" "}
                   </div>
@@ -125,7 +132,9 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
 
             {shouldExpand && (
               <li>
-                <div className="mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase">
+                <div className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
+                  shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                }`}>
                   Main
                 </div>
               </li>
@@ -138,17 +147,31 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                   <>
                     <button
                       onClick={() => setOpenDropdown(!openDropdown)}
-                      className={`relative flex items-center justify-between overflow-hidden pe-6 text-black text-[14px] leading-8 cursor-pointer
-  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out hover:bg-[#f0f3fb] w-full`}
+                      className={`relative flex items-center justify-between overflow-hidden pe-6 ${
+                        shouldUseWhiteTheme ? "text-white" : "text-black"
+                      } text-[14px] leading-8 cursor-pointer
+  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
+    shouldUseWhiteTheme ? "hover:bg-[#2D3748]" : "hover:bg-[#f0f3fb]"
+  } w-full`}
                     >
                       <div className="flex items-center gap-2">
-                        <item.icon size={18} strokeWidth={1.8} />
+                        <item.icon 
+                          size={18} 
+                          strokeWidth={1.8} 
+                          className={shouldUseWhiteTheme ? "text-white" : "text-black"}
+                        />
                         <span>{item.title}</span>
                       </div>
                       {openDropdown ? (
-                        <Minus size={16} className="text-gray-600" />
+                        <Minus 
+                          size={16} 
+                          className={shouldUseWhiteTheme ? "text-white" : "text-gray-600"} 
+                        />
                       ) : (
-                        <Plus size={16} className="text-gray-600" />
+                        <Plus 
+                          size={16} 
+                          className={shouldUseWhiteTheme ? "text-white" : "text-gray-600"} 
+                        />
                       )}
                     </button>
 
@@ -164,7 +187,9 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                                 className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${
                                   isActive
                                     ? "text-[#2196f3]"
-                                    : "text-gray-700 hover:text-[#2196f3]"
+                                    : shouldUseWhiteTheme 
+                                      ? "text-white hover:text-[#2196f3]" 
+                                      : "text-gray-700 hover:text-[#2196f3]"
                                 }`}
                               >
                                 <span
@@ -188,15 +213,23 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                       shouldExpand
                         ? "justify-content-center"
                         : "justify-center px-0"
-                    } overflow-hidden text-black text-[14px] leading-8 cursor-pointer
+                    } overflow-hidden ${
+                      shouldUseWhiteTheme ? "text-white" : "text-black"
+                    } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${
                       item.title === "Logout"
                         ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
-                        : "hover:bg-[#f0f3fb]"
+                        : shouldUseWhiteTheme 
+                          ? "hover:bg-[#2D3748]" 
+                          : "hover:bg-[#f0f3fb]"
                     }`}
-                    href={item.path || item.children?.[0]?.path || "#"}
+                    href={item.path || item.children?.[0]?. path || "#"}
                   >
-                    <item.icon size={18} strokeWidth={1.8} />
+                    <item.icon 
+                      size={18} 
+                      strokeWidth={1.8} 
+                      className={shouldUseWhiteTheme ? "text-white" : "text-black"}
+                    />
                     {shouldExpand && <span className="ml-3">{item.title}</span>}
                   </Link>
                 )}

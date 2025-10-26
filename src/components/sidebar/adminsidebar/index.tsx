@@ -38,10 +38,15 @@ export default function AdminSideBar({
 }: AdminSideBarProps) {
   const [openDropdowns, setOpenDropdowns] = useState<string[]>(["Dashboard"]);
   const [activeChild, setActiveChild] = useState("#/admin/dashboard/main");
+  const { sidebarTheme, websiteTheme } = useThemeStore();
 
   // Only use hover state when sidebar is collapsed
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
-  const { sidebarTheme } = useThemeStore();
+
+  // Check if we should use white text/icons (when sidebar is dark OR website is dark)
+  const shouldUseWhiteTheme =
+    sidebarTheme === "dark" || websiteTheme === "dark";
+
   const toggleDropdown = (title: string) => {
     if (openDropdowns.includes(title)) {
       setOpenDropdowns(openDropdowns.filter((item) => item !== title));
@@ -287,8 +292,11 @@ export default function AdminSideBar({
   return (
     <>
       <aside
-        className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
-          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-56px)] fixed top-[56px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1A202E] text-white" : "bg-white text-gray-800"}`}
+        className={`${
+          shouldExpand ? "w-[260px]" : "w-[60px]"
+        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-56px)] fixed top-[56px] z-[9999] group transition-all duration-300    ${
+          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+        }`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -315,8 +323,11 @@ export default function AdminSideBar({
                     />
                   </div>
                 </div>
-                <div className={`text-center ${sidebarTheme === "dark" ? "text-gray-200" : "text-[#060606]"
-                  }`}>
+                <div
+                  className={`text-center ${
+                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                  }`}
+                >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Sarah Smith{" "}
                   </div>
@@ -329,8 +340,11 @@ export default function AdminSideBar({
               <React.Fragment key={sectionIndex}>
                 {shouldExpand && (
                   <li>
-                    <div className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${sidebarTheme === "dark" ? "text-[#9babf1]" : "text-black"
-                      }`}>
+                    <div
+                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
+                        shouldUseWhiteTheme ? "text-white" : "text-black"
+                      }`}
+                    >
                       {section.section}
                     </div>
                   </li>
@@ -344,20 +358,30 @@ export default function AdminSideBar({
                           onClick={() => toggleDropdown(item.title)}
                           className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
 p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
-${sidebarTheme === "dark"
-                              ? "text-[#b2b6bf]  hover:bg-[#151A25]"
-                              : "text-gray-800 hover:bg-[#f0f3fb]"
-                            } w-full`}
+${
+  shouldUseWhiteTheme
+    ? "text-white hover:bg-[#2D3748]"
+    : "text-gray-800 hover:bg-[#f0f3fb]"
+} w-full`}
                         >
                           <div className="flex items-center gap-2">
-                            <item.icon size={18} strokeWidth={1.8} />
+                            <item.icon
+                              size={18}
+                              strokeWidth={1.8}
+                              className={
+                                shouldUseWhiteTheme
+                                  ? "text-white"
+                                  : "text-gray-800"
+                              }
+                            />
                             <span>{item.title}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             {(item as any).badge && (
                               <span
-                                className={`${(item as any).badge.color
-                                  } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                                className={`${
+                                  (item as any).badge.color
+                                } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                               >
                                 {(item as any).badge.text}
                               </span>
@@ -365,17 +389,22 @@ ${sidebarTheme === "dark"
                             {openDropdowns.includes(item.title) ? (
                               <Minus
                                 size={16}
-                                className={`${sidebarTheme === "dark" ? "text-gray-200" : "text-gray-600"
-                                  }`}
+                                className={
+                                  shouldUseWhiteTheme
+                                    ? "text-white"
+                                    : "text-gray-600"
+                                }
                               />
                             ) : (
                               <Plus
                                 size={16}
-                                className={`${sidebarTheme === "dark" ? "text-gray-200" : "text-gray-600"
-                                  }`}
+                                className={
+                                  shouldUseWhiteTheme
+                                    ? "text-white"
+                                    : "text-gray-600"
+                                }
                               />
                             )}
-
                           </div>
                         </button>
 
@@ -389,24 +418,25 @@ ${sidebarTheme === "dark"
                                     href={child.path}
                                     onClick={() => setActiveChild(child.path)}
                                     className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
-    ${isActive
-                                        ? sidebarTheme === "dark"
-                                          ? "text-[white] hover:bg-[#151A25]"
-                                          : "text-black hover:text-blue-500 hover:bg-[#F5F7FA]"
-                                        : sidebarTheme === "dark"
-                                          ? "text-gray-300 hover:bg-[#151A25] hover:text-white"
-                                          : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
-                                      }`}
+    ${
+      isActive
+        ? shouldUseWhiteTheme
+          ? "text-white bg-[#2D3748]"
+          : "text-black bg-[#f0f3fb]"
+        : shouldUseWhiteTheme
+        ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+        : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+    }`}
                                   >
                                     <span
-                                      className={`text-base transition-opacity ${isActive ? "opacity-100" : "opacity-0"
-                                        }`}
+                                      className={`text-base transition-opacity ${
+                                        isActive ? "opacity-100" : "opacity-0"
+                                      }`}
                                     >
                                       ›
                                     </span>
                                     <span>{child.title}</span>
                                   </Link>
-
                                 </li>
                               );
                             })}
@@ -415,23 +445,33 @@ ${sidebarTheme === "dark"
                       </>
                     ) : (
                       <Link
-                        className={`relative flex items-center ${shouldExpand
-                          ? "justify-between"
-                          : "justify-center px-0"
-                          } overflow-hidden text-black text-[14px] leading-8 cursor-pointer
-                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out hover:bg-[#f0f3fb]`}
+                        className={`relative flex items-center ${
+                          shouldExpand
+                            ? "justify-between"
+                            : "justify-center px-0"
+                        } overflow-hidden text-[14px] leading-8 cursor-pointer
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
+                            shouldUseWhiteTheme
+                              ? "text-white hover:bg-[#2D3748]"
+                              : "text-black hover:bg-[#f0f3fb]"
+                          }`}
                         href={(item as any).path || "#"}
                       >
-                        <div className={`flex items-center  gap-2 ${
-                          sidebarTheme === "dark" ? 'text-[#b2b6bf]' : ''
-                        }`}>
-                          <item.icon size={18} strokeWidth={1.8} />
+                        <div className="flex items-center gap-2">
+                          <item.icon
+                            size={18}
+                            strokeWidth={1.8}
+                            className={
+                              shouldUseWhiteTheme ? "text-white" : "text-black"
+                            }
+                          />
                           {shouldExpand && <span>{item.title}</span>}
                         </div>
                         {shouldExpand && (item as any).badge && (
                           <span
-                            className={`${(item as any).badge.color
-                              } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                            className={`${
+                              (item as any).badge.color
+                            } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                           >
                             {(item as any).badge.text}
                           </span>
