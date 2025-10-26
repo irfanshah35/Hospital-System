@@ -1,18 +1,27 @@
 "use client"
 import { Home } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function DoctorSetting() {
     const [formData, setFormData] = useState({
         username: "",
-        currentPassword: "",
+        currentPassword: "123456789",
         newPassword: "",
     });
 
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+            setFormData((prev) => ({
+                ...prev,
+                username: storedUsername,
+            }));
+        }
+    }, []);
+
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: any) => {
