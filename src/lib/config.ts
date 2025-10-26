@@ -1,0 +1,7 @@
+export const CONFIG = {
+  backendURL: "https://nsadouyjncgafsycmrtq.supabase.co",
+  backendPublicKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zYWRvdXlqbmNnYWZzeWNtcnRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NTAyMDgsImV4cCI6MjA3NzAyNjIwOH0.k3NjQfW-vz76CFYnsufV42SWtXPb92d1s3vZKbK54mA",
+  backendServiceKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zYWRvdXlqbmNnYWZzeWNtcnRxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTQ1MDIwOCwiZXhwIjoyMDc3MDI2MjA4fQ.yFMPbNU70oU7UE1NUWzAp5MNuMe_gWngs_XuqnNM3Mg",
+};

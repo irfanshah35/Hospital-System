@@ -22,7 +22,12 @@ interface SideBarProps {
   setIsHovered: (value: boolean) => void;
 }
 
-export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsHovered }: SideBarProps) {
+export default function SideBar({
+  isCollapsed,
+  setIsCollapsed,
+  isHovered,
+  setIsHovered,
+}: SideBarProps) {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [activeChild, setActiveChild] = useState(
     "#/patient/appointments/upcoming"
@@ -34,56 +39,57 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
 
   // Check if we should use white text/icons (when sidebar is dark OR website is dark)
-  const shouldUseWhiteTheme = sidebarTheme === "dark" || websiteTheme === "dark";
+  const shouldUseWhiteTheme =
+    sidebarTheme === "dark" || websiteTheme === "dark";
 
   const sidebarMenu = [
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      path: "#/patient/dashboard",
+      path: "/patient/dashboard",
     },
     {
       title: "Appointments",
       icon: ClipboardList,
       children: [
-        { title: "Book Appointment", path: "#/patient/appointments/book" },
-        { title: "Today Appointments", path: "#/patient/appointments/today" },
+        { title: "Book Appointment", path: "" },
+        { title: "Today Appointments", path: "" },
         {
           title: "Upcoming Appointments",
-          path: "#/patient/appointments/upcoming",
+          path: "",
         },
-        { title: "Past Appointments", path: "#/patient/appointments/past" },
+        { title: "Past Appointments", path: "" },
       ],
     },
     {
       title: "Prescriptions",
       icon: FileText,
-      path: "#/patient/prescriptions",
+      path: "",
     },
     {
       title: "Medical Record",
       icon: FileArchive,
-      path: "#/patient/records",
+      path: "",
     },
     {
       title: "Billing",
       icon: Receipt,
-      path: "#/patient/billing",
+      path: "",
     },
     {
       title: "Chat",
       icon: MessageSquare,
-      path: "#/apps/chat",
+      path: "",
     },
     {
       title: "Settings",
       icon: Settings,
-      path: "#/patient/settings",
+      path: "",
     },
     {
       title: "Logout",
       icon: LogOut,
-      path: "#/logout",
+      path: "",
     },
   ];
 
@@ -121,7 +127,11 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                     />
                   </div>
                 </div>
-                <div className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"}`}>
+                <div
+                  className={`text-center ${
+                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                  }`}
+                >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Cara Stevens{" "}
                   </div>
@@ -132,9 +142,11 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
 
             {shouldExpand && (
               <li>
-                <div className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                  shouldUseWhiteTheme ? "text-white" : "text-gray-700"
-                }`}>
+                <div
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
+                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                  }`}
+                >
                   Main
                 </div>
               </li>
@@ -155,22 +167,28 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
   } w-full`}
                     >
                       <div className="flex items-center gap-2">
-                        <item.icon 
-                          size={18} 
-                          strokeWidth={1.8} 
-                          className={shouldUseWhiteTheme ? "text-white" : "text-black"}
+                        <item.icon
+                          size={18}
+                          strokeWidth={1.8}
+                          className={
+                            shouldUseWhiteTheme ? "text-white" : "text-black"
+                          }
                         />
                         <span>{item.title}</span>
                       </div>
                       {openDropdown ? (
-                        <Minus 
-                          size={16} 
-                          className={shouldUseWhiteTheme ? "text-white" : "text-gray-600"} 
+                        <Minus
+                          size={16}
+                          className={
+                            shouldUseWhiteTheme ? "text-white" : "text-gray-600"
+                          }
                         />
                       ) : (
-                        <Plus 
-                          size={16} 
-                          className={shouldUseWhiteTheme ? "text-white" : "text-gray-600"} 
+                        <Plus
+                          size={16}
+                          className={
+                            shouldUseWhiteTheme ? "text-white" : "text-gray-600"
+                          }
                         />
                       )}
                     </button>
@@ -187,9 +205,9 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                                 className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${
                                   isActive
                                     ? "text-[#2196f3]"
-                                    : shouldUseWhiteTheme 
-                                      ? "text-white hover:text-[#2196f3]" 
-                                      : "text-gray-700 hover:text-[#2196f3]"
+                                    : shouldUseWhiteTheme
+                                    ? "text-white hover:text-[#2196f3]"
+                                    : "text-gray-700 hover:text-[#2196f3]"
                                 }`}
                               >
                                 <span
@@ -219,16 +237,18 @@ export default function SideBar({ isCollapsed, setIsCollapsed, isHovered, setIsH
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${
                       item.title === "Logout"
                         ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
-                        : shouldUseWhiteTheme 
-                          ? "hover:bg-[#2D3748]" 
-                          : "hover:bg-[#f0f3fb]"
+                        : shouldUseWhiteTheme
+                        ? "hover:bg-[#2D3748]"
+                        : "hover:bg-[#f0f3fb]"
                     }`}
-                    href={item.path || item.children?.[0]?. path || "#"}
+                    href={item.path || item.children?.[0]?.path || "#"}
                   >
-                    <item.icon 
-                      size={18} 
-                      strokeWidth={1.8} 
-                      className={shouldUseWhiteTheme ? "text-white" : "text-black"}
+                    <item.icon
+                      size={18}
+                      strokeWidth={1.8}
+                      className={
+                        shouldUseWhiteTheme ? "text-white" : "text-black"
+                      }
                     />
                     {shouldExpand && <span className="ml-3">{item.title}</span>}
                   </Link>

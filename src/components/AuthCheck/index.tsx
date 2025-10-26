@@ -16,28 +16,26 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
       setIsAuthenticated(isAuth);
       setIsLoading(false);
 
-      if (!isAuth && pathname !== "/login") {
-        router.replace("/login");
-      } else if (isAuth && pathname === "/login") {
+      // If not authenticated and not on login page (which is now "/")
+      if (!isAuth && pathname !== "/") {
         router.replace("/");
+      } 
+      // If authenticated and on login page ("/")
+      else if (isAuth && pathname === "/") {
+        router.replace("/admin/dashboard");
       }
     };
 
     checkAuth();
   }, [pathname, router]);
 
-  if (isLoading) {
-    return (
-      <></>
-    );
-  }
 
   // Prevent rendering wrong content during redirect
-  if (!isAuthenticated && pathname !== "/login") {
+  if (!isAuthenticated && pathname !== "/") {
     return null;
   }
 
-  if (isAuthenticated && pathname === "/login") {
+  if (isAuthenticated && pathname === "/") {
     return null;
   }
 

@@ -60,7 +60,7 @@ export default function Header({
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPicture");
     localStorage.removeItem("loginMethod");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   // Language change function
