@@ -70,19 +70,19 @@ export default function AdminSideBar({
           children: [
             {
               title: "Appointment Calendar",
-              // path: "/admin/appointment/appointment-calendar",
+              path: "/admin/appointment/appointment-calendar",
             },
             {
               title: "View Appointment",
-              // path: "/admin/appointment/view-appointment",
+              path: "/admin/appointment/view-appointment",
             },
             {
               title: "Book Appointment",
-              // path: "/admin/appointment/book-appointment",
+              path: "/admin/appointment/book-appointment",
             },
             {
               title: "Edit Appointment",
-              // path: "/admin/appointment/edit-appointment",
+              path: "/admin/appointment/edit-appointment",
             },
           ],
         },
