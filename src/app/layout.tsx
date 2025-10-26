@@ -44,6 +44,10 @@ export default function RootLayout({
     }
   }, [pathname]);
 
+  useEffect(()=>{
+    getAll()
+  },[])
+
   const renderSidebar = () => {
     switch (userRole) {
       case "admin":
