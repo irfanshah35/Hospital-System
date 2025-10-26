@@ -144,7 +144,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "All Patients",
-              // path: "/admin/patients/all-patients"
+              path: "/admin/all-patient"
             },
             {
               title: "Add Patient",
