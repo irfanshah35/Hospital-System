@@ -246,7 +246,7 @@ export default function Header({
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-6 h-6 relative left-[2px] top-[1px]"
                 viewBox="0 0 24 24"
-                fill="currentColor"
+                fill="var(--tableHeadertext)"
               >
                 <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
               </svg>
@@ -268,7 +268,7 @@ export default function Header({
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-[24px] h-6"
-                  fill="currentColor"
+                  fill="var(--tableHeadertext)"
                 >
                   <path d="M4 4h6v2H6v4H4V4zm14 0v6h-2V6h-4V4h6zm-6 16h6v-6h-2v4h-4v2zM4 20h6v-2H6v-4H4v6z" />
                 </svg>
@@ -286,7 +286,7 @@ export default function Header({
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="currentColor"
+                    stroke="var(--tableHeadertext)"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -369,7 +369,7 @@ export default function Header({
                 >
                   <span
                     className={`text-sm font-medium ${getTextColorClass()} truncate`}
-                  >
+                  style={{ color: 'var(--tableHeadertext)' }}>
                     {userData.name}
                   </span>
                   <img
