@@ -22,6 +22,7 @@
   --text-secondary: #6c757d;
   --border-color: #dee2e6;
   --tableHeaderBg: #DAE1F3;
+  --tableHeadertext: #44474e;
 }
 
 /* Dark Theme */
@@ -34,6 +35,7 @@
   --text-secondary: #cbd5e1;
   --border-color: #334155;
   --tableHeaderBg: #020910;
+  --tableHeadertext: white;
 }
 
 @media (prefers-color-scheme: dark) {
