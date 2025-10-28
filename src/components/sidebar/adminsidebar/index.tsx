@@ -126,7 +126,7 @@ export default function AdminSideBar({
             },
             {
               title: "Add Staff",
-              // path: "/admin/staff/add-staff"
+              path: "/admin/staff/add-staff"
             },
             {
               title: "Edit Staff",
@@ -148,7 +148,7 @@ export default function AdminSideBar({
             },
             {
               title: "Add Patient",
-              // path: "/admin/patients/add-patient"
+              path: "/admin/add-patient"
             },
             {
               title: "Edit Patient",
