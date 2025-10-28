@@ -81,38 +81,38 @@ export default function BookAppointmentComponent() {
     const formData = new FormData(e.currentTarget);
     
     // Extract only the specified fields for payload
-    const payloadData = {
-      firstName: formData.get("firstName") as string,
-      middleName: formData.get("middleName") as string,
-      lastName: formData.get("lastName") as string,
-      gender: formData.get("gender") as string,
-      dateOfBirth: formData.get("dateOfBirth") as string,
-      bloodGroup: formData.get("bloodGroup") as string,
-      mobile: formData.get("mobile") as string,
-      email: formData.get("email") as string,
-      patientId: formData.get("patientId") as string,
-      address: formData.get("address") as string,
-      insuranceProvider: formData.get("insuranceProvider") as string,
-      policyNumber: formData.get("policyNumber") as string,
-      groupNumber: formData.get("groupNumber") as string,
-      insuranceHolderName: formData.get("insuranceHolderName") as string,
-      relationshipToPatient: formData.get("relationshipToPatient") as string,
-      existingConditions: formData.get("existingConditions") as string,
-      currentMedications: formData.get("currentMedications") as string,
-      allergies: formData.get("allergies") as string,
-      previousSurgeries: formData.get("previousSurgeries") as string,
-      contactName: formData.get("contactName") as string,
-      contactRelationship: formData.get("contactRelationship") as string,
-      contactPhone: formData.get("contactPhone") as string,
-      department: formData.get("department") as string,
-      consultingDoctor: formData.get("consultingDoctor") as string,
-      appointmentType: formData.get("appointmentType") as string,
-      appointmentDate: formData.get("appointmentDate") as string,
-      appointmentTime: selectedTime,
-      reasonForVisit: formData.get("reasonForVisit") as string,
-      symptoms: formData.get("symptoms") as string,
-      additionalNotes: formData.get("additionalNotes") as string,
-    };
+   const payloadData = {
+  firstname: formData.get("firstName") as string,
+  middlename: formData.get("middleName") as string,
+  lastname: formData.get("lastName") as string,
+  gender: formData.get("gender") as string,
+  dateofbirth: formData.get("dateOfBirth") as string,
+  bloodgroup: formData.get("bloodGroup") as string,
+  mobile: formData.get("mobile") as string,
+  email: formData.get("email") as string,
+  patientid: formData.get("patientId") as string,
+  address: formData.get("address") as string,
+  insuranceprovider: formData.get("insuranceProvider") as string,
+  policynumber: formData.get("policyNumber") as string,
+  groupnumber: formData.get("groupNumber") as string,
+  insuranceholdername: formData.get("insuranceHolderName") as string,
+  relationshiptopatient: formData.get("relationshipToPatient") as string,
+  existingconditions: formData.get("existingConditions") as string,
+  currentmedications: formData.get("currentMedications") as string,
+  allergies: formData.get("allergies") as string,
+  previoussurgeries: formData.get("previousSurgeries") as string,
+  contactname: formData.get("contactName") as string,
+  contactrelationship: formData.get("contactRelationship") as string,
+  contactphone: formData.get("contactPhone") as string,
+  department: formData.get("department") as string,
+  consultingdoctor: formData.get("consultingDoctor") as string,
+  appointmenttype: formData.get("appointmentType") as string,
+  appointmentdate: formData.get("appointmentDate") as string,
+  appointmenttime: selectedTime,
+  reasonforvisit: formData.get("reasonForVisit") as string,
+  symptoms: formData.get("symptoms") as string,
+  additionalnotes: formData.get("additionalNotes") as string,
+};
 
     // Log extra fields that won't be sent in payload but exist in UI
     const allFormData = Object.fromEntries(formData.entries());
@@ -122,22 +122,22 @@ export default function BookAppointmentComponent() {
     }
 
     const {
-      firstName,
+      firstname,
       gender,
-      dateOfBirth,
+      dateofbirth,
       mobile,
       email,
       department,
-      consultingDoctor,
-      appointmentType,
-      appointmentDate,
-      reasonForVisit
+      consultingdoctor,
+      appointmenttype,
+      appointmentdate,
+      reasonforvisit
     } = payloadData;
 
     const errors: FormErrors = {};
 
     // Validation
-    if (!firstName || firstName.trim().length === 0) {
+    if (!firstname || firstname.trim().length === 0) {
       errors.firstName = "First name is required";
     }
 
@@ -145,7 +145,7 @@ export default function BookAppointmentComponent() {
       errors.gender = "Gender is required";
     }
 
-    if (!dateOfBirth) {
+    if (!dateofbirth) {
       errors.dateOfBirth = "Date of birth is required";
     }
 
@@ -165,19 +165,19 @@ export default function BookAppointmentComponent() {
       errors.department = "Department is required";
     }
 
-    if (!consultingDoctor) {
+    if (!consultingdoctor) {
       errors.consultingDoctor = "Consulting doctor is required";
     }
 
-    if (!appointmentType) {
+    if (!appointmenttype) {
       errors.appointmentType = "Appointment type is required";
     }
 
-    if (!appointmentDate) {
+    if (!appointmentdate) {
       errors.appointmentDate = "Appointment date is required";
     }
 
-    if (!reasonForVisit || reasonForVisit.trim().length === 0) {
+    if (!reasonforvisit || reasonforvisit.trim().length === 0) {
       errors.reasonForVisit = "Reason for visit is required";
     }
 
@@ -205,9 +205,7 @@ export default function BookAppointmentComponent() {
 
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to create appointment");
-      }
+     
 
       // Success
       setFormState({
@@ -256,7 +254,7 @@ export default function BookAppointmentComponent() {
       setFormState({
         success: false,
         errors: {},
-        message: "❌ Failed to book appointment. Please try again.",
+        message: "",
       });
     } finally {
       setIsPending(false);
@@ -1539,9 +1537,7 @@ export default function BookAppointmentComponent() {
                 className="flex items-center gap-2 px-6 py-2.5 border border-gray-500 rounded-md text-blue-600 hover:bg-blue-50 transition"
                 disabled={isPending}
                 onClick={() => {
-                  if (
-                    window.confirm("Are you sure you want to reset the form?")
-                  ) {
+                  {
                     const form = document.querySelector("form");
                     if (form) form.reset();
                     setFieldStates({

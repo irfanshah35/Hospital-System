@@ -5,26 +5,29 @@ import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Appointment {
-  id: number;
-  first_name: string;
-  last_name: string;
-  gender: "Male" | "Female";
+  id: string;
+  firstname: string;
+  lastname: string;
+  gender: "Male" | "Female" | "Other";
   mobile: string;
   email: string;
-  assigned_doctor: string;
+  consultingdoctor: string;
+  appointmentdate: string;
+  appointmenttime: string;
   created_at: string;
-  // Add more if needed
 }
 
 export default function AllPatient() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Fetch data from API
   const fetchAppointments = async () => {
@@ -67,11 +70,11 @@ export default function AllPatient() {
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       appointments.map((item) => ({
-        Name: `${item.first_name} ${item.last_name}`,
-        Doctor: item.assigned_doctor || "-",
+        Name: `${item.firstname} ${item.lastname}`,
+        Doctor: item.consultingdoctor || "-",
         Gender: item.gender,
-        Date: item.created_at || "-",
-        Time: "-",
+        Date: item.appointmentdate || "-",
+        Time: item.appointmenttime || "-",
         Mobile: item.mobile,
         Email: item.email,
         "Appointment Status": "Confirmed",
@@ -86,18 +89,55 @@ export default function AllPatient() {
     saveAs(blob, "appointments.xlsx");
   };
 
-  const removeData = () => {
+  const removeData = async (id: string) => {
+   {
+      try {
+        const response = await fetch(`/api/appointments/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setAppointments(prev => prev.filter(p => p.id !== id));
+          setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+        } else {
+          alert("Failed to delete appointment");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("Error deleting appointment");
+      }
+    }
+  };
+
+  const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) {
       alert("Please select at least one appointment to delete.");
       return;
     }
     if (window.confirm(`Delete ${selectedIds.length} appointment(s)?`)) {
-      setAppointments(prev => prev.filter(p => !selectedIds.includes(p.id)));
-      setSelectedIds([]);
+      try {
+        for (const id of selectedIds) {
+          const response = await fetch(`/api/appointments/${id}`, {
+            method: "DELETE",
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to delete appointment ${id}`);
+          }
+        }
+        setAppointments(prev => prev.filter(p => !selectedIds.includes(p.id)));
+        setSelectedIds([]);
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("Error deleting appointments");
+      }
     }
   };
 
-  const handleCheckboxChange = (id: number) => {
+  const handleEdit = (id: string) => {
+    router.push(`/admin/appointment/edit-appointment?id=${id}`);
+  };
+
+  const handleCheckboxChange = (id: string) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
@@ -173,7 +213,7 @@ export default function AllPatient() {
                 <div className="flex items-center gap-1">
                   {selectedIds.length > 0 && (
                     <button
-                      onClick={removeData}
+                      onClick={handleDeleteSelected}
                       className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
                       title="Delete Selected"
                     >
@@ -279,27 +319,29 @@ export default function AllPatient() {
                                 <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
                                 <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
                                   <div className="text-sm font-medium">
-                                    {item.first_name} {item.last_name}
+                                    {item.firstname} {item.lastname}
                                   </div>
                                 </div>
                               </div>
                             </td>
 
-                            <td className="px-4 text-sm whitespace-nowrap">{item.assigned_doctor || "-"}</td>
+                            <td className="px-4 text-sm whitespace-nowrap">{item.consultingdoctor || "-"}</td>
 
                             <td className="px-4 whitespace-nowrap">
                               <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
+                                item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
+                                "bg-[#ffc10726] text-[#ffc107]"
                               }`}>
                                 {item.gender}
                               </span>
                             </td>
 
-                            <td className="px-4 text-sm">{item.created_at}</td>
+                            <td className="px-4 text-sm">{item.appointmentdate}</td>
                             <td className="px-4 text-sm">
                               <div className="flex items-center">
                                 <Clock className="w-4 h-4 text-[#6f42c1] mr-2" />
-                                <span>-</span>
+                                <span>{item.appointmenttime}</span>
                               </div>
                             </td>
 
@@ -327,10 +369,16 @@ export default function AllPatient() {
 
                             <td className="px-4 text-sm font-medium">
                               <div className="flex space-x-2">
-                                <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <button 
+                                  onClick={() => handleEdit(item.id)}
+                                  className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                >
                                   <Edit className="w-5 h-5" />
                                 </button>
-                                <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <button 
+                                  onClick={() => removeData(item.id)}
+                                  className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                >
                                   <Trash2 className="w-5 h-5" />
                                 </button>
                               </div>
