@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import React, { useState } from "react";
 import { Home, User } from "lucide-react";
 
@@ -9,6 +9,11 @@ interface FormErrors {
   dateOfBirth?: string;
   mobile?: string;
   email?: string;
+  department?: string;
+  consultingDoctor?: string;
+  appointmentType?: string;
+  appointmentDate?: string;
+  reasonForVisit?: string;
 }
 
 interface FormState {
@@ -74,16 +79,65 @@ export default function BookAppointmentComponent() {
     setIsPending(true);
 
     const formData = new FormData(e.currentTarget);
-    const firstName = formData.get("firstName") as string;
-    const gender = formData.get("gender") as string;
-    const dateOfBirth = formData.get("dateOfBirth") as string;
-    const mobile = formData.get("mobile") as string;
-    const email = formData.get("email") as string;
+    
+    // Extract only the specified fields for payload
+   const payloadData = {
+  firstname: formData.get("firstName") as string,
+  middlename: formData.get("middleName") as string,
+  lastname: formData.get("lastName") as string,
+  gender: formData.get("gender") as string,
+  dateofbirth: formData.get("dateOfBirth") as string,
+  bloodgroup: formData.get("bloodGroup") as string,
+  mobile: formData.get("mobile") as string,
+  email: formData.get("email") as string,
+  patientid: formData.get("patientId") as string,
+  address: formData.get("address") as string,
+  insuranceprovider: formData.get("insuranceProvider") as string,
+  policynumber: formData.get("policyNumber") as string,
+  groupnumber: formData.get("groupNumber") as string,
+  insuranceholdername: formData.get("insuranceHolderName") as string,
+  relationshiptopatient: formData.get("relationshipToPatient") as string,
+  existingconditions: formData.get("existingConditions") as string,
+  currentmedications: formData.get("currentMedications") as string,
+  allergies: formData.get("allergies") as string,
+  previoussurgeries: formData.get("previousSurgeries") as string,
+  contactname: formData.get("contactName") as string,
+  contactrelationship: formData.get("contactRelationship") as string,
+  contactphone: formData.get("contactPhone") as string,
+  department: formData.get("department") as string,
+  consultingdoctor: formData.get("consultingDoctor") as string,
+  appointmenttype: formData.get("appointmentType") as string,
+  appointmentdate: formData.get("appointmentDate") as string,
+  appointmenttime: selectedTime,
+  reasonforvisit: formData.get("reasonForVisit") as string,
+  symptoms: formData.get("symptoms") as string,
+  additionalnotes: formData.get("additionalNotes") as string,
+};
+
+    // Log extra fields that won't be sent in payload but exist in UI
+    const allFormData = Object.fromEntries(formData.entries());
+    const extraFields = Object.keys(allFormData).filter(key => !(key in payloadData));
+    if (extraFields.length > 0) {
+      console.log("Extra UI fields (not in payload):", extraFields);
+    }
+
+    const {
+      firstname,
+      gender,
+      dateofbirth,
+      mobile,
+      email,
+      department,
+      consultingdoctor,
+      appointmenttype,
+      appointmentdate,
+      reasonforvisit
+    } = payloadData;
 
     const errors: FormErrors = {};
 
     // Validation
-    if (!firstName || firstName.trim().length === 0) {
+    if (!firstname || firstname.trim().length === 0) {
       errors.firstName = "First name is required";
     }
 
@@ -91,7 +145,7 @@ export default function BookAppointmentComponent() {
       errors.gender = "Gender is required";
     }
 
-    if (!dateOfBirth) {
+    if (!dateofbirth) {
       errors.dateOfBirth = "Date of birth is required";
     }
 
@@ -107,7 +161,25 @@ export default function BookAppointmentComponent() {
       errors.email = "Invalid email format";
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    if (!department) {
+      errors.department = "Department is required";
+    }
+
+    if (!consultingdoctor) {
+      errors.consultingDoctor = "Consulting doctor is required";
+    }
+
+    if (!appointmenttype) {
+      errors.appointmentType = "Appointment type is required";
+    }
+
+    if (!appointmentdate) {
+      errors.appointmentDate = "Appointment date is required";
+    }
+
+    if (!reasonforvisit || reasonforvisit.trim().length === 0) {
+      errors.reasonForVisit = "Reason for visit is required";
+    }
 
     if (Object.keys(errors).length > 0) {
       setFormState({
@@ -119,26 +191,74 @@ export default function BookAppointmentComponent() {
       return;
     }
 
-    // Success
-    setFormState({
-      success: true,
-      errors: {},
-      message: "✅ Appointment booked successfully!",
-    });
-    setIsPending(false);
-    e.currentTarget.reset();
-    setFieldStates({
-      firstName: false,
-      middleName: false,
-      lastName: false,
-      gender: false,
-      dateOfBirth: false,
-      bloodGroup: false,
-      mobile: false,
-      email: false,
-      patientId: false,
-      address: false,
-    });
+    try {
+      // API call to create appointment with only specified fields
+      console.log("Sending payload to API:", payloadData);
+      
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payloadData),
+      });
+
+      const result = await response.json();
+
+     
+
+      // Success
+      setFormState({
+        success: true,
+        errors: {},
+        message: "✅ Appointment booked successfully!",
+      });
+      
+      // Reset form
+      e.currentTarget.reset();
+      setFieldStates({
+        firstName: false,
+        middleName: false,
+        lastName: false,
+        gender: false,
+        dateOfBirth: false,
+        bloodGroup: false,
+        mobile: false,
+        email: false,
+        patientId: false,
+        address: false,
+        insuranceProvider: false,
+        policyNumber: false,
+        groupNumber: false,
+        insuranceHolderName: false,
+        relationshipToPatient: false,
+        existingConditions: false,
+        currentMedications: false,
+        allergies: false,
+        previousSurgeries: false,
+        contactName: false,
+        contactRelationship: false,
+        contactPhone: false,
+        department: false,
+        consultingDoctor: false,
+        appointmentType: false,
+        appointmentDate: false,
+        reasonForVisit: false,
+        symptoms: false,
+        additionalNotes: false,
+      });
+      setSelectedTime("06:00 PM");
+
+    } catch (error) {
+      console.error("Appointment creation error:", error);
+      setFormState({
+        success: false,
+        errors: {},
+        message: "",
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -175,7 +295,7 @@ export default function BookAppointmentComponent() {
             </div>
           )}
 
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Patient Information Section */}
             <div>
               <div className="flex items-center mb-4">
@@ -458,7 +578,7 @@ export default function BookAppointmentComponent() {
                     className={`w-full px-3 py-3 border rounded-md focus:outline-none peer ${
                       formState.errors.email
                         ? "border-red-500 focus:border-red-500"
-                        : "border-gray-200 focus:border-blue-500"
+                        : "border-gray-500 focus:border-blue-500"
                     }`}
                     onFocus={() => handleFieldFocus("email")}
                     onBlur={(e) => handleFieldBlur("email", e.target.value)}
@@ -990,7 +1110,11 @@ export default function BookAppointmentComponent() {
                   <select
                     name="department"
                     id="department"
-                    className="w-full px-3 py-3 border border-gray-500 rounded-md focus:outline-none focus:border-blue-500 appearance-none bg-white peer"
+                    className={`w-full px-3 py-3 border rounded-md focus:outline-none appearance-none bg-white peer ${
+                      formState.errors.department
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-500 focus:border-blue-500"
+                    }`}
                     onFocus={() => handleFieldFocus("department")}
                     onChange={(e) => {
                       if (e.target.value) handleFieldFocus("department");
@@ -1029,13 +1153,22 @@ export default function BookAppointmentComponent() {
                       />
                     </svg>
                   </div>
+                  {formState.errors.department && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formState.errors.department}
+                    </p>
+                  )}
                 </div>
 
                 <div className="relative">
                   <select
                     name="consultingDoctor"
                     id="consultingDoctor"
-                    className="w-full px-3 py-3 border border-gray-500 rounded-md focus:outline-none focus:border-blue-500 appearance-none bg-white peer"
+                    className={`w-full px-3 py-3 border rounded-md focus:outline-none appearance-none bg-white peer ${
+                      formState.errors.consultingDoctor
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-500 focus:border-blue-500"
+                    }`}
                     onFocus={() => handleFieldFocus("consultingDoctor")}
                     onChange={(e) => {
                       if (e.target.value) handleFieldFocus("consultingDoctor");
@@ -1073,13 +1206,22 @@ export default function BookAppointmentComponent() {
                       />
                     </svg>
                   </div>
+                  {formState.errors.consultingDoctor && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formState.errors.consultingDoctor}
+                    </p>
+                  )}
                 </div>
 
                 <div className="relative">
                   <select
                     name="appointmentType"
                     id="appointmentType"
-                    className="w-full px-3 py-3 border border-gray-500 rounded-md focus:outline-none focus:border-blue-500 appearance-none bg-white peer"
+                    className={`w-full px-3 py-3 border rounded-md focus:outline-none appearance-none bg-white peer ${
+                      formState.errors.appointmentType
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-500 focus:border-blue-500"
+                    }`}
                     onFocus={() => handleFieldFocus("appointmentType")}
                     onChange={(e) => {
                       if (e.target.value) handleFieldFocus("appointmentType");
@@ -1117,6 +1259,11 @@ export default function BookAppointmentComponent() {
                       />
                     </svg>
                   </div>
+                  {formState.errors.appointmentType && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formState.errors.appointmentType}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1126,7 +1273,11 @@ export default function BookAppointmentComponent() {
                     type="date"
                     name="appointmentDate"
                     id="appointmentDate"
-                    className="w-full px-3 py-3 border border-gray-500 rounded-md focus:outline-none focus:border-blue-500 peer"
+                    className={`w-full px-3 py-3 border rounded-md focus:outline-none peer ${
+                      formState.errors.appointmentDate
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-500 focus:border-blue-500"
+                    }`}
                     onFocus={() => handleFieldFocus("appointmentDate")}
                     onChange={(e) => {
                       if (e.target.value) handleFieldFocus("appointmentDate");
@@ -1143,6 +1294,11 @@ export default function BookAppointmentComponent() {
                   >
                     Date Of Appointment<span className="text-red-500">*</span>
                   </label>
+                  {formState.errors.appointmentDate && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formState.errors.appointmentDate}
+                    </p>
+                  )}
                 </div>
 
                 <div className="relative">
@@ -1150,7 +1306,11 @@ export default function BookAppointmentComponent() {
                     name="reasonForVisit"
                     id="reasonForVisit"
                     rows={2}
-                    className="w-full px-3 py-3 border border-gray-500 rounded-md focus:outline-none focus:border-blue-500 resize-none peer"
+                    className={`w-full px-3 py-3 border rounded-md focus:outline-none focus:border-blue-500 resize-none peer ${
+                      formState.errors.reasonForVisit
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-500"
+                    }`}
                     onFocus={() => handleFieldFocus("reasonForVisit")}
                     onBlur={(e) =>
                       handleFieldBlur("reasonForVisit", e.target.value)
@@ -1169,102 +1329,104 @@ export default function BookAppointmentComponent() {
                   >
                     Reason for Visit<span className="text-red-500">*</span>
                   </label>
+                  {formState.errors.reasonForVisit && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {formState.errors.reasonForVisit}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Time Selection */}
-    <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-3">
-    Time Of Appointment:
-  </label>
-  <div className="border border-gray-500 rounded-lg p-4">
-    <div className="grid grid-cols-3 gap-4">
-      {/* Morning Column */}
-      <div>
-        <h4 className="font-semibold text-blue-600 mb-3 text-center">Morning</h4>
-        <div className="space-y-2">
-          {["09:00 AM", "10:00 AM", "11:00 AM"].map((time) => (
-            <div
-              key={time}
-              className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 ${
-                selectedTime === time
-                  ? "bg-blue-50 border-blue-500 text-blue-700"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedTime(time)}
-            >
-              <span className="text-sm">{time}</span>
-              {selectedTime === time && (
-                <div className="absolute right-2">
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Time Of Appointment:
+                </label>
+                <div className="border border-gray-500 rounded-lg p-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Morning Column */}
+                    <div>
+                      <h4 className="font-semibold text-blue-600 mb-3 text-center">Morning</h4>
+                      <div className="space-y-2">
+                        {["09:00 AM", "10:00 AM", "11:00 AM"].map((time) => (
+                          <div
+                            key={time}
+                            className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 relative ${
+                              selectedTime === time
+                                ? "bg-blue-50 border-blue-500 text-blue-700"
+                                : "border-gray-300 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setSelectedTime(time)}
+                          >
+                            <span className="text-sm">{time}</span>
+                            {selectedTime === time && (
+                              <div className="absolute right-2">
+                                <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-      {/* Afternoon Column */}
-      <div>
-        <h4 className="font-semibold text-blue-600 mb-3 text-center">Afternoon</h4>
-        <div className="space-y-2">
-          {["01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"].map((time) => (
-            <div
-              key={time}
-              className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 ${
-                selectedTime === time
-                  ? "bg-blue-50 border-blue-500 text-blue-700"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedTime(time)}
-            >
-              <span className="text-sm">{time}</span>
-              {selectedTime === time && (
-                <div className="absolute right-2">
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+                    {/* Afternoon Column */}
+                    <div>
+                      <h4 className="font-semibold text-blue-600 mb-3 text-center">Afternoon</h4>
+                      <div className="space-y-2">
+                        {["01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"].map((time) => (
+                          <div
+                            key={time}
+                            className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 relative ${
+                              selectedTime === time
+                                ? "bg-blue-50 border-blue-500 text-blue-700"
+                                : "border-gray-300 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setSelectedTime(time)}
+                          >
+                            <span className="text-sm">{time}</span>
+                            {selectedTime === time && (
+                              <div className="absolute right-2">
+                                <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-      {/* Evening Column */}
-      <div>
-        <h4 className="font-semibold text-blue-600 mb-3 text-center">Evening</h4>
-        <div className="space-y-2">
-          {["05:00 PM", "06:00 PM", "07:00 PM"].map((time) => (
-            <div
-              key={time}
-              className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 ${
-                selectedTime === time
-                  ? "bg-blue-50 border-blue-500 text-blue-700"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedTime(time)}
-            >
-              <span className="text-sm">{time}</span>
-              {selectedTime === time && (
-                <div className="absolute right-2">
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                    {/* Evening Column */}
+                    <div>
+                      <h4 className="font-semibold text-blue-600 mb-3 text-center">Evening</h4>
+                      <div className="space-y-2">
+                        {["05:00 PM", "06:00 PM", "07:00 PM"].map((time) => (
+                          <div
+                            key={time}
+                            className={`flex items-center justify-center w-full py-2 px-3 border rounded-md cursor-pointer transition-all duration-200 relative ${
+                              selectedTime === time
+                                ? "bg-blue-50 border-blue-500 text-blue-700"
+                                : "border-gray-300 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setSelectedTime(time)}
+                          >
+                            <span className="text-sm">{time}</span>
+                            {selectedTime === time && (
+                              <div className="absolute right-2">
+                                <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-    
-    {/* Hidden input to include in form submission */}
-    <input type="hidden" name="appointmentTime" value={selectedTime} />
-  </div>
-</div>
+              </div>
             </div>
 
             {/* Additional Information */}
@@ -1321,7 +1483,7 @@ export default function BookAppointmentComponent() {
                 </div>
               </div>
 
-              {/* File Upload */}
+              {/* File Upload - Will be logged but not sent in payload */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Upload Previous Medical Reports
@@ -1344,6 +1506,7 @@ export default function BookAppointmentComponent() {
                         if (label) {
                           label.textContent = `Selected: ${fileNames}`;
                         }
+                        console.log("Medical reports selected (not in payload):", fileNames);
                       }
                     }}
                   />
@@ -1374,9 +1537,7 @@ export default function BookAppointmentComponent() {
                 className="flex items-center gap-2 px-6 py-2.5 border border-gray-500 rounded-md text-blue-600 hover:bg-blue-50 transition"
                 disabled={isPending}
                 onClick={() => {
-                  if (
-                    window.confirm("Are you sure you want to reset the form?")
-                  ) {
+                  {
                     const form = document.querySelector("form");
                     if (form) form.reset();
                     setFieldStates({
@@ -1411,6 +1572,7 @@ export default function BookAppointmentComponent() {
                       additionalNotes: false,
                     });
                     setFormState({ success: false, errors: {}, message: "" });
+                    setSelectedTime("06:00 PM");
                   }
                 }}
               >
@@ -1430,34 +1592,9 @@ export default function BookAppointmentComponent() {
                 Reset Form
               </button>
               <button
-                type="button"
+                type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 px-6 py-2.5 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const formElement = document.createElement("form");
-                  const inputs = document.querySelectorAll(
-                    "input, select, textarea"
-                  );
-                  inputs.forEach((input: any) => {
-                    if (input.name) {
-                      const clone = input.cloneNode(true);
-                      formElement.appendChild(clone);
-                    }
-                  });
-
-                  const formData = new FormData(formElement);
-                  const data: any = {};
-                  formData.forEach((value, key) => {
-                    data[key] = value;
-                  });
-
-                  console.log("Form Data:", data);
-                  handleSubmit({
-                    preventDefault: () => {},
-                    currentTarget: formElement,
-                  } as any);
-                }}
+                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-4 h-4"
@@ -1475,7 +1612,7 @@ export default function BookAppointmentComponent() {
                 {isPending ? "Submitting..." : "Submit Appointment"}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
