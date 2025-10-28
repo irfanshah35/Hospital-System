@@ -96,7 +96,7 @@ export default function AdminSideBar({
             },
             {
               title: "Add Doctor",
-              // path: "/admin/doctors/add-doctor"
+              path: "/admin/doctors/add-doctor"
             },
             {
               title: "Edit Doctor",
