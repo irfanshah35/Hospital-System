@@ -28,6 +28,9 @@ export default function AllPatient() {
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<any | null>(null);
+
   // Fetch data from API
   const fetchPatients = async () => {
     setLoading(true);
@@ -35,7 +38,7 @@ export default function AllPatient() {
       const res = await fetch("/api/patients");
       const data = await res.json();
       setPatients(data);
-      
+
     } catch (error) {
       console.error("Failed to fetch patients:", error);
     } finally {
@@ -78,7 +81,7 @@ export default function AllPatient() {
         Email: item.email,
         "Appointment Status": "Confirmed",
         "Visit Type": "General",
-      }))  
+      }))
     );
 
     const workbook = XLSX.utils.book_new();
@@ -135,6 +138,67 @@ export default function AllPatient() {
     { label: "Notes", checked: false },
     { label: "Actions", checked: true },
   ];
+
+  const deleteSelectedPatients = async (id: any) => {
+    try {
+      const response = await fetch(`/api/patients/${id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      console.log(" Patient deleted:", result);
+    } catch (error) {
+      console.error(" Error deleting patient:", error);
+    }
+  };
+
+
+  const handleEditClick = (patient: any) => {
+    setEditingPatient(patient);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdatePatient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // 🧩 Map frontend snake_case -> backend camelCase
+      const payload = {
+        firstName: editingPatient.first_name,
+        lastName: editingPatient.last_name,
+        gender: editingPatient.gender,
+        age: editingPatient.age,
+        mobile: editingPatient.mobile,
+        email: editingPatient.email,
+        address: editingPatient.address,
+        admissionDate: editingPatient.admission_date,
+        assignedDoctor: editingPatient.assigned_doctor,
+        // optional fields (only if exist)
+        dischargeDate: editingPatient.discharge_date || null,
+        status: editingPatient.status,
+        treatment: editingPatient.treatment,
+      };
+      console.log("📌 Update Payload:", payload);
+
+      const response = await fetch(`/api/patients/${editingPatient.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        alert("Patient updated successfully!");
+        setIsEditModalOpen(false);
+        fetchPatients(); // Refresh list after update
+      } else {
+        const err = await response.json();
+        alert(` Update failed: ${err.error || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error updating patient:", error);
+      alert("An unexpected error occurred.");
+    }
+  };
+
+
 
   return (
     <>
@@ -290,14 +354,14 @@ export default function AllPatient() {
                             <td className="px-4 text-sm whitespace-nowrap">{item.assigned_doctor || "-"}</td>
 
                             <td className="px-4 whitespace-nowrap">
-                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
-                              }`}>
+                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                }`}>
                                 {item.gender}
                               </span>
                             </td>
 
-                            <td className="px-4 text-sm">{item.created_at}</td>
+                           <td className="px-4 text-sm">{new Date(item.created_at).toLocaleDateString()}</td>
+
                             <td className="px-4 text-sm">
                               <div className="flex items-center">
                                 <Clock className="w-4 h-4 text-[#6f42c1] mr-2" />
@@ -329,10 +393,12 @@ export default function AllPatient() {
 
                             <td className="px-4 text-sm font-medium">
                               <div className="flex space-x-2">
-                                <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                   <Edit className="w-5 h-5" />
                                 </button>
-                                <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <button onClick={() => {
+                                  deleteSelectedPatients(item.id);
+                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                   <Trash2 className="w-5 h-5" />
                                 </button>
                               </div>
@@ -352,6 +418,297 @@ export default function AllPatient() {
           <Paginator totalItems={patients.length} />
         </div>
       </div>
+
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
+            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+              <div className="flex items-center space-x-3">
+                <img
+                  src="/default-avatar.png"
+                  alt="Patient"
+                  className="w-10 h-10 rounded-full border"
+                />
+                <h2 className="text-lg font-semibold">
+                  Edit {editingPatient?.first_name} {editingPatient?.last_name}
+                </h2>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdatePatient} className="p-6 space-y-6 h-[450px] overflow-y-auto scrollbar-hide">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Name */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="first_name"
+                    name='first_name'
+                    value={`${editingPatient?.first_name || ""} ${editingPatient?.last_name || ""}`}
+                    onChange={(e) => {
+                      const [first, ...last] = e.target.value.split(" ");
+                      setEditingPatient({ ...editingPatient, first_name: first, last_name: last.join(" ") });
+                    }}
+                    placeholder=" "
+                    required
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="name"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.first_name || editingPatient?.last_name ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Name*
+                  </label>
+                </div>
+
+                {/* Mobile */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="mobile"
+                    value={editingPatient?.mobile || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, mobile: e.target.value })}
+                    placeholder=" "
+                    required
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="mobile"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.mobile ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Mobile*
+                  </label>
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div className="flex items-center gap-6">
+                <span className="text-sm font-medium">Gender:</span>
+                <label className="flex items-center gap-1 text-sm">
+                  <input
+                    type="radio"
+                    name="gender"
+                    checked={editingPatient?.gender === "Male"}
+                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Male" })}
+                  />
+                  Male
+                </label>
+                <label className="flex items-center gap-1 text-sm">
+                  <input
+                    type="radio"
+                    name="gender"
+                    checked={editingPatient?.gender === "Female"}
+                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Female" })}
+                  />
+                  Female
+                </label>
+              </div>
+
+              {/* Treatment */}
+              <div className="relative">
+                <input
+                  type="text"
+                  id="treatment"
+                  value={editingPatient?.treatment || ""}
+                  onChange={(e) => setEditingPatient({ ...editingPatient, treatment: e.target.value })}
+                  placeholder=" "
+                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 h-[80px] focus:ring-[#005CBB] outline-none transition-all`}
+                />
+                <label
+                  htmlFor="treatment"
+                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.treatment ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                >
+                  Treatment
+                </label>
+              </div>
+
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Age */}
+                <div className="relative">
+                  <input
+                    type="number"
+                    id="age"
+                    value={editingPatient?.age || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, age: e.target.value })}
+                    placeholder=" "
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="age"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.age ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Age*
+                  </label>
+                </div>
+
+                {/* Email */}
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    value={editingPatient?.email || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, email: e.target.value })}
+                    placeholder=" "
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="email"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.email ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Email*
+                  </label>
+                </div>
+
+                {/* Admission Date */}
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="admission_date"
+                    value={editingPatient?.admission_date || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, admission_date: e.target.value })}
+                    placeholder=" "
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="admission_date"
+                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
+      ${editingPatient?.admission_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Admission Date*
+                  </label>
+                </div>
+
+                {/* Discharge Date */}
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="discharge_date"
+                    value={editingPatient?.discharge_date || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, discharge_date: e.target.value })}
+                    placeholder=" "
+                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                  />
+                  <label
+                    htmlFor="discharge_date"
+                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
+      ${editingPatient?.discharge_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                  >
+                    Discharge Date*
+                  </label>
+                </div>
+
+                {/* Doctor Assigned */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="doctor_assigned"
+                    value={editingPatient?.assigned_doctor || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, assigned_doctor: e.target.value })}
+                    placeholder=" "
+                    required
+                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+                  />
+                  <label
+                    htmlFor="doctor_assigned"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+          ${editingPatient?.assigned_doctor ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
+                  >
+                    Doctor Assigned*
+                  </label>
+                </div>
+
+                {/* Status */}
+                <div className="relative">
+                  <select
+                    id="status"
+                    value={editingPatient?.status || ""}
+                    onChange={(e) => setEditingPatient({ ...editingPatient, status: e.target.value })}
+                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+                  >
+                    <option value="" disabled hidden></option>
+                    <option value="Admitted">Admitted</option>
+                    <option value="Under Treatment">Under Treatment</option>
+                    <option value="Recovered">Recovered</option>
+                    <option value="Discharged">Discharged</option>
+                  </select>
+                  <label
+                    htmlFor="status"
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+          ${editingPatient?.status ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
+                  >
+                    Status*
+                  </label>
+                </div>
+              </div>
+
+              <div className="relative">
+                <textarea
+                  id="address"
+                  rows={3}
+                  value={editingPatient?.address || ""}
+                  onChange={(e) => setEditingPatient({ ...editingPatient, address: e.target.value })}
+                  placeholder=" "
+                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none
+      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
+                ></textarea>
+                <label
+                  htmlFor="address"
+                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
+      ${editingPatient?.address ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                >
+                  Address
+                </label>
+              </div>
+
+              {/* Submit */}
+              <div className="flex gap-2 pt-3">
+                <button
+                  type="submit"
+                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  type="button"
+                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium  transition"
+                >
+                  cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
 
       <style jsx>{`
         @keyframes slideDown {
