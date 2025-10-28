@@ -122,7 +122,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "All Staff",
-              // path: "/admin/staff/all-staff"
+              path: "/admin/staff/all-staff"
             },
             {
               title: "Add Staff",
@@ -130,11 +130,11 @@ export default function AdminSideBar({
             },
             {
               title: "Edit Staff",
-              // path: "/admin/staff/edit-staff"
+              path: "/admin/staff/edit-staff"
             },
             {
               title: "Staff Profile",
-              // path: "/admin/staff/staff-profile"
+              path: "/admin/staff/staff-profile"
             },
           ],
         },
