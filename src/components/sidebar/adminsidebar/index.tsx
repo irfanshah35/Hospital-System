@@ -144,23 +144,23 @@ export default function AdminSideBar({
           children: [
             {
               title: "All Patients",
-              path: "/admin/all-patient"
+              path: "/admin/patients/all-patient"
             },
             {
               title: "Add Patient",
-              path: "/admin/add-patient"
+              path: "/admin/patients/add-patient"
             },
             {
               title: "Edit Patient",
-              // path: "/admin/patients/edit-patient"
+              path: "/admin/patients/edit-patient"
             },
             {
               title: "Patient Records",
-              // path: "/admin/patients/patient-records",
+              path: "/admin/patients/patient-records",
             },
             {
               title: "Patient Profile",
-              // path: "/admin/patients/patient-profile",
+              path: "/admin/patients/patient-profile",
             },
           ],
         },
