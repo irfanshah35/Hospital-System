@@ -10,7 +10,7 @@ interface FieldState {
   [key: string]: boolean;
 }
 
-export default function AddDoctorComponent() {
+export default function EditDoctorComponent() {
   const [fieldStates, setFieldStates] = useState<FieldState>({});
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -100,7 +100,7 @@ export default function AdminSideBar({
             },
             {
               title: "Edit Doctor",
-              // path: "/admin/doctors/edit-doctor"
+              path: "/admin/doctors/edit-doctor"
             },
             {
               title: "Assign Department",
@@ -112,7 +112,7 @@ export default function AdminSideBar({
             },
             {
               title: "Doctor Profile",
-              // path: "/admin/doctors/doctor-profile"
+              path: "/admin/doctors/doctor-profile"
             },
           ],
         },
@@ -256,7 +256,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "Bill List",
-              // path: "/admin/accounts/bill-list"
+              path: "/admin/accounts/bill-list"
             },
             {
               title: "Add Bill",
@@ -264,7 +264,7 @@ export default function AdminSideBar({
             },
             {
               title: "Income",
-              // path: "/admin/accounts/income"
+              path: "/admin/accounts/income"
             },
             {
               title: "Expenses",
