@@ -1,6 +1,6 @@
 'use client';
 import { Home, UserPlus, Eye, EyeOff, ChevronLeft, Check, User, Users, ChevronDown, Droplet, Flag, Mail, Phone, Contact, IdCard, Calendar, Building2, Brain, Clock, BriefcaseBusiness, TrendingUp, UserRoundCog, GraduationCap, FileBadge, MoveRight, Pencil } from 'lucide-react'
-import React, { useActionState, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 export default function AddStaffPage() {
     const [step, setStep] = useState(1);
@@ -8,6 +8,8 @@ export default function AddStaffPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState({ type: '', text: '' });
 
     const totalSteps = 5;
     const steps = ["Personal Information", "Contact Information", "Professional Details", "Qualifications", "Account Setup"];
@@ -95,12 +97,110 @@ export default function AddStaffPage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validateStep(5)) {
-            console.log("Form Submitted:", formData);
+ const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateStep(5)) {
+        setSubmitMessage({ type: 'error', text: 'Please fix all validation errors before submitting.' });
+        return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage({ type: '', text: '' });
+
+    try {
+        // Prepare the payload for API - EXACT MATCH to database schema
+        const payload = {
+            // Personal Info
+            firstname: formData.firstName,
+            lastname: formData.lastName,
+            gender: formData.gender,
+            dob: formData.dob, // Date type
+            bloodgroup: formData.bloodGroup,
+            maritalstatus: formData.maritalStatus,
+            nationality: formData.nationality,
+            
+            // Contact Info
+            email: formData.email,
+            mobile: formData.mobile,
+            emergencyname: formData.emergencyName,
+            emergencycontact: formData.emergencyContact,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            postalcode: formData.postalCode,
+            country: formData.country,
+            
+            // Professional Info
+            staffid: formData.staffId,
+            joindate: formData.joinDate, // Date type
+            designation: formData.designation,
+            department: formData.department,
+            specialization: formData.specialization,
+            experience: parseInt(formData.experience) || 0, // Integer type
+            employmenttype: formData.employmentType,
+            shift: formData.shift,
+            
+            // Qualifications
+            education: formData.education,
+            certifications: formData.certifications,
+            licensenumber: formData.licenseNumber,
+            licenseexpiry: formData.licenseExpiry, // Date type
+            skills: formData.skills,
+            
+            // Account Info
+            username: formData.username,
+            password: formData.password,
+            bio: formData.bio,
+            // photo: formData.photo, // jsonb type - handle separately if needed
+            agreed: agreed, // boolean type
+            // created_at will be automatically set by database
+        };
+
+        console.log("Submitting staff data:", payload);
+
+        // API call
+        const response = await fetch("/api/staff", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            setSubmitMessage({ 
+                type: 'success', 
+                text: '✅ Staff member added successfully!' 
+            });
+            
+            // Reset form
+            setFormData({
+                firstName: "", lastName: "", gender: "", dob: "", bloodGroup: "", maritalStatus: "", nationality: "",
+                email: "", mobile: "", emergencyName: "", emergencyContact: "", address: "", city: "", state: "", postalCode: "", country: "",
+                staffId: "", joinDate: "", designation: "", department: "", specialization: "", experience: "", employmentType: "", shift: "",
+                education: "", certifications: "", licenseNumber: "", licenseExpiry: "", skills: "",
+                username: "", password: "", confirmPassword: "", bio: "", photo: null, agreed: false
+            });
+            setAgreed(false);
+            setStep(1);
+            
+        } else {
+            throw new Error(result.error || result.message || 'Failed to add staff member');
         }
-    };
+
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        setSubmitMessage({ 
+            type: 'error', 
+            text: error instanceof Error ? error.message : '❌ Failed to add staff member. Please try again.' 
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
     return (
         <div className="px-6 py-3 mt-1">
@@ -120,6 +220,17 @@ export default function AddStaffPage() {
                     <h2 className="text-lg font-semibold">Add New Staff Member</h2>
                 </div>
                 <p className="text-sm text-gray-500 mb-4">Complete all required fields for staff onboarding</p>
+
+                {/* Success/Error Message */}
+                {submitMessage.text && (
+                    <div className={`mb-4 p-3 rounded-md text-sm ${
+                        submitMessage.type === 'success' 
+                            ? "bg-green-50 text-green-700 border border-green-200" 
+                            : "bg-red-50 text-red-700 border border-red-200"
+                    }`}>
+                        {submitMessage.text}
+                    </div>
+                )}
 
                 {/* Progress Bar */}
                 <div className="flex items-center justify-between w-full mb-6">
@@ -142,7 +253,7 @@ export default function AddStaffPage() {
                     {step === 2 && <ContactInfoForm formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
                     {step === 3 && <ProfessionalInfo formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
                     {step === 4 && <Qualifications formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
-                    {step === 5 && <AccountInfo formData={formData} handleChange={handleChange} prevStep={prevStep} agreed={agreed} setAgreed={setAgreed} errors={errors} />}
+                    {step === 5 && <AccountInfo formData={formData} handleChange={handleChange} prevStep={prevStep} agreed={agreed} setAgreed={setAgreed} errors={errors} isSubmitting={isSubmitting} />}
                 </form>
             </div>
         </div>
@@ -290,7 +401,7 @@ function Qualifications({ formData, handleChange, nextStep, prevStep, errors }: 
     )
 }
 
-function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, errors }: any) {
+function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, errors, isSubmitting }: any) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -337,9 +448,14 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                 <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
                     <ChevronLeft className="w-5 h-5" /> Back
                 </button>
-                <button type="submit" 
-                    className={`px-8 py-2 rounded-full flex items-center gap-2 transition ${agreed ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`}>
-                    <Check className="w-5 h-5" /> Submit
+                <button type="submit" disabled={!agreed || isSubmitting}
+                    className={`px-8 py-2 rounded-full flex items-center gap-2 transition ${
+                        agreed && !isSubmitting 
+                            ? "bg-green-600 text-white hover:bg-green-700" 
+                            : "bg-gray-400 text-gray-600 cursor-not-allowed"
+                    }`}>
+                    <Check className="w-5 h-5" />
+                    {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
             </div>
         </div>
