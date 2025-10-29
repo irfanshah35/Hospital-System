@@ -260,7 +260,7 @@ export default function AdminSideBar({
             },
             {
               title: "Add Bill",
-              // path: "/admin/accounts/add-bill"
+              path: "/admin/accounts/add-bill"
             },
             {
               title: "Income",
@@ -268,7 +268,7 @@ export default function AdminSideBar({
             },
             {
               title: "Expenses",
-              // path: "/admin/accounts/expenses"
+              path: "/admin/accounts/expenses"
             },
             {
               title: "Income Report",
