@@ -196,11 +196,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Birth Records",
-              // path: "/admin/records/birth"
+              path: "/admin/records/birth-records"
             },
             {
               title: "Death Records",
-              // path: "/admin/records/death"
+              path: "/admin/records/death-records"
             },
           ],
         },
