@@ -256,7 +256,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "Bill List",
-              // path: "/admin/accounts/bill-list"
+              path: "/admin/accounts/bill-list"
             },
             {
               title: "Add Bill",
@@ -264,7 +264,7 @@ export default function AdminSideBar({
             },
             {
               title: "Income",
-              // path: "/admin/accounts/income"
+              path: "/admin/accounts/income"
             },
             {
               title: "Expenses",
