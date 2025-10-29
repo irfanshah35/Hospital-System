@@ -100,7 +100,7 @@ export default function AdminSideBar({
             },
             {
               title: "Edit Doctor",
-              // path: "/admin/doctors/edit-doctor"
+              path: "/admin/doctors/edit-doctor"
             },
             {
               title: "Assign Department",
@@ -112,7 +112,7 @@ export default function AdminSideBar({
             },
             {
               title: "Doctor Profile",
-              // path: "/admin/doctors/doctor-profile"
+              path: "/admin/doctors/doctor-profile"
             },
           ],
         },
