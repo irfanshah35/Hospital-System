@@ -92,7 +92,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "All Doctors",
-              // path: "/admin/doctors/all-doctors"
+              path: "/admin/doctors/all-doctors"
             },
             {
               title: "Add Doctor",
@@ -104,11 +104,11 @@ export default function AdminSideBar({
             },
             {
               title: "Assign Department",
-              // path: "/admin/doctors/assign-department",
+              path: "/admin/doctors/assign-department",
             },
             {
               title: "Shift Management",
-              // path: "/admin/doctors/shift-management",
+              path: "/admin/doctors/shift-management",
             },
             {
               title: "Doctor Profile",
@@ -286,11 +286,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Department List",
-              // path: "/admin/departments/department-list",
+              path: "/admin/departments/department-list",
             },
             {
               title: "Add Department",
-              // path: "/admin/departments/add-department",
+              path: "/admin/departments/add-department",
             },
           ],
         },
