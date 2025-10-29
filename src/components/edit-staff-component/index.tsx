@@ -1,16 +1,113 @@
 'use client';
 import { Home, UserPlus, Eye, EyeOff, ChevronLeft, Check, User, Users, ChevronDown, Droplet, Flag, Mail, Phone, Contact, IdCard, Calendar, Building2, Brain, Clock, BriefcaseBusiness, TrendingUp, UserRoundCog, GraduationCap, FileBadge, MoveRight, Pencil } from 'lucide-react'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function EditStaffComponent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const staffId = searchParams.get('id');
+    
     const [step, setStep] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState({ type: '', text: '' });
+    const [loading, setLoading] = useState(true);
 
     const totalSteps = 5;
     const steps = ["Personal Information", "Contact Information", "Professional Details", "Qualifications", "Account Setup"];
+
+    const [formData, setFormData] = useState({
+        // Personal Info
+        firstName: "", lastName: "", gender: "", dob: "", bloodGroup: "", maritalStatus: "", nationality: "",
+        // Contact Info
+        email: "", mobile: "", emergencyName: "", emergencyContact: "", address: "", city: "", state: "", postalCode: "", country: "",
+        // Professional Info
+        staffId: "", joinDate: "", designation: "", department: "", specialization: "", experience: "", employmentType: "", shift: "",
+        // Qualifications
+        education: "", certifications: "", licenseNumber: "", licenseExpiry: "", skills: "",
+        // Account Info
+        username: "", password: "", confirmPassword: "", bio: "", photo: null, agreed: false
+    });
+
+    // Fetch staff data
+    useEffect(() => {
+        if (staffId) {
+            fetchStaffData();
+        }
+    }, [staffId]);
+
+   const fetchStaffData = async () => {
+    setLoading(true);
+    try {
+        const res = await fetch(`/api/staff/${staffId}`);
+        const data = await res.json();
+        
+        // Check if response is ok and data exists (it could be an object or array)
+        if (res.ok && data) {
+            // Handle both array response and single object response
+            const staff = Array.isArray(data) ? data[0] : data;
+            
+            if (staff) {
+                setFormData({
+                    // Personal Info
+                    firstName: staff.firstname || "",
+                    lastName: staff.lastname || "",
+                    gender: staff.gender || "",
+                    dob: staff.dob || "",
+                    bloodGroup: staff.bloodgroup || "",
+                    maritalStatus: staff.maritalstatus || "",
+                    nationality: staff.nationality || "",
+                    // Contact Info
+                    email: staff.email || "",
+                    mobile: staff.mobile || "",
+                    emergencyName: staff.emergencyname || "",
+                    emergencyContact: staff.emergencycontact || "",
+                    address: staff.address || "",
+                    city: staff.city || "",
+                    state: staff.state || "",
+                    postalCode: staff.postalcode || "",
+                    country: staff.country || "",
+                    // Professional Info
+                    staffId: staff.staffid || "",
+                    joinDate: staff.joindate || "",
+                    designation: staff.designation || "",
+                    department: staff.department || "",
+                    specialization: staff.specialization || "",
+                    experience: staff.experience?.toString() || "",
+                    employmentType: staff.employmenttype || "",
+                    shift: staff.shift || "",
+                    // Qualifications
+                    education: staff.education || "",
+                    certifications: staff.certifications || "",
+                    licenseNumber: staff.licensenumber || "",
+                    licenseExpiry: staff.licenseexpiry || "",
+                    skills: staff.skills || "",
+                    // Account Info
+                    username: staff.username || "",
+                    password: "", // Don't pre-fill password for security
+                    confirmPassword: "",
+                    bio: staff.bio || "",
+                    photo: null,
+                    agreed: staff.agreed || false
+                });
+                setAgreed(staff.agreed || false);
+            } else {
+                setSubmitMessage({ type: 'error', text: 'Staff member not found' });
+            }
+        } else {
+            setSubmitMessage({ type: 'error', text: 'Staff member not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching staff data:', error);
+        setSubmitMessage({ type: 'error', text: 'Failed to load staff data' });
+    } finally {
+        setLoading(false);
+    }
+};
 
     const nextStep = () => {
         if (validateStep(step)) {
@@ -24,19 +121,6 @@ export default function EditStaffComponent() {
             setStep(index + 1);
         }
     };
-
-    const [formData, setFormData] = useState({
-        // Personal Info
-        firstName: "John", lastName: "Doe", gender: "Male", dob: "1990-01-01", bloodGroup: "A+", maritalStatus: "Single", nationality: "Indian",
-        // Contact Info
-        email: "john@gmail.com", mobile: "+91 1234567890", emergencyName: "Jane Doe", emergencyContact: "+91 9876543210", address: "123 Main Street", city: "Ahmedabad", state: "Gujarat", postalCode: "380001", country: "India",
-        // Professional Info
-        staffId: "STAFF001", joinDate: "2023-01-15", designation: "Senior Nurse", department: "Cardiology", specialization: "Cardiac Care", experience: "5", employmentType: "Full-Time", shift: "Morning",
-        // Qualifications
-        education: "M.S.N., Gujarat University, Ahmedabad, India.\nB.S.N., Gujarat University, Ahmedabad, India.", certifications: "Advanced Cardiac Life Support", licenseNumber: "RN123456", licenseExpiry: "2025-12-31", skills: "Patient care, Emergency response, Team leadership",
-        // Account Info
-        username: "johndoe", password: "", confirmPassword: "", bio: "Experienced nurse with 5+ years in cardiac care", photo: null, agreed: false
-    });
 
     const validateStep = (stepNumber: number): boolean => {
         const newErrors: Record<string, string> = {};
@@ -93,12 +177,121 @@ export default function EditStaffComponent() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateStep(5)) {
-            console.log("Staff Updated:", formData);
+        
+        if (!validateStep(5)) {
+            setSubmitMessage({ type: 'error', text: 'Please fix all validation errors before submitting.' });
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitMessage({ type: '', text: '' });
+
+        try {
+            // Prepare the payload for API - EXACT MATCH to database schema
+            const payload = {
+                // Personal Info
+                firstname: formData.firstName,
+                lastname: formData.lastName,
+                gender: formData.gender,
+                dob: formData.dob,
+                bloodgroup: formData.bloodGroup,
+                maritalstatus: formData.maritalStatus,
+                nationality: formData.nationality,
+                
+                // Contact Info
+                email: formData.email,
+                mobile: formData.mobile,
+                emergencyname: formData.emergencyName,
+                emergencycontact: formData.emergencyContact,
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                postalcode: formData.postalCode,
+                country: formData.country,
+                
+                // Professional Info
+                staffid: formData.staffId,
+                joindate: formData.joinDate,
+                designation: formData.designation,
+                department: formData.department,
+                specialization: formData.specialization,
+                experience: parseInt(formData.experience) || 0,
+                employmenttype: formData.employmentType,
+                shift: formData.shift,
+                
+                // Qualifications
+                education: formData.education,
+                certifications: formData.certifications,
+                licensenumber: formData.licenseNumber,
+                licenseexpiry: formData.licenseExpiry,
+                skills: formData.skills,
+                
+                // Account Info
+                username: formData.username,
+                password: formData.password || undefined, // Only send if changed
+                bio: formData.bio,
+                agreed: agreed,
+            };
+
+            console.log("Updating staff data:", payload);
+
+            // API call
+            const response = await fetch(`/api/staff/${staffId}`, {
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setSubmitMessage({ 
+                    type: 'success', 
+                    text: '✅ Staff member updated successfully!' 
+                });
+                
+                // Redirect back to staff list after success
+                setTimeout(() => {
+                    router.push('/admin/staff/all-staff');
+                }, 2000);
+                
+            } else {
+                throw new Error(result.error || result.message || 'Failed to update staff member');
+            }
+
+        } catch (error) {
+            console.error('Error updating staff:', error);
+            setSubmitMessage({ 
+                type: 'error', 
+                text: error instanceof Error ? error.message : '❌ Failed to update staff member. Please try again.' 
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="px-6 py-3 mt-1">
+                <div className="flex items-center space-x-2">
+                    <h1 className="text-lg font-semibold">Edit Staff</h1>
+                    <span>›</span>
+                    <Home size={18} className="text-gray-500" />
+                    <span>›</span>
+                    <span>Staffs</span>
+                    <span>›</span>
+                    <span>Edit Staff</span>
+                </div>
+                <div className="card mt-4 bg-white p-8 rounded-xl shadow-sm border border-gray-200 text-center">
+                    <div className="animate-pulse">Loading staff data...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="px-6 py-3 mt-1">
@@ -117,6 +310,17 @@ export default function EditStaffComponent() {
                     <UserPlus className="mr-2 w-5 h-5" />
                     <h2 className="text-lg font-semibold">Edit Staff Member</h2>
                 </div>
+
+                {/* Success/Error Message */}
+                {submitMessage.text && (
+                    <div className={`mb-4 p-3 rounded-md text-sm ${
+                        submitMessage.type === 'success' 
+                            ? "bg-green-50 text-green-700 border border-green-200" 
+                            : "bg-red-50 text-red-700 border border-red-200"
+                    }`}>
+                        {submitMessage.text}
+                    </div>
+                )}
 
                 {/* Progress Bar */}
                 <div className="flex items-center justify-between w-full mb-6">
@@ -139,7 +343,7 @@ export default function EditStaffComponent() {
                     {step === 2 && <ContactInfoForm formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
                     {step === 3 && <ProfessionalInfo formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
                     {step === 4 && <Qualifications formData={formData} handleChange={handleChange} nextStep={nextStep} prevStep={prevStep} errors={errors} />}
-                    {step === 5 && <AccountInfo formData={formData} handleChange={handleChange} prevStep={prevStep} agreed={agreed} setAgreed={setAgreed} errors={errors} />}
+                    {step === 5 && <AccountInfo formData={formData} handleChange={handleChange} prevStep={prevStep} agreed={agreed} setAgreed={setAgreed} errors={errors} isSubmitting={isSubmitting} />}
                 </form>
             </div>
         </div>
@@ -287,7 +491,7 @@ function Qualifications({ formData, handleChange, nextStep, prevStep, errors }: 
     )
 }
 
-function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, errors }: any) {
+function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, errors, isSubmitting }: any) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -302,9 +506,11 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                     <FloatingInput label="Username" name="username" value={formData.username} onChange={handleChange} icon={User} required error={errors.username} />
                 </div>
                 <FloatingInput type={showPassword ? "text" : "password"} label="Password" name="password" value={formData.password} onChange={handleChange} 
-                    showPassword={showPassword} setShowPassword={setShowPassword} error={errors.password} />
+                    showPassword={showPassword} setShowPassword={setShowPassword} error={errors.password} 
+                    placeholder="Leave blank to keep current password" />
                 <FloatingInput type={showConfirmPassword ? "text" : "password"} label="Confirm Password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} 
-                    showPassword={showConfirmPassword} setShowPassword={setShowConfirmPassword} error={errors.confirmPassword} />
+                    showPassword={showConfirmPassword} setShowPassword={setShowConfirmPassword} error={errors.confirmPassword} 
+                    placeholder="Leave blank to keep current password" />
                 
                 <div className="md:col-span-2">
                     <label className="block text-sm font-medium mb-2">Profile Photo</label>
@@ -334,21 +540,25 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                 <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
                     <ChevronLeft className="w-5 h-5" /> Back
                 </button>
-                <button type="submit" 
-                    className={`px-8 py-2 rounded-full flex items-center gap-2 transition ${agreed ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`}>
-                    <Check className="w-5 h-5" /> Update Staff
+                <button type="submit" disabled={!agreed || isSubmitting}
+                    className={`px-8 py-2 rounded-full flex items-center gap-2 transition ${
+                        agreed && !isSubmitting 
+                            ? "bg-green-600 text-white hover:bg-green-700" 
+                            : "bg-gray-400 text-gray-600 cursor-not-allowed"
+                    }`}>
+                    <Check className="w-5 h-5" />
+                    {isSubmitting ? "Updating..." : "Update Staff"}
                 </button>
             </div>
         </div>
     )
 }
 
-// Reusable Components with Error Handling
-function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, showPassword, setShowPassword, error }: any) {
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, showPassword, setShowPassword, error, placeholder }: any) {
     const isDate = type === "date";
     return (
         <div className="relative">
-            <input type={type} name={name} value={value} onChange={onChange} placeholder=" " required={required}
+            <input type={type} name={name} value={value} onChange={onChange} placeholder={placeholder || " "} required={required}
                 className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : ''}`} />
             <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
                 {label} {required && <span className="text-red-500">*</span>}
