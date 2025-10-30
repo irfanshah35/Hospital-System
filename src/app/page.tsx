@@ -28,6 +28,7 @@ export default function LoginPage() {
     const params = new URLSearchParams(hash.substring(1)); 
 
     const accessToken = params.get("access_token");
+    const error = params.get("error");
 
     if (accessToken) {
       localStorage.setItem("authToken", accessToken);
@@ -35,9 +36,14 @@ export default function LoginPage() {
       console.log("Token saved successfully:", {
         accessToken,
       });
-    } else {
-      console.warn("No access_token found in URL");
     }
+     else if (error) {
+      router.replace("/error-page");
+    } 
+     else {
+      console.warn("error");
+    }
+
   }, [searchParams, router]);
 
   // Password validation rules
