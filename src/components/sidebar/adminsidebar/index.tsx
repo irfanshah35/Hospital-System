@@ -170,23 +170,23 @@ export default function AdminSideBar({
           children: [
             {
               title: "Alloted Rooms",
-              // path: "/admin/room/all-rooms"
+              path: "/admin/rooms/all-rooms"
             },
             {
               title: "New Allotment",
-              // path: "/admin/room/add-allotment"
+              path: "/admin/rooms/add-allotment"
             },
             {
               title: "Edit Allotment",
-              // path: "/admin/room/edit-allotment"
+              path: "/admin/rooms/edit-allotment"
             },
             {
               title: "Rooms By Department",
-              // path: "/admin/room/rooms-by-department",
+              // path: "/admin/rooms/rooms-by-department",
             },
             {
               title: "Add Room",
-              // path: "/admin/room/add-room"
+              path: "/admin/rooms/add-room"
             },
           ],
         },
