@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // Extend Window interface for Google
 declare global {
@@ -15,17 +15,20 @@ export default function LoginPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState("admin");
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const searchParams = useSearchParams();
 
-   useEffect(() => {
-    const hash = window.location.hash; 
+  useEffect(() => {
+    const hash = window.location.hash;
     if (!hash) return;
 
-    const params = new URLSearchParams(hash.substring(1)); 
+    const params = new URLSearchParams(hash.substring(1));
 
     const accessToken = params.get("access_token");
     const error = params.get("error");
@@ -37,10 +40,10 @@ export default function LoginPage() {
         accessToken,
       });
     }
-     else if (error) {
+    else if (error) {
       router.replace("/error-page");
-    } 
-     else {
+    }
+    else {
       console.warn("error");
     }
 
@@ -69,10 +72,11 @@ export default function LoginPage() {
     return errors;
   };
 
-  // Update username when role changes
-  useEffect(() => {
-    setUsername(selectedRole);
-  }, [selectedRole]);
+  // Email validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   // Validate password on change
   useEffect(() => {
@@ -148,7 +152,17 @@ export default function LoginPage() {
 
       const userData = JSON.parse(jsonPayload);
 
-      // Store user data
+      // Store user data in cookies for middleware
+      document.cookie = `authToken=${response.credential}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userRole=${selectedRole}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `username=${userData.name || userData.email
+        }; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userEmail=${userData.email}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userPicture=${userData.picture || ""
+        }; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `loginMethod=google; path=/; max-age=604800; SameSite=Strict`;
+
+      // Also store in localStorage for client-side access
       localStorage.setItem("authToken", response.credential);
       localStorage.setItem("userRole", selectedRole);
       localStorage.setItem("username", userData.name || userData.email);
@@ -161,6 +175,7 @@ export default function LoginPage() {
       navigateBasedOnRole(selectedRole);
     } catch (error) {
       console.error("Error processing Google login:", error);
+      setError("Google login failed. Please try again.");
     }
   };
 
@@ -203,33 +218,59 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // Validate password before submission
+    // Validate email and password before submission
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     const errors = validatePassword(password);
     if (errors.length > 0) {
       setValidationErrors(errors);
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      // Create a dummy token and store in localStorage
-      const dummyToken = `token_${Date.now()}_${Math.random()
+      // For demo purposes - generate a fake token
+      const fakeToken = `fake-jwt-token-${Date.now()}-${Math.random()
         .toString(36)
         .substr(2, 9)}`;
-      localStorage.setItem("authToken", dummyToken);
+
+      // Store in cookies for middleware
+      document.cookie = `authToken=${fakeToken}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userRole=${selectedRole}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userEmail=${email}; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `loginMethod=credentials; path=/; max-age=604800; SameSite=Strict`;
+
+      // Also store in localStorage for client-side access
+      localStorage.setItem("authToken", fakeToken);
       localStorage.setItem("userRole", selectedRole);
-      localStorage.setItem("username", username);
+      localStorage.setItem("userEmail", email);
       localStorage.setItem("loginMethod", "credentials");
 
+      console.log("Login successful, token stored");
+
+      // Let middleware handle the redirection
       navigateBasedOnRole(selectedRole);
-    } catch (error) {
-      console.error("Error storing auth data:", error);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setError("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const isPasswordValid = validationErrors.length === 0 && password.length > 0;
+  const isFormValid =
+    validateEmail(email) &&
+    validationErrors.length === 0 &&
+    password.length > 0 &&
+    email.length > 0;
 
   return (
     <div className="min-h-screen bg-[#CFE1EC] flex items-center justify-center p-4">
@@ -247,44 +288,51 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setSelectedRole("admin")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "admin" ? "bg-[#458E21]" : "bg-[#458E21]/70"
-                }`}
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "admin" ? "bg-[#458E21]" : "bg-[#458E21]/70"
+                  }`}
               >
                 Admin
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole("doctor")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "doctor" ? "bg-[#EB872B]" : "bg-[#EB872B]/70"
-                }`}
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "doctor" ? "bg-[#EB872B]" : "bg-[#EB872B]/70"
+                  }`}
               >
                 Doctor
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole("patient")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "patient"
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "patient"
                     ? "bg-[#3C6EFD]"
                     : "bg-[#3C6EFD]/70"
-                }`}
+                  }`}
               >
                 Patient
               </button>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
               <fieldset className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 mb-4">
                 <legend className="text-xs text-gray-600 dark:text-gray-300 px-2">
-                  Username*
+                  Email*
                 </legend>
                 <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full outline-none text-gray-900 dark:text-white bg-transparent text-sm"
+                  placeholder="Enter your email"
                   required
                 />
               </fieldset>
@@ -298,6 +346,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full outline-none text-gray-900 dark:text-white bg-transparent pr-10 text-sm"
+                  placeholder="Enter your password"
                   required
                 />
                 <button
@@ -317,11 +366,10 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-1">
                     <div
-                      className={`text-xs ${
-                        password.length >= 8 && password.length <= 20
+                      className={`text-xs ${password.length >= 8 && password.length <= 20
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • 8-20 characters{" "}
                       {password.length >= 8 && password.length <= 20
@@ -329,30 +377,27 @@ export default function LoginPage() {
                         : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /[a-zA-Z]/.test(password)
+                      className={`text-xs ${/[a-zA-Z]/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 letter{" "}
                       {/[a-zA-Z]/.test(password) ? "✓" : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /\d/.test(password)
+                      className={`text-xs ${/\d/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 number {/\d/.test(password) ? "✓" : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+                      className={`text-xs ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 special character{" "}
                       {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
@@ -383,14 +428,13 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                disabled={!isPasswordValid}
-                className={`w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg transition mb-5 text-sm ${
-                  isPasswordValid
+                disabled={!isFormValid || isLoading}
+                className={`w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg transition mb-5 text-sm ${isFormValid && !isLoading
                     ? "hover:opacity-90"
                     : "opacity-50 cursor-not-allowed"
-                }`}
+                  }`}
               >
-                Login
+                {isLoading ? "Logging in..." : "Login"}
               </button>
 
               <p className="text-center text-gray-600 dark:text-gray-300 mb-5 text-sm">

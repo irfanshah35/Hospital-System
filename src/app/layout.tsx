@@ -2,7 +2,6 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
-import AuthCheck from "@/components/AuthCheck";
 import { useThemeStore } from "@/store/store";
 import { useGoogleTranslate } from "@/useGoogleTranslate";
 
@@ -19,14 +18,10 @@ export default function RootLayout({
 }>) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-
   const { websiteTheme } = useThemeStore();
-
 
   // Initialize Google Translate for non-auth pages
   useGoogleTranslate();
-
-  
 
   return (
     <html lang="en" className={websiteTheme}>
@@ -56,7 +51,7 @@ export default function RootLayout({
           websiteTheme === "dark" ? "dark-theme" : "light-theme"
         }`}
       >
-        {/* Hidden Google Translate Element - MUST be outside any conditional rendering */}
+        {/* Hidden Google Translate Element */}
         <div
           id="google_translate_element"
           style={{
@@ -67,11 +62,8 @@ export default function RootLayout({
           }}
         ></div>
 
-        <AuthCheck>
-            <div className="min-h-screen">{children}</div>
-           
-         
-        </AuthCheck>
+        {/* Remove AuthCheck wrapper - middleware handles authentication */}
+        <div className="min-h-screen">{children}</div>
 
         {/* Load the config script */}
         <script src="/lang-config.js" async />
