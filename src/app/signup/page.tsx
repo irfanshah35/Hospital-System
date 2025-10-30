@@ -156,18 +156,45 @@ export default function SignupPage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate password before submission
-        // const errors = validatePassword(password);
-        // if (errors.length > 0) {
-        //     setValidationErrors(errors);
-        //     return;
-        // }
+        // password validation check
+        const errors = validatePassword(password);
+        if (errors.length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
 
-        console.log("Form submitted with:", { username, password, email });
+        try {
+            const res = await fetch("/api/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: username,
+                    email: email,
+                    password: password,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error("Registration failed:", data.message);
+                alert(data.message || "Registration failed");
+                return;
+            }
+
+            alert("Registration successful! Please check your email to verify your account.");
+            setUsername("");
+            setEmail("");
+            setPassword("");
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Something went wrong, please try again.");
+        }
     };
+
 
     const isPasswordValid = validationErrors.length === 0 && password.length > 0;
 
@@ -237,7 +264,7 @@ export default function SignupPage() {
                             </button>
 
                             <p className="text-center text-gray-600 dark:text-gray-300 mb-5 text-sm">
-                               Already have an account?{" "}
+                                Already have an account?{" "}
                                 <a
                                     href="#"
                                     className="text-gray-900 dark:text-white font-semibold hover:underline"

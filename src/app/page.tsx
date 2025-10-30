@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 // Extend Window interface for Google
 declare global {
@@ -19,6 +19,26 @@ export default function LoginPage() {
   const [password, setPassword] = useState("password123");
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const searchParams = useSearchParams();
+
+   useEffect(() => {
+    const hash = window.location.hash; 
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash.substring(1)); 
+
+    const accessToken = params.get("access_token");
+
+    if (accessToken) {
+      localStorage.setItem("authToken", accessToken);
+
+      console.log("Token saved successfully:", {
+        accessToken,
+      });
+    } else {
+      console.warn("No access_token found in URL");
+    }
+  }, [searchParams, router]);
 
   // Password validation rules
   const validatePassword = (password: string): string[] => {
