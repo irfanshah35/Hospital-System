@@ -182,7 +182,7 @@ export default function AdminSideBar({
             },
             {
               title: "Rooms By Department",
-              // path: "/admin/rooms/rooms-by-department",
+              path: "/admin/rooms/rooms-by-department",
             },
             {
               title: "Add Room",
