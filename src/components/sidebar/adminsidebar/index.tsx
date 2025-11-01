@@ -170,7 +170,7 @@ export default function AdminSideBar({
           children: [
             {
               title: "Alloted Rooms",
-              path: "/admin/rooms/all-rooms"
+              path: "/admin/rooms/alloted-rooms"
             },
             {
               title: "New Allotment",
