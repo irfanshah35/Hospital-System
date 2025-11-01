@@ -5,7 +5,6 @@ import AdminSideBar from '@/components/sidebar/adminsidebar';
 import DoctorSideBar from '@/components/sidebar/doctorsidebar';
 import SideBar from '@/components/sidebar/patientsidebar';
 import MobileHeader from '@/m-components/m-header';
-import MobileSidebar from '@/m-components/m-sidebar';
 import { useThemeStore } from '@/store/store';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -48,37 +47,49 @@ const Layout = ({
       case "admin":
         return (
           <AdminSideBar
-            isCollapsed={isCollapsed}
+            isCollapsed={isMobile ? false : isCollapsed}
             setIsCollapsed={setIsCollapsed}
             isHovered={isHovered}
             setIsHovered={setIsHovered}
+            isMobile={isMobile}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
           />
         );
       case "doctor":
         return (
           <DoctorSideBar
-            isCollapsed={isCollapsed}
+            isCollapsed={isMobile ? false : isCollapsed}
             setIsCollapsed={setIsCollapsed}
             isHovered={isHovered}
             setIsHovered={setIsHovered}
+            isMobile={isMobile}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
           />
         );
       case "patient":
         return (
           <SideBar
-            isCollapsed={isCollapsed}
+            isCollapsed={isMobile ? false : isCollapsed}
             setIsCollapsed={setIsCollapsed}
             isHovered={isHovered}
             setIsHovered={setIsHovered}
+            isMobile={isMobile}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
           />
         );
       default:
         return (
           <AdminSideBar
-            isCollapsed={isCollapsed}
+            isCollapsed={isMobile ? false : isCollapsed}
             setIsCollapsed={setIsCollapsed}
             isHovered={isHovered}
             setIsHovered={setIsHovered}
+            isMobile={isMobile}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
           />
         );
     }
@@ -86,43 +97,38 @@ const Layout = ({
 
   return (
     <>
-      {/* Mobile Layout (< 768px) */}
+      {/* Conditional Header */}
       {isMobile ? (
-        <>
-          <MobileHeader
-            isMobileMenuOpen={isMobileMenuOpen}
-            setIsMobileMenuOpen={setIsMobileMenuOpen}
-          />
-          <MobileSidebar 
-            isOpen={isMobileMenuOpen}
-            setIsOpen={setIsMobileMenuOpen}
-            userRole={userRole || "admin"}
-          />
-          <div className="flex flex-col mt-[61px] w-full px-4">
-            {children}
-          </div>
-        </>
+        <MobileHeader
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
       ) : (
-        /* Desktop Layout (>= 768px) */
-        <>
-          <Header
-            isCollapsed={isCollapsed}
-            setIsCollapsed={setIsCollapsed}
-            shouldExpand={shouldExpand}
-          />
-          <div className="flex flex-row">
-            {renderSidebar()}
-            <div
-              className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
-                shouldExpand ? "pl-[260px]" : "pl-[60px]"
-              }`}
-            >
-              {children}
-            </div>
-            <RightSidebar />
-          </div>
-        </>
+        <Header
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          shouldExpand={shouldExpand}
+        />
       )}
+
+      {/* Sidebar - same for both mobile and desktop */}
+      <div className="flex flex-row">
+        {renderSidebar()}
+        
+        <div
+          className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
+            isMobile 
+              ? "pl-0" 
+              : shouldExpand 
+                ? "pl-[260px]" 
+                : "pl-[60px]"
+          }`}
+        >
+          {children}
+        </div>
+        
+        {!isMobile && <RightSidebar />}
+      </div>
     </>
   )
 }
