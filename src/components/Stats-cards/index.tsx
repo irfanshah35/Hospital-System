@@ -143,26 +143,28 @@ const StatsCard = () => {
 
   return (
     <div>
-      <div className={`flex items-center justify-between  px-6 py-3 mt-8 ${websiteTheme === 'dark' ? 'text-[#96A2B4]' : 'light-theme'}`}>
-        <div className="flex items-center space-x-2 ">
-          <h1 className="text-lg font-semibold ">Dashboard</h1>
-          <span className="">›</span>
-          <Home size={18} className="text-gray-500" />
-          <span className="">›</span>
-          <span className="">Dashboard</span>
-        </div>
-
-        <div className="flex items-center space-x-6 font-medium">
-          <Link href="/add-patient" className="flex items-center space-x-1 hover:text-blue-800 transition">
-            <UserPlus size={18} />
-            <span className="text-blue-600">Add Patient</span>
-          </Link>
-          <Link href="/appointment/appointment-calendar" className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
-            <CalendarDays size={18} />
-            <span className="text-blue-600">Appointment</span>
-          </Link>
-        </div>
+    <div className={`flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-6 py-3 mt-8 gap-3 md:gap-0 ${websiteTheme === 'dark' ? 'text-[#96A2B4]' : 'light-theme'}`}>
+      {/* Breadcrumb Section */}
+      <div className="flex items-center space-x-2">
+        <h1 className="text-base md:text-lg font-semibold">Dashboard</h1>
+        <span className="hidden sm:inline">›</span>
+        <Home size={18} className="text-gray-500 hidden sm:block" />
+        <span className="hidden sm:inline">›</span>
+        <span className="hidden sm:inline">Dashboard</span>
       </div>
+
+      {/* Action Buttons Section */}
+      <div className="flex items-center gap-3 md:gap-6 font-medium flex-wrap">
+        <Link href="/add-patient" className="flex items-center space-x-1 hover:text-blue-800 transition">
+          <UserPlus size={18} />
+          <span className="text-blue-600 text-sm md:text-base">Add Patient</span>
+        </Link>
+        <Link href="/appointment/appointment-calendar" className="flex items-center space-x-1 hover:text-blue-800 transition cursor-pointer">
+          <CalendarDays size={18} />
+          <span className="text-blue-600 text-sm md:text-base">Appointment</span>
+        </Link>
+      </div>
+    </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
         {stats.map((item, index) => {

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Extend Window interface for Google
 declare global {
@@ -21,6 +21,33 @@ export default function LoginPage() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash.substring(1));
+
+    const accessToken = params.get("access_token");
+    const error = params.get("error");
+
+    if (accessToken) {
+      localStorage.setItem("authToken", accessToken);
+
+      console.log("Token saved successfully:", {
+        accessToken,
+      });
+    }
+    else if (error) {
+      router.replace("/error-page");
+    }
+    else {
+      console.warn("error");
+    }
+
+  }, [searchParams, router]);
 
   // Password validation rules
   const validatePassword = (password: string): string[] => {
@@ -128,13 +155,11 @@ export default function LoginPage() {
       // Store user data in cookies for middleware
       document.cookie = `authToken=${response.credential}; path=/; max-age=604800; SameSite=Strict`;
       document.cookie = `userRole=${selectedRole}; path=/; max-age=604800; SameSite=Strict`;
-      document.cookie = `username=${
-        userData.name || userData.email
-      }; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `username=${userData.name || userData.email
+        }; path=/; max-age=604800; SameSite=Strict`;
       document.cookie = `userEmail=${userData.email}; path=/; max-age=604800; SameSite=Strict`;
-      document.cookie = `userPicture=${
-        userData.picture || ""
-      }; path=/; max-age=604800; SameSite=Strict`;
+      document.cookie = `userPicture=${userData.picture || ""
+        }; path=/; max-age=604800; SameSite=Strict`;
       document.cookie = `loginMethod=google; path=/; max-age=604800; SameSite=Strict`;
 
       // Also store in localStorage for client-side access
@@ -263,29 +288,26 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setSelectedRole("admin")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "admin" ? "bg-[#458E21]" : "bg-[#458E21]/70"
-                }`}
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "admin" ? "bg-[#458E21]" : "bg-[#458E21]/70"
+                  }`}
               >
                 Admin
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole("doctor")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "doctor" ? "bg-[#EB872B]" : "bg-[#EB872B]/70"
-                }`}
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "doctor" ? "bg-[#EB872B]" : "bg-[#EB872B]/70"
+                  }`}
               >
                 Doctor
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRole("patient")}
-                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${
-                  selectedRole === "patient"
+                className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "patient"
                     ? "bg-[#3C6EFD]"
                     : "bg-[#3C6EFD]/70"
-                }`}
+                  }`}
               >
                 Patient
               </button>
@@ -344,11 +366,10 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-1">
                     <div
-                      className={`text-xs ${
-                        password.length >= 8 && password.length <= 20
+                      className={`text-xs ${password.length >= 8 && password.length <= 20
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • 8-20 characters{" "}
                       {password.length >= 8 && password.length <= 20
@@ -356,30 +377,27 @@ export default function LoginPage() {
                         : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /[a-zA-Z]/.test(password)
+                      className={`text-xs ${/[a-zA-Z]/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 letter{" "}
                       {/[a-zA-Z]/.test(password) ? "✓" : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /\d/.test(password)
+                      className={`text-xs ${/\d/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 number {/\d/.test(password) ? "✓" : "✗"}
                     </div>
                     <div
-                      className={`text-xs ${
-                        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+                      className={`text-xs ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       • At least 1 special character{" "}
                       {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
@@ -411,11 +429,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={!isFormValid || isLoading}
-                className={`w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg transition mb-5 text-sm ${
-                  isFormValid && !isLoading
+                className={`w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg transition mb-5 text-sm ${isFormValid && !isLoading
                     ? "hover:opacity-90"
                     : "opacity-50 cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {isLoading ? "Logging in..." : "Login"}
               </button>

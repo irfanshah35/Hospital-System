@@ -60,7 +60,7 @@ export default function DashboardRecords() {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-4 px-2 font-semibold md:text-sm ">Patient Name</th>
-                  <th className="text-left py-4 px-2 font-semibold md:text-sm">Assigned Doctor</th>
+                  <th className="text-left py-4 px-8 font-semibold md:text-sm">Assigned Doctor</th>
                   <th className="text-left py-4 px-2 font-semibold md:text-sm">Date</th>
                   <th className="text-left py-4 px-2 font-semibold md:text-sm">Diseases</th>
                   <th className="text-left py-4 px-2 font-semibold md:text-sm">Actions</th>
@@ -75,7 +75,7 @@ export default function DashboardRecords() {
                         <span className="font-medium text-gray-800">{apt.patient}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2">
+                    <td className="py-4 px-12">
                       <span className="text-blue-600 font-medium">{apt.doctor}</span>
                     </td>
                     <td className="py-4 px-2">{apt.date}</td>
