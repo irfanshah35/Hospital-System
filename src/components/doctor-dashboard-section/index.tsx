@@ -80,8 +80,8 @@ export default function DoctorDashboardSection() {
     };
     return (
         <>
-            <div className={`pt-[20px] pl-[25px] ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
-            style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
+            <div className={`pt-[20px] px-[9px] md:pl-[25px] ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+                style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
                 <div className="block-header flex items-center justify-between mt-3 mb-3">
                     <div className="w-full">
                         <ul className="flex flex-wrap items-center gap-1 ">
@@ -120,14 +120,14 @@ export default function DoctorDashboardSection() {
 
 
 
-                <div className="flex gap-[24px]">
+                <div className="flex flex-col md:flex-row gap-[24px]">
 
                     <div className="w-full lg:w-8/12 order-2 lg:order-1 mt-[22px] mb-6 lg:mb-0">
 
 
                         <div className="bg-[var(--header-bg)] rounded-lg shadow p-[16px] border border-[var(--border-color)]">
-                            <div className="flex items-center gap-6">
-                                <div className="w-full md:w-8/12 mb-6 md:mb-0">
+                            <div className="flex flex-col md:flex-row items-center md:gap-6">
+                                <div className="w-full md:w-8/12 md:mb-6 ">
                                     <p className="font-medium text-sm mb-[18px] text-[var(--text-secondary)]">Welcome back</p>
                                     <div className="font-medium text-[25px] text-[#2195F3] mb-2">DR. Sarah Smith!</div>
                                     <p className="font-medium text-[14px] mb-6 text-[var(--text-secondary)]">Gynecologist, MBBS, MD</p>
@@ -160,16 +160,16 @@ export default function DoctorDashboardSection() {
 
 
                                 </div>
-                                <div className="w-full md:w-[146px]">
+                                <div className="w-full md:w-[146px] mt-[-3rem] md:mt-0">
                                     <img src="/assets/doctorDashboard/doctors.svg" alt="Doctor" className="w-full object-cover" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-6 mt-6">
-                            {/* 🩺 Appointments Card */}                           
-
-                            <div className="bg-[var(--header-bg)] rounded-lg shadow p-4 w-full max-w-[250px] mx-auto border border-[var(--border-color)]">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                            {/* 🩺 Appointments Card */}
+                            
+                            <div className="bg-[var(--header-bg)] rounded-lg shadow p-4 w-full md:max-w-[250px] mx-auto border border-[var(--border-color)]">
                                 {/* Header */}
                                 <div className="flex justify-between items-center mb-3">
                                     <div>
@@ -430,14 +430,14 @@ export default function DoctorDashboardSection() {
                     </div>
 
 
-                    <div className="w-full lg:w-4/12 order-1 lg:order-2 mt-[22px] pr-[25px] mb-6 lg:mb-0">
-                        <div className="bg-[var(--header-bg)] rounded-lg shadow p-6 flex flex-col items-center border border-[var(--border-color)]">
+                    <div className="w-full lg:w-4/12 order-1 lg:order-2 mt-[22px] md:pr-[25px] mb-6 lg:mb-0">
+                        <div className="bg-[var(--header-bg)] rounded-lg shadow p-6 flex flex-col items-center ">
                             <img src="/assets/doctorDashboard/doctor.jpg" className="rounded-full mb-3 w-[150px] h-[150px] object-cover" />
                             <h4 className="text-[#0d6efd] font-medium text-[calc(1.275rem+0.3vw)] mb-1">Dr. Ashton Cox</h4>
                             <p className="text-[var(--text-secondary)] text-center text-[14px] mb-[10px]">Orthopedics – Restar Hospital</p>
                             <hr className="w-full my-4 border-[var(--border-color)]" />
-                            <div className="w-full">
-                                <div className="rounded-[16px] flex items-center p-4 mb-4 bg-[var(--header-bg)] shadow-[0_8px_32px_#1f26871a] border border-[var(--border-color)]">
+                            <div className="w-[243.7px] mt-4 md:mt-0">
+                                <div className="rounded-[16px] flex items-center p-4 mb-8 md:mb-4 bg-[var(--header-bg)] shadow-[0_8px_32px_#1f26871a]">
                                     <div>
                                         <h6 className="font-semibold text-[var(--text-primary)]">3,897 Patients</h6>
                                         <p className="text-[var(--text-secondary)]">8,000 Patients Limit</p>
@@ -447,15 +447,15 @@ export default function DoctorDashboardSection() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-[12px]">
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 text-center rounded-[16px] py-4 border border-[var(--border-color)]">
+                                <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 pr-[12px]">
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 text-center rounded-[8px] py-4">
                                         <p className="label text-sm text-[var(--text-secondary)] whitespace-normal break-words">Surgery</p>
                                         <h4 className="value font-bold text-xl text-[var(--text-primary)] mb-2">578</h4>
                                         <p className="label text-sm text-[var(--text-secondary)] mt-4 whitespace-normal break-words">Patients</p>
                                         <h4 className="value font-bold text-xl text-[var(--text-primary)]">4,257</h4>
                                     </div>
 
-                                    <div className="bg-orange-50 dark:bg-orange-900/20 text-center rounded-[16px] py-4 border border-[var(--border-color)]">
+                                    <div className="bg-orange-50 dark:bg-orange-900/20 text-center rounded-[8px] py-4">
                                         <p className="label text-sm text-[var(--text-secondary)] whitespace-normal break-words">Consultation</p>
                                         <h4 className="value font-bold text-xl text-[var(--text-primary)] mb-2">387</h4>
                                         <p className="label text-sm text-[var(--text-secondary)] mt-4 whitespace-normal break-words">Appointment</p>
@@ -466,59 +466,59 @@ export default function DoctorDashboardSection() {
                             </div>
                         </div>
 
+                        <div className='w-full rounded-xl shadow-[0_8px_32px_#1f26871a]'>
+                            <div className="bg-[var(--header-bg)] rounded-xl shadow-[0_8px_32px_#1f26871a] mt-6 p-4 w-full max-w-sm border border-[var(--border-color)]">
+                                {/* Header */}
+                                <div className="flex justify-between items-center mb-3">
+                                    <h2 className="text-lg font-semibold text-[var(--text-primary)]">October 2025</h2>
+                                    <CalendarDays className="w-5 h-5 text-[var(--text-secondary)]" />
+                                </div>
 
+                                {/* Weekdays */}
+                                <div className="grid grid-cols-7 text-center text-[var(--text-secondary)] text-sm mb-2">
+                                    {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                                        <span key={i}>{d}</span>
+                                    ))}
+                                </div>
 
-                        <div className="bg-[var(--header-bg)] rounded-xl shadow-[0_8px_32px_#1f26871a] mt-6 p-4 w-full max-w-sm border border-[var(--border-color)]">
-                            {/* Header */}
-                            <div className="flex justify-between items-center mb-3">
-                                <h2 className="text-lg font-semibold text-[var(--text-primary)]">October 2025</h2>
-                                <CalendarDays className="w-5 h-5 text-[var(--text-secondary)]" />
-                            </div>
-
-                            {/* Weekdays */}
-                            <div className="grid grid-cols-7 text-center text-[var(--text-secondary)] text-sm mb-2">
-                                {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-                                    <span key={i}>{d}</span>
-                                ))}
-                            </div>
-
-                            {/* Dates */}
-                            <div className="grid grid-cols-7 gap-2 text-center text-[var(--text-primary)]">
-                                {Array.from({ length: 31 }, (_, i) => {
-                                    const day = i + 1;
-                                    const dayEvents = events[day] || [];
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={`py-1 rounded-lg flex flex-col items-center justify-center ${day === 22
-                                                ? "border border-blue-500 text-blue-600 font-semibold"
-                                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                }`}
-                                        >
-                                            <span>{day}</span>
-                                            <div className="flex gap-[2px] mt-[2px]">
-                                                {dayEvents.map((ev: any, idx: any) => (
-                                                    <span
-                                                        key={idx}
-                                                        className={`w-1.5 h-1.5 rounded-full ${colors[ev]}`}
-                                                    ></span>
-                                                ))}
+                                {/* Dates */}
+                                <div className="grid grid-cols-7 gap-2 text-center text-[var(--text-primary)]">
+                                    {Array.from({ length: 31 }, (_, i) => {
+                                        const day = i + 1;
+                                        const dayEvents = events[day] || [];
+                                        return (
+                                            <div
+                                                key={i}
+                                                className={`py-1 rounded-lg flex flex-col items-center justify-center ${day === 22
+                                                    ? "border border-blue-500 text-blue-600 font-semibold"
+                                                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                    }`}
+                                            >
+                                                <span>{day}</span>
+                                                <div className="flex gap-[2px] mt-[2px]">
+                                                    {dayEvents.map((ev: any, idx: any) => (
+                                                        <span
+                                                            key={idx}
+                                                            className={`w-1.5 h-1.5 rounded-full ${colors[ev]}`}
+                                                        ></span>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                        );
+                                    })}
+                                </div>
 
-                            {/* Legend */}
-                            <div className="flex flex-wrap gap-4 text-sm mt-4 justify-center text-[var(--text-primary)]">
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-blue-500 rounded-full"></span> Surgery
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-red-500 rounded-full"></span> Polyclinic
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-green-500 rounded-full"></span> Evaluation
+                                {/* Legend */}
+                                <div className="flex flex-wrap gap-4 text-sm mt-4 justify-center text-[var(--text-primary)]">
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-3 h-3 bg-blue-500 rounded-full"></span> Surgery
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-3 h-3 bg-red-500 rounded-full"></span> Polyclinic
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-3 h-3 bg-green-500 rounded-full"></span> Evaluation
+                                    </div>
                                 </div>
                             </div>
                         </div>
