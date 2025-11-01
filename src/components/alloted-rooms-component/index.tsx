@@ -1,117 +1,131 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, MessageCircle } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Link from 'next/link';
 
-interface DeathRecord {
-  id: string;
-  caseNumber: string;
+interface RoomAllotment {
+  id: number;
+  roomNo: string;
   patientName: string;
+  roomType: string;
+  bedNo: string;
+  admissionDate: string;
   gender: "Male" | "Female";
-  deathDate: string;
-  guardianName: string;
   mobile: string;
-  address: string;
-  notes: string;
+  doctorAssigned: string;
+  status: "Available" | "Occupied" | "Reserved" | "Maintenance" | "Discharged";
+  amountCharged: number;
 }
 
-export default function DeathRecordsComponent() {
+export default function AllotedRoomComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [deathRecords, setDeathRecords] = useState<DeathRecord[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [roomAllotments, setRoomAllotments] = useState<RoomAllotment[]>([]);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Static death records data matching the design
-  const staticDeathRecords: DeathRecord[] = [
+  // Static data matching the design
+  const staticRoomData: RoomAllotment[] = [
     {
-      id: "1",
-      caseNumber: "3453",
-      patientName: "Eva Willis",
-      gender: "Female",
-      deathDate: "02/25/2021",
-      guardianName: "Laurel Max...",
+      id: 1,
+      roomNo: "101",
+      patientName: "John Doe",
+      roomType: "Delux",
+      bedNo: "1",
+      admissionDate: "02/25/2024",
+      gender: "Male",
       mobile: "1234567890",
-      address: "76 E. Lo...",
-      notes: "Heart Attack"
+      doctorAssigned: "Dr. Jane Smith",
+      status: "Discharged",
+      amountCharged: 15000
     },
     {
-      id: "2",
-      caseNumber: "3276",
-      patientName: "Camille McK...",
+      id: 2,
+      roomNo: "102",
+      patientName: "Alice Johnson",
+      roomType: "Standard",
+      bedNo: "5",
+      admissionDate: "03/01/2024",
       gender: "Female",
-      deathDate: "02/22/2021",
-      guardianName: "Terry Ball",
-      mobile: "1234567891",
-      address: "36 Addi...",
-      notes: "Heart Attack"
+      mobile: "2345678901",
+      doctorAssigned: "Dr. Mark Wilson",
+      status: "Reserved",
+      amountCharged: 8000
     },
     {
-      id: "3",
-      caseNumber: "6823",
-      patientName: "Ramona Fre...",
+      id: 3,
+      roomNo: "103",
+      patientName: "Robert Brown",
+      roomType: "Delux",
+      bedNo: "7",
+      admissionDate: "03/10/2024",
       gender: "Male",
-      deathDate: "02/12/2021",
-      guardianName: "Johnny Mack",
-      mobile: "1234567892",
-      address: "374 HiC...",
-      notes: "Heart Attack"
+      mobile: "3456789012",
+      doctorAssigned: "Dr. Emily Davis",
+      status: "Available",
+      amountCharged: 20000
     },
     {
-      id: "4",
-      caseNumber: "1563",
-      patientName: "Serena Bond",
-      gender: "Male",
-      deathDate: "02/15/2021",
-      guardianName: "Marvin Miller",
-      mobile: "1234567893",
-      address: "8108 Co...",
-      notes: "Heart Attack"
-    },
-    {
-      id: "5",
-      caseNumber: "342",
-      patientName: "Mia Howell",
+      id: 4,
+      roomNo: "104",
+      patientName: "Emily Davis",
+      roomType: "Standard",
+      bedNo: "5",
+      admissionDate: "03/20/2024",
       gender: "Female",
-      deathDate: "02/05/2021",
-      guardianName: "Woody Robi...",
-      mobile: "1234567894",
-      address: "43 St M...",
-      notes: "Heart Attack"
+      mobile: "4567890123",
+      doctorAssigned: "Dr. James Miller",
+      status: "Maintenance",
+      amountCharged: 9000
     },
     {
-      id: "6",
-      caseNumber: "78",
-      patientName: "Vania Jacks...",
+      id: 5,
+      roomNo: "105",
+      patientName: "Michael Garcia",
+      roomType: "Delux",
+      bedNo: "6",
+      admissionDate: "03/25/2024",
       gender: "Male",
-      deathDate: "02/02/2021",
-      guardianName: "Baxter Burg...",
-      mobile: "1234567895",
-      address: "8642 Gr...",
-      notes: "Heart Attack"
+      mobile: "5678901234",
+      doctorAssigned: "Dr. Sarah Johnson",
+      status: "Discharged",
+      amountCharged: 25000
+    },
+    {
+      id: 6,
+      roomNo: "106",
+      patientName: "Sophia Williams",
+      roomType: "Standard",
+      bedNo: "3",
+      admissionDate: "04/01/2024",
+      gender: "Female",
+      mobile: "6789012345",
+      doctorAssigned: "Dr. John Anderson",
+      status: "Available",
+      amountCharged: 12000
     }
   ];
 
   // Fetch data (using static data for now)
-  const fetchDeathRecords = async () => {
+  const fetchRoomAllotments = async () => {
     setLoading(true);
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 500));
-      setDeathRecords(staticDeathRecords);
+      setRoomAllotments(staticRoomData);
     } catch (error) {
-      console.error("Failed to fetch death records:", error);
+      console.error("Failed to fetch room allotments:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDeathRecords();
+    fetchRoomAllotments();
   }, []);
 
   // Click outside dropdown
@@ -128,108 +142,121 @@ export default function DeathRecordsComponent() {
 
   const handleRefresh = () => {
     setAnimate(true);
-    fetchDeathRecords().then(() => {
+    fetchRoomAllotments().then(() => {
       setTimeout(() => setAnimate(false), 300);
     });
   };
 
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      deathRecords.map((item) => ({
-        "Case Number": item.caseNumber,
+      roomAllotments.map((item) => ({
+        "Room No": item.roomNo,
         "Patient Name": item.patientName,
+        "Room Type": item.roomType,
+        "Bed No": item.bedNo,
+        "Admission Date": item.admissionDate,
         "Gender": item.gender,
-        "Death Date": item.deathDate,
-        "Guardian Name": item.guardianName,
         "Mobile": item.mobile,
-        "Address": item.address,
-        "Notes": item.notes,
+        "Doctor Assigned": item.doctorAssigned,
+        "Status": item.status,
+        "Amount Charged": item.amountCharged,
       }))
     );
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Death Records");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Room Allotments");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "death-records.xlsx");
+    saveAs(blob, "room-allotments.xlsx");
   };
 
-  const removeData = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this death record?")) {
-      try {
-        setDeathRecords(prev => prev.filter(p => p.id !== id));
-        setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-      } catch (error) {
-        console.error("Delete error:", error);
-        alert("Error deleting death record");
-      }
-    }
-  };
-
-  const handleDeleteSelected = async () => {
+  const removeData = () => {
     if (selectedIds.length === 0) {
-      alert("Please select at least one death record to delete.");
+      alert("Please select at least one room allotment to delete.");
       return;
     }
-    if (window.confirm(`Delete ${selectedIds.length} death record(s)?`)) {
-      try {
-        setDeathRecords(prev => prev.filter(p => !selectedIds.includes(p.id)));
-        setSelectedIds([]);
-      } catch (error) {
-        console.error("Delete error:", error);
-        alert("Error deleting death records");
-      }
+    if (window.confirm(`Delete ${selectedIds.length} room allotment(s)?`)) {
+      setRoomAllotments(prev => prev.filter(p => !selectedIds.includes(p.id)));
+      setSelectedIds([]);
     }
   };
 
-  const handleEdit = (id: string) => {
-    console.log("Edit death record:", id);
-    // Add edit functionality here
-  };
-
-  const handleCheckboxChange = (id: string) => {
+  const handleCheckboxChange = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedIds(checked ? deathRecords.map(p => p.id) : []);
+    setSelectedIds(checked ? roomAllotments.map(p => p.id) : []);
   };
 
   useEffect(() => {
     const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
     if (selectAllCheckbox) {
       selectAllCheckbox.indeterminate =
-        selectedIds.length > 0 && selectedIds.length < deathRecords.length;
+        selectedIds.length > 0 && selectedIds.length < roomAllotments.length;
     }
-  }, [selectedIds, deathRecords]);
+  }, [selectedIds, roomAllotments]);
 
   const checkboxItems = [
     { label: "Checkbox", checked: true },
-    { label: "Case Number", checked: true },
+    { label: "Room No", checked: true },
     { label: "Patient Name", checked: true },
+    { label: "Room Type", checked: true },
+    { label: "Bed No", checked: true },
+    { label: "Admission Date", checked: true },
     { label: "Gender", checked: true },
-    { label: "Death Date", checked: true },
-    { label: "Guardian Name", checked: true },
     { label: "Mobile", checked: true },
-    { label: "Address", checked: true },
-    { label: "Notes", checked: true },
+    { label: "Doctor Assigned", checked: true },
+    { label: "Status", checked: true },
+    { label: "Amount Charged", checked: true },
     { label: "Actions", checked: true },
   ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Available":
+        return "bg-[#19875426] text-[#198754]";
+      case "Occupied":
+        return "bg-[#fd7e1426] text-[#fd7e14]";
+      case "Reserved":
+        return "bg-[#ffc10726] text-[#ffc107]";
+      case "Maintenance":
+        return "bg-[#6f42c126] text-[#6f42c1]";
+      case "Discharged":
+        return "bg-[#6c757d26] text-[#6c757d]";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const handleEditClick = (allotment: RoomAllotment) => {
+    console.log("Edit room allotment:", allotment);
+    // Add edit modal logic here if needed
+  };
+
+  const deleteSelectedAllotments = async (id: number) => {
+    try {
+      console.log("Deleting room allotment:", id);
+      setRoomAllotments(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting room allotment:", error);
+    }
+  };
 
   return (
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
           <div className="flex items-center space-x-2">
-            <h1 className="text-[20px] font-semibold">Death Records</h1>
+            <h1 className="text-[20px] font-semibold">All Allotment</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
             <span>›</span>
-            <span className="text-sm">Records</span>
+            <span className="text-sm">Room</span>
             <span>›</span>
-            <span className="text-sm">Death Records</span>
+            <span className="text-sm">All Allotment</span>
           </div>
         </div>
 
@@ -239,7 +266,7 @@ export default function DeathRecordsComponent() {
               {/* Header */}
               <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
                 <div className='flex items-center flex-[35%]'>
-                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Death Records</h1>
+                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Allotment List</h1>
                   <label className='relative'>
                     <input
                       type="text"
@@ -257,7 +284,7 @@ export default function DeathRecordsComponent() {
                 <div className="flex items-center gap-1">
                   {selectedIds.length > 0 && (
                     <button
-                      onClick={handleDeleteSelected}
+                      onClick={removeData}
                       className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
                       title="Delete Selected"
                     >
@@ -298,7 +325,7 @@ export default function DeathRecordsComponent() {
                     )}
                   </div>
 
-                  <Link href="/add-death-record">
+                  <Link href="/add-room-allotment">
                     <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
                       <CirclePlus className='w-[22px] h-[22px]' />
                     </button>
@@ -318,9 +345,9 @@ export default function DeathRecordsComponent() {
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
                   {loading ? (
-                    <div className="p-8 text-center text-gray-500">Loading death records...</div>
-                  ) : deathRecords.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No death records found</div>
+                    <div className="p-8 text-center text-gray-500">Loading room allotments...</div>
+                  ) : roomAllotments.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">No room allotments found</div>
                   ) : (
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-white">
@@ -333,20 +360,22 @@ export default function DeathRecordsComponent() {
                               className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                             />
                           </th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Case Number</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Room No</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Name</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Room Type</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Bed No</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Admission Date</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Death Date</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Guardian Name</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Address</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Notes</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Doctor Assigned</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Amount Charged</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
 
                       <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                        {deathRecords.map((item) => (
+                        {roomAllotments.map((item) => (
                           <tr key={item.id} className="transition-colors duration-150">
                             <td className="px-4 py-3 pl-[37px]">
                               <input
@@ -359,7 +388,7 @@ export default function DeathRecordsComponent() {
 
                             <td className="px-4 py-3 whitespace-nowrap">
                               <div className="text-sm font-medium text-gray-900">
-                                {item.caseNumber}
+                                {item.roomNo}
                               </div>
                             </td>
 
@@ -374,20 +403,24 @@ export default function DeathRecordsComponent() {
                               </div>
                             </td>
 
+                            <td className="px-4 py-3 text-sm whitespace-nowrap">
+                              {item.roomType}
+                            </td>
+
+                            <td className="px-4 py-3 text-sm whitespace-nowrap">
+                              {item.bedNo}
+                            </td>
+
+                            <td className="px-4 py-3 text-sm whitespace-nowrap">
+                              {item.admissionDate}
+                            </td>
+
                             <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
                                 item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
                               }`}>
                                 {item.gender}
                               </span>
-                            </td>
-
-                            <td className="px-4 py-3 text-sm whitespace-nowrap">
-                              {item.deathDate}
-                            </td>
-
-                            <td className="px-4 py-3 text-sm whitespace-nowrap">
-                              {item.guardianName}
                             </td>
 
                             <td className="px-4 py-3 text-sm whitespace-nowrap">
@@ -398,30 +431,35 @@ export default function DeathRecordsComponent() {
                             </td>
 
                             <td className="px-4 py-3 text-sm whitespace-nowrap">
-                              {item.address}
+                              {item.doctorAssigned}
+                            </td>
+
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${getStatusColor(item.status)}`}>
+                                {item.status}
+                              </span>
                             </td>
 
                             <td className="px-4 py-3 text-sm whitespace-nowrap">
-                              {item.notes}
+                              ₹{item.amountCharged.toLocaleString()}
                             </td>
 
                             <td className="px-4 py-3 text-sm font-medium">
                               <div className="flex space-x-2">
                                 <button 
-                                  onClick={() => handleEdit(item.id)}
+                                  onClick={() => handleEditClick(item)} 
                                   className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                   title="Edit"
                                 >
                                   <Edit className="w-5 h-5" />
                                 </button>
                                 <button 
-                                  onClick={() => removeData(item.id)}
+                                  onClick={() => deleteSelectedAllotments(item.id)} 
                                   className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                   title="Delete"
                                 >
                                   <Trash2 className="w-5 h-5" />
                                 </button>
-                               
                               </div>
                             </td>
                           </tr>
@@ -436,7 +474,7 @@ export default function DeathRecordsComponent() {
         </div>
 
         <div>
-          <Paginator totalItems={deathRecords.length} />
+          <Paginator totalItems={roomAllotments.length} />
         </div>
       </div>
 
