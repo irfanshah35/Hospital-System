@@ -191,7 +191,7 @@ export default function UpcomingSurgeries() {
 
   return (
     <div
-      className={`min-h-screen p-6 ${
+      className={`min-h-screen max-[767px]:mt-4 max-[767px]:px-[9px] md:p-6 ${
         websiteTheme === "dark" ? "dark-theme" : "light-theme"
       }`}
       style={{
@@ -502,7 +502,7 @@ export default function UpcomingSurgeries() {
                   stroke="#10B981"
                   strokeWidth="28"
                   strokeDasharray="257 440"
-                  strokeLinecap="round"
+                  // strokeLinecap="round"
                 />
 
                 {/* Yellow arc - Good (33.0%) */}
@@ -515,7 +515,7 @@ export default function UpcomingSurgeries() {
                   strokeWidth="28"
                   strokeDasharray="145 440"
                   strokeDashoffset="-257"
-                  strokeLinecap="round"
+                  // strokeLinecap="round"
                 />
 
                 {/* Red arc - Poor (8.6%) */}
@@ -528,18 +528,18 @@ export default function UpcomingSurgeries() {
                   strokeWidth="28"
                   strokeDasharray="38 440"
                   strokeDashoffset="-402"
-                  strokeLinecap="round"
+                  // strokeLinecap="round"
                 />
               </svg>
 
               {/* Percentage labels */}
-              <div className="absolute top-12 right-8 text-xs font-semibold text-[var(--text-primary)]">
+              <div className="absolute top-24 right-4 text-xs font-semibold text-[var(--text-primary)]">
                 58.4%
               </div>
-              <div className="absolute bottom-16 right-4 text-xs font-semibold text-[var(--text-primary)]">
+              <div className="absolute top-24 left-5 text-xs font-semibold text-[var(--text-primary)]">
                 33.0%
               </div>
-              <div className="absolute top-8 left-16 text-xs font-semibold text-[var(--text-primary)]">
+              <div className="absolute top-8 left-20 text-xs font-semibold text-[var(--text-primary)]">
                 8.6%
               </div>
             </div>
