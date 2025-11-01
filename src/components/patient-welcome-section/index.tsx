@@ -50,27 +50,28 @@ const PatientWelcomeSection = () => {
   ];
 
   return (
-    <div className={`p-6 space-y-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+    <div className={`p-4 md:p-6 space-y-4 md:space-y-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
          style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Welcome Card */}
-      <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-8 border border-[var(--border-color)]">
-        <div className="flex items-center gap-8">
-          {/* Doctor Illustrations - Reduced width */}
+      <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-4 md:p-8 border border-[var(--border-color)]">
+        <div className="flex flex-col md:flex-row items-center md:gap-8 gap-4">
+          {/* Doctor Illustrations */}
           <div className="flex-shrink-0">
-            <img src="/assets/welcome.png" alt="Doctors" className="w-48 h-auto" />
+            <img 
+              src="/assets/welcome.png" 
+              alt="Doctors" 
+              className="w-32 h-auto md:w-48" 
+            />
           </div>
 
           {/* Welcome Text */}
-          <div className="flex-1">
-            <p className="text-[var(--text-secondary)] text-sm mb-1">Welcome back</p>
-            <h2 className="text-3xl font-bold text-blue-500 mb-3">Cara Stevens!</h2>
-            <p className="text-[var(--text-primary)] leading-relaxed">
+          <div className="flex-1 text-center md:text-left">
+            <p className="text-[var(--text-secondary)] text-xs md:text-sm mb-1">Welcome back</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-500 mb-2 md:mb-3">Cara Stevens!</h2>
+            <p className="text-[var(--text-primary)] text-sm md:text-base leading-relaxed">
               We would like to take this opportunity to welcome you to our practice and to thank you for choosing our physicians to participate in your healthcare. We look forward to providing you with personalized, comprehensive health care focusing on wellness and prevention.
             </p>
           </div>
-
-          {/* Settings Icon */}
-       
         </div>
       </div>
 
@@ -80,11 +81,13 @@ const PatientWelcomeSection = () => {
           <div key={index} className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow border border-[var(--border-color)]">
             {/* Icon and Value in same row */}
             <div className="flex items-center justify-between mb-3">
-              <div className={`w-12 h-12 ${metric.iconBg} rounded-xl flex items-center justify-center ${metric.iconColor}`}>
-                {metric.icon}
+              <div className={`w-10 h-10 md:w-12 md:h-12 ${metric.iconBg} rounded-xl flex items-center justify-center ${metric.iconColor}`}>
+                <div className="scale-75 md:scale-100">
+                  {metric.icon}
+                </div>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-green-600">{metric.value}</p>
+                <p className="text-xl md:text-2xl font-bold text-green-600">{metric.value}</p>
               </div>
             </div>
 

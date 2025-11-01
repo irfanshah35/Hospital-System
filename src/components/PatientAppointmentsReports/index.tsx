@@ -36,74 +36,115 @@ export default function PatientAppointmentsReports() {
          style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Appointments Section */}
-        <div className="lg:col-span-2 bg-[var(--header-bg)] rounded-2xl shadow-lg p-6 h-[700px] flex flex-col border border-[var(--border-color)]">
-          {/* Tabs */}
-          <div className="flex border-b border-[var(--border-color)] mb-6">
-            <button
-              onClick={() => setActiveTab('upcoming')}
-              className={`flex-1 py-3 px-4 text-center font-semibold transition-colors relative ${
-                activeTab === 'upcoming' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
-              }`}
-            >
-              Upcoming Appointment
-              {activeTab === 'upcoming' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab('past')}
-              className={`flex-1 py-3 px-4 text-center font-semibold transition-colors relative ${
-                activeTab === 'past' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
-              }`}
-            >
-              Past Appointment
-              {activeTab === 'past' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
-              )}
-            </button>
-          </div>
+        <div className="lg:col-span-2 bg-[var(--header-bg)] rounded-2xl shadow-lg p-4 md:p-6 h-auto md:h-[700px] flex flex-col border border-[var(--border-color)]">
+      {/* Tabs */}
+      <div className="flex border-b border-[var(--border-color)] mb-4 md:mb-6">
+        <button
+          onClick={() => setActiveTab('upcoming')}
+          className={`flex-1 py-2 md:py-3 px-2 md:px-4 text-center text-sm md:text-base font-semibold transition-colors relative ${
+            activeTab === 'upcoming' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
+          }`}
+        >
+          <span className="hidden sm:inline">Upcoming Appointment</span>
+          <span className="sm:hidden">Upcoming</span>
+          {activeTab === 'upcoming' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('past')}
+          className={`flex-1 py-2 md:py-3 px-2 md:px-4 text-center text-sm md:text-base font-semibold transition-colors relative ${
+            activeTab === 'past' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
+          }`}
+        >
+          <span className="hidden sm:inline">Past Appointment</span>
+          <span className="sm:hidden">Past</span>
+          {activeTab === 'past' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+          )}
+        </button>
+      </div>
 
-          {/* Appointments List */}
-          <div className="flex-1 overflow-y-hidden space-y">
-            {appointments.map((apt) => (
-              <div key={apt.id} className="flex items-center gap-4 py-4 border-b border-[var(--border-color)] last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 transition rounded-lg px-2">
-                <img src={apt.image} alt={apt.doctor} className="w-14 h-14 rounded-full object-cover" />
+      {/* Appointments List */}
+      <div className="flex-1 overflow-y-auto space-y-3 md:space-y-0">
+        {appointments.map((apt) => (
+          <div key={apt.id} className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 py-3 md:py-4 border-b border-[var(--border-color)] last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 transition rounded-lg px-2">
+            {/* Doctor Image and Info - Mobile: Row, Desktop: Same */}
+            <div className="flex items-center gap-3 md:gap-4">
+              <img src={apt.image} alt={apt.doctor} className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover flex-shrink-0" />
+              
+              <div className="flex-1 md:hidden">
+                <div className="font-semibold text-sm text-[var(--text-primary)]">{apt.doctor}</div>
+                <div className="text-xs text-[var(--text-secondary)]">{apt.specialty}</div>
+              </div>
+            </div>
+
+            {/* Desktop Layout - Hidden on Mobile */}
+            <div className="hidden md:flex flex-1 gap-4">
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div>
+                  <div className="font-semibold text-[var(--text-primary)]">{apt.doctor}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">{apt.specialty}</div>
+                </div>
                 
-                <div className="flex-1 grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="font-semibold text-[var(--text-primary)]">{apt.doctor}</div>
-                    <div className="text-sm text-[var(--text-secondary)]">{apt.specialty}</div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-sm text-[var(--text-primary)] font-medium">{apt.date}</div>
-                    <div className="text-sm text-[var(--text-secondary)]">{apt.time}</div>
-                  </div>
-                </div>
-
-                <div className="flex-1 grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-[var(--text-secondary)] uppercase mb-1">Treatment</div>
-                    <div className="text-sm font-medium text-[var(--text-primary)]">{apt.treatment}</div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-xs text-[var(--text-secondary)] uppercase mb-1">Contact Number</div>
-                    <div className="text-sm text-[var(--text-primary)]">{apt.contact}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
+                <div>
+                  <div className="text-sm text-[var(--text-primary)] font-medium">{apt.date}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">{apt.time}</div>
                 </div>
               </div>
-            ))}
+
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs text-[var(--text-secondary)] uppercase mb-1">Treatment</div>
+                  <div className="text-sm font-medium text-[var(--text-primary)]">{apt.treatment}</div>
+                </div>
+                
+                <div>
+                  <div className="text-xs text-[var(--text-secondary)] uppercase mb-1">Contact Number</div>
+                  <div className="text-sm text-[var(--text-primary)]">{apt.contact}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Layout - Hidden on Desktop */}
+            <div className="md:hidden space-y-2 pl-0">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="text-xs text-[var(--text-secondary)] mb-0.5">Date & Time</div>
+                  <div className="text-sm text-[var(--text-primary)] font-medium">{apt.date}</div>
+                  <div className="text-xs text-[var(--text-secondary)]">{apt.time}</div>
+                </div>
+                <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="text-xs text-[var(--text-secondary)] mb-0.5">Treatment</div>
+                  <div className="text-sm font-medium text-[var(--text-primary)]">{apt.treatment}</div>
+                </div>
+                
+                <div>
+                  <div className="text-xs text-[var(--text-secondary)] mb-0.5">Contact</div>
+                  <div className="text-xs text-[var(--text-primary)]">{apt.contact}</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+    </div>
 
         {/* Reports/Documents Section */}
         <div className="bg-[var(--header-bg)] rounded-2xl shadow-lg p-6 h-[700px] flex flex-col border border-[var(--border-color)]">
