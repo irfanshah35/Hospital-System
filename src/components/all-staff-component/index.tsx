@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, Mail } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -30,7 +30,6 @@ export default function AllStaffComponent() {
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch data from API
   const fetchStaffs = async () => {
     setLoading(true);
     try {
@@ -48,7 +47,6 @@ export default function AllStaffComponent() {
     fetchStaffs();
   }, []);
 
-  // Click outside dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -133,14 +131,13 @@ export default function AllStaffComponent() {
   ];
 
   const deleteStaff = async (id: number) => {
- {
+    if (window.confirm("Are you sure you want to delete this staff member?")) {
       try {
         const response = await fetch(`/api/staff/${id}`, {
           method: "DELETE",
         });
         
         if (response.ok) {
-          // Remove from local state
           setStaffs(prev => prev.filter(staff => staff.id !== id));
           setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
         } else {
@@ -154,23 +151,23 @@ export default function AllStaffComponent() {
     }
   };
 
- const handleEditClick = (staff: Staff) => {
-  // Redirect to edit page with staff ID
-  router.push(`/admin/staff/edit-staff?id=${staff.id}`);
-};
+  const handleEditClick = (staff: Staff) => {
+    router.push(`/admin/staff/edit-staff?id=${staff.id}`);
+  };
 
   return (
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
+        {/* Breadcrumb */}
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-[20px] font-semibold">All Staff</h1>
-            <span className="text-[20px] font-bold">›</span>
-            <Home size={18} />
-            <span>›</span>
-            <span className="text-sm">Staffs</span>
-            <span>›</span>
-            <span className="text-sm">All Staff</span>
+          <div className="flex items-center space-x-2 flex-wrap text-sm md:text-base">
+            <h1 className="text-base md:text-[20px] font-semibold">All Staff</h1>
+            <span className="hidden sm:inline text-[20px] font-bold">›</span>
+            <Home size={18} className="hidden sm:block" />
+            <span className="hidden sm:inline">›</span>
+            <span className="hidden sm:inline text-sm">Staffs</span>
+            <span className="hidden sm:inline">›</span>
+            <span className="hidden sm:inline text-sm">All Staff</span>
           </div>
         </div>
 
@@ -178,14 +175,14 @@ export default function AllStaffComponent() {
           <div className="max-w-full">
             <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
-                <div className='flex items-center flex-[35%]'>
-                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Staff</h1>
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center flex-wrap gap-2">
+                <div className='flex items-center flex-1 min-w-[200px]'>
+                  <h1 className="m-0 text-sm md:text-[17px] leading-[28px] pr-[10px] font-medium">Staff</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -206,7 +203,7 @@ export default function AllStaffComponent() {
                     </button>
                   )}
 
-                  <div ref={detailref} className='relative'>
+                  <div ref={detailref} className='relative hidden md:block'>
                     <button
                       onClick={() => setDetailDropdown(!detailDropdown)}
                       className="flex justify-center items-center w-10 h-10 rounded-full text-indigo-500 cursor-pointer hover:bg-[#CED5E6] transition"
@@ -263,111 +260,208 @@ export default function AllStaffComponent() {
                   ) : staffs.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">No staff members found</div>
                   ) : (
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-white">
-                        <tr>
-                          <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <input
-                              type="checkbox"
-                              id="selectAll"
-                              onChange={(e) => handleSelectAll(e.target.checked)}
-                              className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                            />
-                          </th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Staff ID</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Designation</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date of Birth</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Join Date</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-
-                      <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                        {staffs.map((item) => (
-                          <tr key={item.id} className="transition-colors duration-150">
-                            <td className="px-4 py-3 pl-[37px]">
+                    <>
+                      {/* Desktop Table */}
+                      <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                        <thead className="bg-white">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               <input
                                 type="checkbox"
-                                checked={selectedIds.includes(item.id)}
-                                onChange={() => handleCheckboxChange(item.id)}
+                                id="selectAll"
+                                onChange={(e) => handleSelectAll(e.target.checked)}
                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                               />
-                            </td>
+                            </th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Staff ID</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Designation</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date of Birth</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Join Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
 
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                  <div className="text-sm font-medium">
-                                    {item.firstname} {item.lastname}
+                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                          {staffs.map((item) => (
+                            <tr key={item.id} className="transition-colors duration-150">
+                              <td className="px-4 py-3 pl-[37px]">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedIds.includes(item.id)}
+                                  onChange={() => handleCheckboxChange(item.id)}
+                                  className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                />
+                              </td>
+
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                    <div className="text-sm font-medium">
+                                      {item.firstname} {item.lastname}
+                                    </div>
                                   </div>
                                 </div>
+                              </td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">{item.staffid}</td>
+                              <td className="px-4 text-sm whitespace-nowrap">{item.designation}</td>
+                              <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
+
+                              <td className="px-4 whitespace-nowrap">
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
+                                  item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
+                                  item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
+                                  "bg-[#ffc10726] text-[#ffc107]"
+                                }`}>
+                                  {item.gender}
+                                </span>
+                              </td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">
+                                {item.dob ? new Date(item.dob).toLocaleDateString() : "-"}
+                              </td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  <Phone className="w-4 h-4 text-[#198754] mr-2" />
+                                  <span>{item.mobile}</span>
+                                </div>
+                              </td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  <Mail className="w-4 h-4 text-red-500 mr-2" />
+                                  <span>{item.email}</span>
+                                </div>
+                              </td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">
+                                {item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}
+                              </td>
+
+                              <td className="px-4 text-sm font-medium">
+                                <div className="flex space-x-2">
+                                  <button 
+                                    onClick={() => handleEditClick(item)} 
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button 
+                                    onClick={() => deleteStaff(item.id)} 
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {/* Mobile Cards */}
+                      <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                        {staffs.map((item) => (
+                          <div key={item.id} className="border-b border-gray-200 py-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <input
+                                checked={selectedIds.includes(item.id)}
+                                onChange={() => handleCheckboxChange(item.id)}
+                                type="checkbox" 
+                                className="w-4 h-4 text-blue-600 rounded" 
+                              />
+                            </div>
+                            
+                            <div className="space-y-2 text-sm">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Name:</span>
+                                <div className='flex items-center gap-2'>
+                                  <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <span>{item.firstname} {item.lastname}</span>
+                                </div>
                               </div>
-                            </td>
 
-                            <td className="px-4 text-sm whitespace-nowrap">{item.staffid}</td>
-
-                            <td className="px-4 text-sm whitespace-nowrap">{item.designation}</td>
-
-                            <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
-
-                            <td className="px-4 whitespace-nowrap">
-                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
-                                item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
-                                "bg-[#ffc10726] text-[#ffc107]"
-                              }`}>
-                                {item.gender}
-                              </span>
-                            </td>
-
-                            <td className="px-4 text-sm whitespace-nowrap">
-                              {item.dob ? new Date(item.dob).toLocaleDateString() : "-"}
-                            </td>
-
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                <Phone className="w-4 h-4 text-[#198754] mr-2" />
-                                <span>{item.mobile}</span>
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Staff ID:</span>
+                                <span>{item.staffid}</span>
                               </div>
-                            </td>
 
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                <Mail className="w-4 h-4 text-red-500 mr-2" />
-                                <span>{item.email}</span>
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Designation:</span>
+                                <span>{item.designation}</span>
                               </div>
-                            </td>
 
-                            <td className="px-4 text-sm whitespace-nowrap">
-                              {item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}
-                            </td>
-
-                            <td className="px-4 text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button 
-                                  onClick={() => handleEditClick(item)} 
-                                  className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                >
-                                  <Edit className="w-5 h-5" />
-                                </button>
-                                <button 
-                                  onClick={() => deleteStaff(item.id)} 
-                                  className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                >
-                                  <Trash2 className="w-5 h-5" />
-                                </button>
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Department:</span>
+                                <span>{item.department}</span>
                               </div>
-                            </td>
-                          </tr>
+
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Gender:</span>
+                                <span className={`px-2 py-1 text-xs font-semibold rounded ${
+                                  item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
+                                  item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
+                                  "bg-[#ffc10726] text-[#ffc107]"
+                                }`}>
+                                  {item.gender}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">DOB:</span>
+                                <span>{item.dob ? new Date(item.dob).toLocaleDateString() : "-"}</span>
+                              </div>
+
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Mobile:</span>
+                                <div className='flex items-center gap-1'>
+                                  <Phone className="w-4 h-4 text-[#198754]" />
+                                  <span>{item.mobile}</span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Email:</span>
+                                <div className='flex items-center gap-1'>
+                                  <Mail className="w-4 h-4 text-red-500" />
+                                  <span className="truncate">{item.email}</span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-24">Join Date:</span>
+                                <span>{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
+                              </div>
+
+                              <div className="flex items-center gap-3 pt-2">
+                                <span className="font-semibold w-24">Actions:</span>
+                                <div className="flex space-x-2">
+                                  <button 
+                                    onClick={() => handleEditClick(item)} 
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full"
+                                  >
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button 
+                                    onClick={() => deleteStaff(item.id)} 
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -391,7 +485,6 @@ export default function AllStaffComponent() {
   );
 }
 
-// Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
@@ -400,8 +493,8 @@ function Paginator({ totalItems = 0 }: { totalItems: number }) {
   const endItem = Math.min(page * itemsPerPage, totalItems);
 
   return (
-    <div className="flex items-center justify-end gap-8 border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 rounded-b-xl shadow-sm">
-      <div className="font-medium">
+    <div className="flex flex-col sm:flex-row items-center justify-between sm:justify-end gap-4 sm:gap-8 border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 rounded-b-xl shadow-sm">
+      <div className="font-medium text-xs sm:text-sm">
         {totalItems > 0 ? `${startItem} – ${endItem} of ${totalItems}` : "0 – 0 of 0"}
       </div>
       <div className="flex items-center space-x-2">

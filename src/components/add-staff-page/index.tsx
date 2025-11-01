@@ -83,7 +83,6 @@ export default function AddStaffPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type, checked, files } = e.target as any;
         
-        // Clear error when user starts typing
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: "" }));
         }
@@ -97,133 +96,108 @@ export default function AddStaffPage() {
         }
     };
 
- const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateStep(5)) {
-        setSubmitMessage({ type: 'error', text: 'Please fix all validation errors before submitting.' });
-        return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitMessage({ type: '', text: '' });
-
-    try {
-        // Prepare the payload for API - EXACT MATCH to database schema
-        const payload = {
-            // Personal Info
-            firstname: formData.firstName,
-            lastname: formData.lastName,
-            gender: formData.gender,
-            dob: formData.dob, // Date type
-            bloodgroup: formData.bloodGroup,
-            maritalstatus: formData.maritalStatus,
-            nationality: formData.nationality,
-            
-            // Contact Info
-            email: formData.email,
-            mobile: formData.mobile,
-            emergencyname: formData.emergencyName,
-            emergencycontact: formData.emergencyContact,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            postalcode: formData.postalCode,
-            country: formData.country,
-            
-            // Professional Info
-            staffid: formData.staffId,
-            joindate: formData.joinDate, // Date type
-            designation: formData.designation,
-            department: formData.department,
-            specialization: formData.specialization,
-            experience: parseInt(formData.experience) || 0, // Integer type
-            employmenttype: formData.employmentType,
-            shift: formData.shift,
-            
-            // Qualifications
-            education: formData.education,
-            certifications: formData.certifications,
-            licensenumber: formData.licenseNumber,
-            licenseexpiry: formData.licenseExpiry, // Date type
-            skills: formData.skills,
-            
-            // Account Info
-            username: formData.username,
-            password: formData.password,
-            bio: formData.bio,
-            // photo: formData.photo, // jsonb type - handle separately if needed
-            agreed: agreed, // boolean type
-            // created_at will be automatically set by database
-        };
-
-        console.log("Submitting staff data:", payload);
-
-        // API call
-        const response = await fetch("/api/staff", {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            setSubmitMessage({ 
-                type: 'success', 
-                text: '✅ Staff member added successfully!' 
-            });
-            
-            // Reset form
-            setFormData({
-                firstName: "", lastName: "", gender: "", dob: "", bloodGroup: "", maritalStatus: "", nationality: "",
-                email: "", mobile: "", emergencyName: "", emergencyContact: "", address: "", city: "", state: "", postalCode: "", country: "",
-                staffId: "", joinDate: "", designation: "", department: "", specialization: "", experience: "", employmentType: "", shift: "",
-                education: "", certifications: "", licenseNumber: "", licenseExpiry: "", skills: "",
-                username: "", password: "", confirmPassword: "", bio: "", photo: null, agreed: false
-            });
-            setAgreed(false);
-            setStep(1);
-            
-        } else {
-            throw new Error(result.error || result.message || 'Failed to add staff member');
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!validateStep(5)) {
+            setSubmitMessage({ type: 'error', text: 'Please fix all validation errors before submitting.' });
+            return;
         }
 
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        setSubmitMessage({ 
-            type: 'error', 
-            text: error instanceof Error ? error.message : '❌ Failed to add staff member. Please try again.' 
-        });
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+        setIsSubmitting(true);
+        setSubmitMessage({ type: '', text: '' });
+
+        try {
+            const payload = {
+                firstname: formData.firstName,
+                lastname: formData.lastName,
+                gender: formData.gender,
+                dob: formData.dob,
+                bloodgroup: formData.bloodGroup,
+                maritalstatus: formData.maritalStatus,
+                nationality: formData.nationality,
+                email: formData.email,
+                mobile: formData.mobile,
+                emergencyname: formData.emergencyName,
+                emergencycontact: formData.emergencyContact,
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                postalcode: formData.postalCode,
+                country: formData.country,
+                staffid: formData.staffId,
+                joindate: formData.joinDate,
+                designation: formData.designation,
+                department: formData.department,
+                specialization: formData.specialization,
+                experience: parseInt(formData.experience) || 0,
+                employmenttype: formData.employmentType,
+                shift: formData.shift,
+                education: formData.education,
+                certifications: formData.certifications,
+                licensenumber: formData.licenseNumber,
+                licenseexpiry: formData.licenseExpiry,
+                skills: formData.skills,
+                username: formData.username,
+                password: formData.password,
+                bio: formData.bio,
+                agreed: agreed,
+            };
+
+            const response = await fetch("/api/staff", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setSubmitMessage({ type: 'success', text: '✅ Staff member added successfully!' });
+                setFormData({
+                    firstName: "", lastName: "", gender: "", dob: "", bloodGroup: "", maritalStatus: "", nationality: "",
+                    email: "", mobile: "", emergencyName: "", emergencyContact: "", address: "", city: "", state: "", postalCode: "", country: "",
+                    staffId: "", joinDate: "", designation: "", department: "", specialization: "", experience: "", employmentType: "", shift: "",
+                    education: "", certifications: "", licenseNumber: "", licenseExpiry: "", skills: "",
+                    username: "", password: "", confirmPassword: "", bio: "", photo: null, agreed: false
+                });
+                setAgreed(false);
+                setStep(1);
+            } else {
+                throw new Error(result.error || result.message || 'Failed to add staff member');
+            }
+        } catch (error) {
+            setSubmitMessage({ 
+                type: 'error', 
+                text: error instanceof Error ? error.message : '❌ Failed to add staff member. Please try again.' 
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
-        <div className="px-6 py-3 mt-1">
-            <div className="flex items-center space-x-2">
-                <h1 className="text-lg font-semibold">Add Staffs</h1>
-                <span>›</span>
-                <Home size={18} className="text-gray-500" />
-                <span>›</span>
-                <span>Staffs</span>
-                <span>›</span>
-                <span>Add Staffs</span>
+        <div className="px-4 md:px-6 py-3 mt-1">
+            {/* Breadcrumb */}
+            <div className="flex items-center space-x-2 text-sm md:text-base flex-wrap">
+                <h1 className="text-base md:text-lg font-semibold">Add Staffs</h1>
+                <span className="hidden sm:inline">›</span>
+                <Home size={18} className="text-gray-500 hidden sm:block" />
+                <span className="hidden sm:inline">›</span>
+                <span className="hidden sm:inline">Staffs</span>
+                <span className="hidden sm:inline">›</span>
+                <span className="hidden sm:inline">Add Staffs</span>
             </div>
 
-            <div className="card mt-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="card mt-4 bg-white p-3 md:p-4 rounded-xl shadow-sm border border-gray-200">
                 <div className="flex items-center mb-2">
-                    <UserPlus className="mr-2 w-5 h-5" />
-                    <h2 className="text-lg font-semibold">Add New Staff Member</h2>
+                    <UserPlus className="mr-2 w-4 h-4 md:w-5 md:h-5" />
+                    <h2 className="text-base md:text-lg font-semibold">Add New Staff Member</h2>
                 </div>
-                <p className="text-sm text-gray-500 mb-4">Complete all required fields for staff onboarding</p>
+                <p className="text-xs md:text-sm text-gray-500 mb-4">Complete all required fields for staff onboarding</p>
 
-                {/* Success/Error Message */}
                 {submitMessage.text && (
-                    <div className={`mb-4 p-3 rounded-md text-sm ${
+                    <div className={`mb-4 p-3 rounded-md text-xs md:text-sm ${
                         submitMessage.type === 'success' 
                             ? "bg-green-50 text-green-700 border border-green-200" 
                             : "bg-red-50 text-red-700 border border-red-200"
@@ -232,8 +206,8 @@ export default function AddStaffPage() {
                     </div>
                 )}
 
-                {/* Progress Bar */}
-                <div className="flex items-center justify-between w-full mb-6">
+                {/* Desktop Progress Bar */}
+                <div className="hidden md:flex items-center justify-between w-full mb-6">
                     {steps.map((label, index) => (
                         <React.Fragment key={index}>
                             <div onClick={() => handleStepClick(index)} className="flex items-center cursor-pointer select-none">
@@ -246,6 +220,25 @@ export default function AddStaffPage() {
                             {index < steps.length - 1 && <div className="flex-1 h-[2px] mx-2 transition-colors duration-300 bg-gray-200"></div>}
                         </React.Fragment>
                     ))}
+                </div>
+
+                {/* Mobile Progress Bar */}
+                <div className="md:hidden mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white font-semibold text-sm">
+                                {step}
+                            </div>
+                            <div>
+                                <div className="text-xs text-gray-500">Step {step} of {steps.length}</div>
+                                <div className="text-sm font-semibold text-gray-800">{steps[step - 1]}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-300 ease-in-out"
+                            style={{ width: `${(step / steps.length) * 100}%` }}></div>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -262,9 +255,9 @@ export default function AddStaffPage() {
 
 function PersonalInfo({ formData, handleChange, nextStep, errors }: any) {
     return (
-        <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        <div className="space-y-4 md:space-y-6">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800">Personal Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6 md:mb-8">
                 <FloatingInput label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} icon={User} required error={errors.firstName} />
                 <FloatingInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} icon={User} required error={errors.lastName} />
                 <FloatingSelect label="Gender" name="gender" value={formData.gender} onChange={handleChange} icon={Users} required error={errors.gender}>
@@ -275,7 +268,7 @@ function PersonalInfo({ formData, handleChange, nextStep, errors }: any) {
                 </FloatingSelect>
                 <FloatingInput type="date" label="Date of Birth" name="dob" value={formData.dob} onChange={handleChange} required error={errors.dob} />
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-5 my-12'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 my-8 md:my-12'>
                 <FloatingSelect label="Blood Group" name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} icon={Droplet}>
                     <option value="">Select</option>
                     <option value="A+">A+</option>
@@ -291,8 +284,8 @@ function PersonalInfo({ formData, handleChange, nextStep, errors }: any) {
                 <FloatingInput label="Nationality" name="nationality" value={formData.nationality} onChange={handleChange} icon={Flag} />
             </div>
             <div className="flex justify-end">
-                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition">
-                    <MoveRight className="w-5 h-5" /> Next
+                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition text-sm md:text-base">
+                    <MoveRight className="w-4 h-4 md:w-5 md:h-5" /> Next
                 </button>
             </div>
         </div>
@@ -301,9 +294,9 @@ function PersonalInfo({ formData, handleChange, nextStep, errors }: any) {
 
 function ContactInfoForm({ formData, handleChange, nextStep, prevStep, errors }: any) {
     return (
-        <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-gray-800">Contact Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4 md:space-y-6">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800">Contact Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <FloatingInput type="email" label="Email" name="email" value={formData.email} onChange={handleChange} icon={Mail} required error={errors.email} />
                 <FloatingInput type="tel" label="Mobile" name="mobile" value={formData.mobile} onChange={handleChange} icon={Phone} required error={errors.mobile} />
                 <FloatingInput label="Emergency Contact Name" name="emergencyName" value={formData.emergencyName} onChange={handleChange} icon={Contact} />
@@ -312,18 +305,18 @@ function ContactInfoForm({ formData, handleChange, nextStep, prevStep, errors }:
                     <FloatingTextarea label="Address" name="address" value={formData.address} onChange={handleChange} icon={Home} required error={errors.address} />
                 </div>
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-5'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5'>
                 <FloatingInput label="City" name="city" value={formData.city} onChange={handleChange} />
                 <FloatingInput label="State/Province" name="state" value={formData.state} onChange={handleChange} />
                 <FloatingInput label="Postal Code" name="postalCode" value={formData.postalCode} onChange={handleChange} />
                 <FloatingInput label="Country" name="country" value={formData.country} onChange={handleChange} />
             </div>
             <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
-                    <ChevronLeft className="w-5 h-5" /> Back
+                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition text-sm md:text-base">
+                    <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /> Back
                 </button>
-                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition">
-                    <MoveRight className="w-5 h-5" /> Next
+                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition text-sm md:text-base">
+                    <MoveRight className="w-4 h-4 md:w-5 md:h-5" /> Next
                 </button>
             </div>
         </div>
@@ -332,9 +325,9 @@ function ContactInfoForm({ formData, handleChange, nextStep, prevStep, errors }:
 
 function ProfessionalInfo({ formData, handleChange, nextStep, prevStep, errors }: any) {
     return (
-        <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Professional Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4 md:space-y-5">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Professional Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <FloatingInput label="Staff ID" name="staffId" value={formData.staffId} onChange={handleChange} icon={IdCard} required error={errors.staffId} />
                 <FloatingInput type="date" label="Join Date" name="joinDate" value={formData.joinDate} onChange={handleChange} />
                 <FloatingInput label="Designation" name="designation" value={formData.designation} onChange={handleChange} icon={BriefcaseBusiness} required error={errors.designation} />
@@ -361,11 +354,11 @@ function ProfessionalInfo({ formData, handleChange, nextStep, prevStep, errors }
                 </FloatingSelect>
             </div>
             <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
-                    <ChevronLeft className="w-5 h-5" /> Back
+                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition text-sm md:text-base">
+                    <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /> Back
                 </button>
-                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition">
-                    <MoveRight className="w-5 h-5" /> Next
+                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition text-sm md:text-base">
+                    <MoveRight className="w-4 h-4 md:w-5 md:h-5" /> Next
                 </button>
             </div>
         </div>
@@ -374,9 +367,9 @@ function ProfessionalInfo({ formData, handleChange, nextStep, prevStep, errors }
 
 function Qualifications({ formData, handleChange, nextStep, prevStep, errors }: any) {
     return (
-        <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Qualifications & Certifications</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4 md:space-y-5">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Qualifications & Certifications</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <div className="md:col-span-2">
                     <FloatingTextarea label="Education" name="education" value={formData.education} onChange={handleChange} icon={GraduationCap} required error={errors.education} rows={3} />
                 </div>
@@ -390,11 +383,11 @@ function Qualifications({ formData, handleChange, nextStep, prevStep, errors }: 
                 </div>
             </div>
             <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
-                    <ChevronLeft className="w-5 h-5" /> Back
+                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition text-sm md:text-base">
+                    <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /> Back
                 </button>
-                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition">
-                    <MoveRight className="w-5 h-5" /> Next
+                <button type="button" onClick={nextStep} className="border border-[#1447e6] text-white bg-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-700 transition text-sm md:text-base">
+                    <MoveRight className="w-4 h-4 md:w-5 md:h-5" /> Next
                 </button>
             </div>
         </div>
@@ -409,9 +402,9 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
     const handleFileClick = () => fileInputRef.current?.click();
 
     return (
-        <div className="space-y-5">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Account Setup</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4 md:space-y-5">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Account Setup</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <div className="md:col-span-2">
                     <FloatingInput label="Username" name="username" value={formData.username} onChange={handleChange} icon={User} required error={errors.username} />
                 </div>
@@ -421,12 +414,12 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                     showPassword={showConfirmPassword} setShowPassword={setShowConfirmPassword} required error={errors.confirmPassword} />
                 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">Profile Photo</label>
-                    <div onClick={handleFileClick} className="border border-dashed border-gray-300 rounded-md p-5 flex items-center cursor-pointer hover:border-blue-500 transition h-[96px]">
-                        <button type="button" className="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-[#1447e6] shadow-sm hover:bg-blue-50 font-medium">
+                    <label className="block text-xs md:text-sm font-medium mb-2">Profile Photo</label>
+                    <div onClick={handleFileClick} className="border border-dashed border-gray-300 rounded-md p-4 md:p-5 flex items-center cursor-pointer hover:border-blue-500 transition h-20 md:h-[96px]">
+                        <button type="button" className="bg-white border border-gray-300 rounded-full px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm text-[#1447e6] shadow-sm hover:bg-blue-50 font-medium">
                             Choose file
                         </button>
-                        <span className="ml-1 text-sm text-gray-600">or drag and drop file here</span>
+                        <span className="ml-1 text-xs md:text-sm text-gray-600">or drag and drop file here</span>
                     </div>
                     <input ref={fileInputRef} name="photo" type="file" accept="image/*" onChange={handleChange} className="hidden" />
                 </div>
@@ -438,23 +431,23 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                 <div className="md:col-span-2 flex items-center gap-2">
                     <input type="checkbox" id="agreed" name="agreed" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} 
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300" />
-                    <label htmlFor="agreed" className="text-sm">
+                    <label htmlFor="agreed" className="text-xs md:text-sm">
                         I agree to the <a href="#" className="underline-none">terms and conditions</a>
                     </label>
-                    {errors.agreed && <span className="text-red-500 text-sm">{errors.agreed}</span>}
+                    {errors.agreed && <span className="text-red-500 text-xs">{errors.agreed}</span>}
                 </div>
             </div>
             <div className="flex justify-between">
-                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition">
-                    <ChevronLeft className="w-5 h-5" /> Back
+                <button type="button" onClick={prevStep} className="border border-gray-300 text-[#1447e6] px-5 md:px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-50 transition text-sm md:text-base">
+                    <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /> Back
                 </button>
                 <button type="submit" disabled={!agreed || isSubmitting}
-                    className={`px-8 py-2 rounded-full flex items-center gap-2 transition ${
+                    className={`px-6 md:px-8 py-2 rounded-full flex items-center gap-2 transition text-sm md:text-base ${
                         agreed && !isSubmitting 
                             ? "bg-green-600 text-white hover:bg-green-700" 
                             : "bg-gray-400 text-gray-600 cursor-not-allowed"
                     }`}>
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4 md:w-5 md:h-5" />
                     {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
             </div>
@@ -462,20 +455,19 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
     )
 }
 
-// Reusable Components with Error Handling
 function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, showPassword, setShowPassword, error }: any) {
     const isDate = type === "date";
     return (
         <div className="relative">
             <input type={type} name={name} value={value} onChange={onChange} placeholder=" " required={required}
-                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : ''}`} />
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : ''}`} />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
-            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-5 h-5 text-gray-500" />}
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
             {type === "password" && (
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-3.5 right-3 text-gray-500">
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <EyeOff className="w-4 h-4 md:w-5 md:h-5" /> : <Eye className="w-4 h-4 md:w-5 md:h-5" />}
                 </button>
             )}
             {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
@@ -487,15 +479,15 @@ function FloatingSelect({ label, name, value, onChange, icon: Icon, required = f
     return (
         <div className="relative">
             <select name={name} value={value} onChange={onChange} required={required}
-                className={`peer w-full appearance-none rounded-md border bg-white px-10 pt-4 pb-4 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : ''}`}>
+                className={`peer w-full appearance-none rounded-md border bg-white px-10 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : ''}`}>
                 <option value=""></option>
                 {children}
             </select>
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
-            {Icon && <Icon className="absolute top-3.5 right-3 w-5 h-5 text-gray-500" />}
-            <ChevronDown className="absolute top-4 right-10 w-5 h-5 text-gray-500" />
+            {Icon && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            <ChevronDown className="absolute top-4 right-10 w-4 h-4 md:w-5 md:h-5 text-gray-500" />
             {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
         </div>
     )
@@ -505,11 +497,11 @@ function FloatingTextarea({ label, name, value, onChange, icon: Icon, required =
     return (
         <div className="relative">
             <textarea name={name} value={value} onChange={onChange} placeholder=" " required={required} rows={rows}
-                className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : ''}`} />
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : ''}`} />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
-            {Icon && <Icon className="absolute top-6 right-3 w-5 h-5 text-gray-500" />}
+            {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
             {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
         </div>
     )
