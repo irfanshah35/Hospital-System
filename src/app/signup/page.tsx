@@ -186,6 +186,7 @@ export default function SignupPage() {
             }
 
             alert("Registration successful! Please check your email to verify your account.");
+            router.push("/varification");
             setUsername("");
             setEmail("");
             setPassword("");
