@@ -178,7 +178,7 @@ export default function DoctorAppointmentsSection() {
   const expectedHours = 10000;
 
   return (
-    <div className={`min-h-screen p-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
+    <div className={`min-h-screen max-[767px]:px-[9px] md:p-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
     style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Top Three Cards */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
