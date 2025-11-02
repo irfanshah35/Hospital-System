@@ -41,7 +41,7 @@ export default function PatientProfilePage() {
       <div className="min-h-screen">
         {/* Breadcrumb */}
         <div className=" px-6 py-2 mt-2">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center flex-wrap space-x-2 text-sm text-gray-600">
             <span className="font-semibold text-[20px]">Profile</span>
             <span className='text-[20px] font-semibold'>›</span>
             <Home size={16} />
@@ -78,7 +78,7 @@ export default function PatientProfilePage() {
 
               <div className="bg-white shadow-md rounded-2xl mb-6 overflow-hidden">
 
-                <div className="flex items-center justify-center gap-2 border-b border-gray-300 px-[15px] py-[15px]">
+                <div className="flex items-center gap-2 border-b border-gray-300 px-[15px] py-[15px]">
                   <CircleUser className='w-5 h-5' />
                   <h2 className="text-lg font-semibold text-gray-800">Personal Information</h2>
                 </div>
@@ -119,7 +119,7 @@ export default function PatientProfilePage() {
 
               <div className="bg-white shadow-md rounded-2xl mb-6 overflow-hidden">
 
-                <div className="flex items-center justify-center gap-2 border-b border-gray-300 px-[15px] py-[15px]">
+                <div className="flex items-center gap-2 border-b border-gray-300 px-[15px] py-[15px]">
                   <IdCard className='w-5 h-5' />
                   <h2 className="text-lg font-semibold text-gray-800">Contact &amp; Address</h2>
                 </div>

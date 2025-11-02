@@ -161,7 +161,7 @@ export default function BillListComponent() {
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-wrap space-x-2">
             <h1 className="text-[20px] font-semibold">Bill List</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
@@ -176,14 +176,14 @@ export default function BillListComponent() {
           <div className="max-w-full">
             <div className="bg-[#dce3f0] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center justify-between">
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap justify-between">
                 <div className='flex items-center'>
                   <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium text-gray-700">Bill List</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full max-w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -254,7 +254,7 @@ export default function BillListComponent() {
               {/* Table */}
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
-                  <table className="min-w-full divide-y divide-gray-200">
+                  <table className="min-w-full divide-y divide-gray-200 hidden md:table">
                     <thead className="bg-white">
                       <tr>
                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
@@ -293,11 +293,10 @@ export default function BillListComponent() {
                           <td className="px-4 py-3 text-sm text-gray-700">{item.admissionId}</td>
                           <td className="px-4 py-3 text-sm text-gray-700">{item.doctorName}</td>
                           <td className="px-4 py-3">
-                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${
-                              item.status === 'Paid' 
-                                ? 'bg-green-100 text-green-800' 
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${item.status === 'Paid'
+                                ? 'bg-green-100 text-green-800'
                                 : 'bg-yellow-100 text-yellow-800'
-                            }`}>
+                              }`}>
                               {item.status}
                             </span>
                           </td>
@@ -323,6 +322,85 @@ export default function BillListComponent() {
                       ))}
                     </tbody>
                   </table>
+
+                  <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+
+                    {bills.map((item) => (
+                      <div className={``}>
+                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                          <input
+                            checked={selectedIds.includes(item.id)}
+                            onChange={() => handleCheckboxChange(item.id)}
+                            type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                        </div>
+                        <div className="text-sm text-gray-800">
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Patient Name:</span>{" "}
+                            <div className='flex items-center'>
+                              <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                              />
+                              <span className="ml-1">{item.patientName}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Admission ID:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1">{item.admissionId}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Doctor Name:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1">{item.doctorName}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Status:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${item.status === 'Paid'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                              }`}> {item.status} </span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Admission Date:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1">{item.admissionDate}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Tax:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1">{item.tax}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Discount:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1">{item.discount}</span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <span className="font-semibold">Total Amount:</span>{" "}
+                            <div className='flex items-center'>
+                              <span className="ml-1"> {item.totalAmount} </span>
+                            </div>
+                          </div>
+                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                            <div className="flex space-x-2">
+                              <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <Edit className="w-5 h-5" />
+                              </button>
+                              <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

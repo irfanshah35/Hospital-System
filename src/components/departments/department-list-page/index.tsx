@@ -204,7 +204,7 @@ export default function DeparmentListPage() {
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-wrap space-x-2">
             <h1 className="text-[20px] font-semibold">Department List</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
@@ -219,14 +219,14 @@ export default function DeparmentListPage() {
           <div className="max-w-full">
             <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                 <div className='flex items-center flex-[35%]'>
                   <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Departments</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -304,70 +304,130 @@ export default function DeparmentListPage() {
                   ) : patients.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">No patients found</div>
                   ) : (
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-white w-full">
-                        <tr>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Number</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Name</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Head</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
+                    <>
+                      <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                        <thead className="bg-white w-full">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department Head</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
 
-                      <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                        {patients.map((item) => (
-                          <tr key={item.id} className="transition-colors duration-150">
-                            
+                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                          {patients.map((item) => (
+                            <tr key={item.id} className="transition-colors duration-150">
 
-                            <td className="px-4 text-sm whitespace-nowrap">1</td>
 
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                  <div className="text-sm font-medium">
-                                    sycology
+                              <td className="px-4 text-sm whitespace-nowrap">1</td>
+
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                    <div className="text-sm font-medium">
+                                      sycology
+                                    </div>
                                   </div>
                                 </div>
+                              </td>
+
+                              <td className="px-4 whitespace-nowrap">
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] `}>
+                                  Role is to provide..
+                                </span>
+                              </td>
+
+                              <td className="px-4 text-sm">25/5/2024</td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  Max
+                                </div>
+                              </td>
+
+
+                              <td className="px-4 text-sm">Active</td>
+
+                              <td className="px-4 text-sm font-medium">
+                                <div className="flex space-x-2">
+                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => {
+                                    deleteSelectedPatients(item.id);
+                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+
+                        {patients.map((item) => (
+                          <div className={``}>
+                            <div className="text-sm text-gray-800">
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Department Number:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1"></span>
+                                </div>
                               </div>
-                            </td>
-
-                            <td className="px-4 whitespace-nowrap">
-                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] `}>
-                                Role is to provide..
-                              </span>
-                            </td>
-
-                           <td className="px-4 text-sm">25/5/2024</td>
-
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                Max
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Department Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Gynecologist</span>
+                                </div>
                               </div>
-                            </td>
-
-
-                            <td className="px-4 text-sm">Active</td>
-
-                            <td className="px-4 text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                  <Edit className="w-5 h-5" />
-                                </button>
-                                <button onClick={() => {
-                                  deleteSelectedPatients(item.id);
-                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                  <Trash2 className="w-5 h-5" />
-                                </button>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Description:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Investigates and treats..</span>
+                                </div>
                               </div>
-                            </td>
-                          </tr>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Date:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1"> 10/01/2024 </span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Department Head:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Dr.Sarah Smith</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Status:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Active</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <div className="flex space-x-2">
+                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => {
+                                    deleteSelectedPatients(item.id);
+                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

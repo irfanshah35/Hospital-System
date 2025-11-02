@@ -10,7 +10,7 @@ interface FieldState {
   [key: string]: boolean;
 }
 
-export default function EditDoctorComponent() {
+export default function AddDoctorComponent() {
   const [fieldStates, setFieldStates] = useState<FieldState>({});
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -182,21 +182,21 @@ export default function EditDoctorComponent() {
 
   return (
     <div className="px-4 sm:px-6 py-5 bg-gray-50 min-h-screen">
-      <div className="flex items-center space-x-2 mb-6">
-        <h1 className="text-[20px] font-semibold">Add Doctor</h1>
+      <div className="flex items-center flex-wrap space-x-2 mb-6">
+        <h1 className="text-[20px] font-semibold">Edit Doctor</h1>
         <span>›</span>
         <Home size={18} />
         <span>›</span>
         <span className="text-sm">Doctors</span>
         <span>›</span>
-        <span className="text-sm">Add Doctor</span>
+        <span className="text-sm">Edit Doctor</span>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm">
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-1">Add Doctor</h2>
+          <h2 className="text-xl font-semibold mb-1">Edit Doctor</h2>
           <p className="text-gray-500 text-sm mb-6">
-            Fill all the required information to register a new doctor
+            Update doctor information
           </p>
 
           {message.text && (
@@ -211,12 +211,12 @@ export default function EditDoctorComponent() {
             {/* Personal Information */}
             <div>
               <SectionHeader icon={User} title="Personal Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <FloatingInput label="First name" name="firstName" required />
                 <FloatingInput label="Middle name" name="middleName" />
                 <FloatingInput label="Last name" name="lastName" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <FloatingInput label="Gender" name="gender" type="select" required 
                   options={["Male", "Female", "Other"]} />
                 <FloatingInput label="Date Of Birth" name="dateOfBirth" type="date" required />
@@ -228,15 +228,15 @@ export default function EditDoctorComponent() {
             {/* Contact Information */}
             <div>
               <SectionHeader icon={MapPin} title="Contact Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <FloatingInput label="Email" name="email" type="email" required />
                 <FloatingInput label="Mobile" name="mobile" type="tel" required />
                 <FloatingInput label="Alternative Contact" name="alternativeContact" type="tel" />
               </div>
-              <div className="relative mb-4">
+              <div className="relative mb-12">
                 <FloatingInput label="Address" name="address" type="textarea" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <FloatingInput label="City" name="city" />
                 <FloatingInput label="State" name="state" />
                 <FloatingInput label="Postal Code" name="postalCode" />
@@ -246,7 +246,7 @@ export default function EditDoctorComponent() {
             {/* Account Information */}
             <div>
               <SectionHeader icon={Key} title="Account Information" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <FloatingInput label="Password" name="password" type="password" required />
                 <FloatingInput label="Re-Enter Password" name="reEnterPassword" type="password" required />
               </div>
@@ -255,18 +255,18 @@ export default function EditDoctorComponent() {
             {/* Professional Information */}
             <div>
               <SectionHeader icon={Briefcase} title="Professional Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <FloatingInput label="Designation" name="designation" required />
                 <FloatingInput label="Select Department" name="department" type="select" required
                   options={["Cardiology", "Neurology", "Orthopedics", "Pediatrics", "General Medicine"]} />
                 <FloatingInput label="Specialization" name="specialization" required />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <FloatingInput label="Experience (Years)" name="experience" required />
                 <FloatingInput label="License Number" name="licenseNumber" required />
                 <FloatingInput label="License Expiry Date" name="licenseExpiryDate" type="date" required />
               </div>
-              <div className="relative mb-4">
+              <div className="relative mb-12">
                 <FloatingInput label="Education" name="education" type="textarea" required />
               </div>
               <div className="relative">
@@ -277,7 +277,7 @@ export default function EditDoctorComponent() {
             {/* Hospital Information */}
             <div>
               <SectionHeader icon={Building2} title="Hospital Specific Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <FloatingInput label="Joining Date" name="joiningDate" type="date" required />
                 <FloatingInput label="Employee ID" name="employeeId" required />
                 <FloatingInput label="Room/Cabin Number" name="roomCabinNumber" />
@@ -287,7 +287,7 @@ export default function EditDoctorComponent() {
             {/* Availability Information */}
             <div>
               <SectionHeader icon={Clock} title="Availability Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <FloatingInput label="Available Days" name="availableDays" type="select" required
                   options={["Monday-Friday", "Monday-Saturday", "All Days", "Weekends Only"]} />
                 <FloatingInput label="Start Time" name="startTime" type="time" required />
@@ -298,7 +298,7 @@ export default function EditDoctorComponent() {
             {/* Emergency Contact */}
             <div>
               <SectionHeader icon={Phone} title="Emergency Contact Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <FloatingInput label="Emergency Contact Name" name="emergencyContactName" />
                 <FloatingInput label="Emergency Contact Number" name="emergencyContactNumber" type="tel" />
                 <FloatingInput label="Relationship" name="relationship" />

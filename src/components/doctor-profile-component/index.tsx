@@ -1,15 +1,35 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Home, MapPin, Phone, Mail, Settings, User, GraduationCap, Briefcase, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function DoctorProfileComponent() {
   const [activeTab, setActiveTab] = useState('aboutme');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
+    }
+  };
+
+  const tabs = [
+    { id: "aboutme", label: "About Me", icon: <User size={18} /> },
+    { id: "education", label: "Education", icon: <GraduationCap size={18} /> },
+    { id: "experience", label: "Experience", icon: <Briefcase size={18} /> },
+    { id: "certifications", label: "Certifications", icon: <Award size={18} /> },
+  ];
 
   return (
     <div className="min-h-screen bg-[#e8ebf3]">
       {/* Breadcrumb */}
       <div className="px-6 py-4 bg-white border-b border-gray-200">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center flex-wrap space-x-2 text-sm text-gray-600">
           <span className="font-semibold text-gray-800">Profile</span>
           <span className="text-gray-400">›</span>
           <Home size={16} className="text-gray-500" />
@@ -24,64 +44,59 @@ export default function DoctorProfileComponent() {
         {/* Profile Header Card */}
         <div className="bg-white rounded-lg shadow-sm mb-6 p-8 relative">
           <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-6">
+            <div className="flex flex-col max-[600px]:items-center space-x-6">
               {/* Profile Image */}
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                <img 
-                  src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
+                <img
+                  src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop"
                   alt="Dr. John Smith"
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Profile Info */}
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Dr. John Smith</h1>
-                <p className="text-gray-600 mb-4">MD - Cardiologist</p>
-                
+              <div className='flex flex-col w-full justify-center'>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1 max-[600px]:text-center">Dr. John Smith</h1>
+                <p className="text-gray-600 mb-4 max-[600px]:text-center">MD - Cardiologist</p>
+
                 {/* Contact Info */}
-                <div className="flex flex-wrap items-center gap-6 text-sm">
-                  <div className="flex items-center text-gray-700">
+                <div className="flex flex-wrap items-center gap-4 text-sm">
+                  <div className="flex items-center text-gray-700 justify-center">
                     <MapPin size={16} className="text-green-600 mr-2" />
-                    <span>123 Medical Center Dr, New York, NY 10001</span>
+                    <span className='max-[600px]:text-center'>123 Medical Center Dr, New York, NY 10001</span>
                   </div>
-                  <div className="flex items-center text-gray-700">
+                  <div className="flex items-center text-gray-700 w-full max-[600px]:justify-center">
                     <Phone size={16} className="text-blue-500 mr-2" />
                     <span>+1 (123) 456-7890</span>
                   </div>
-                  <div className="flex items-center text-gray-700">
+                  <div className="flex items-center text-gray-700 w-full max-[600px]:justify-center">
                     <Mail size={16} className="text-red-500 mr-2" />
                     <span>john.smith@example.com</span>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Settings Icon */}
-            <button className="w-12 h-12 rounded-lg bg-[#5b73e8] text-white flex items-center justify-center hover:bg-[#4a5fc7] transition-colors">
-              <Settings size={20} />
-            </button>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-6 gap-4 mt-8">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-3xl font-bold text-[#5b73e8] mb-1">564</div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mt-8">
+            <div className="border border-gray-200 max-w-[100px] rounded-lg p-4 flex flex-col items-center">
+              <div className="text-[20px] font-bold text-[#5b73e8] mb-1">564</div>
               <div className="text-sm text-gray-600">Following</div>
             </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-3xl font-bold text-[#5b73e8] mb-1">18000</div>
+            <div className="border border-gray-200 max-w-[100px] rounded-lg p-4 flex flex-col items-center">
+              <div className="text-[20px] font-bold text-[#5b73e8] mb-1">18000</div>
               <div className="text-sm text-gray-600">Followers</div>
             </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-3xl font-bold text-[#5b73e8] mb-1">565</div>
+            <div className="border border-gray-200 max-w-[100px] rounded-lg p-4 flex flex-col items-center">
+              <div className="text-[20px] font-bold text-[#5b73e8] mb-1">565</div>
               <div className="text-sm text-gray-600">Posts</div>
             </div>
           </div>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-5 relative">
             <div className="absolute top-5 right-5 w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
               <User size={24} className="text-white" />
@@ -198,59 +213,42 @@ export default function DoctorProfileComponent() {
           <div className="bg-white rounded-lg shadow-sm">
             {/* Tabs Header */}
             <div className="border-b border-gray-200 px-2">
-              <div className="flex items-center justify-between">
-                <button className="p-2 text-gray-400 hover:text-gray-600">
+              
+
+              <div className="flex items-center justify-between overflow-hidden border-b">
+                {/* Left Scroll Button */}
+                <button
+                  onClick={scrollLeft}
+                  className="p-2 text-gray-400 hover:text-gray-600 md:hidden"
+                >
                   <ChevronLeft size={20} />
                 </button>
-                
-                <div className="flex items-center flex-1 justify-center">
-                  <button 
-                    onClick={() => setActiveTab('aboutme')}
-                    className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'aboutme' 
-                        ? 'text-gray-900 border-[#5b73e8]' 
-                        : 'text-gray-600 border-transparent hover:text-gray-800'
-                    }`}
-                  >
-                    <User size={18} />
-                    <span>About Me</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('education')}
-                    className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'education' 
-                        ? 'text-gray-900 border-[#5b73e8]' 
-                        : 'text-gray-600 border-transparent hover:text-gray-800'
-                    }`}
-                  >
-                    <GraduationCap size={18} />
-                    <span>Education</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('experience')}
-                    className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'experience' 
-                        ? 'text-gray-900 border-[#5b73e8]' 
-                        : 'text-gray-600 border-transparent hover:text-gray-800'
-                    }`}
-                  >
-                    <Briefcase size={18} />
-                    <span>Experience</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('certifications')}
-                    className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'certifications' 
-                        ? 'text-gray-900 border-[#5b73e8]' 
-                        : 'text-gray-600 border-transparent hover:text-gray-800'
-                    }`}
-                  >
-                    <Award size={18} />
-                    <span>Certifications</span>
-                  </button>
+
+                {/* Scrollable Tabs */}
+                <div
+                  ref={scrollRef}
+                  className="flex items-center flex-1 justify-start overflow-x-hidden scrollbar-hide scroll-smooth space-x-1 md:justify-center"
+                >
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center flex-shrink-0 space-x-2 px-4 md:px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                        ? "text-gray-900 border-[#5b73e8]"
+                        : "text-gray-600 border-transparent hover:text-gray-800"
+                        }`}
+                    >
+                      {tab.icon}
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
                 </div>
 
-                <button className="p-2 text-gray-400 hover:text-gray-600">
+                {/* Right Scroll Button */}
+                <button
+                  onClick={scrollRight}
+                  className="p-2 text-gray-400 hover:text-gray-600 md:hidden"
+                >
                   <ChevronRight size={20} />
                 </button>
               </div>
@@ -261,9 +259,9 @@ export default function DoctorProfileComponent() {
               {activeTab === 'aboutme' && (
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h2>
-                  
+
                   {/* Info Grid */}
-                  <div className="grid grid-cols-4 gap-6 mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                     <div>
                       <h3 className="text-xs font-semibold text-gray-600 mb-2">Full Name</h3>
                       <p className="text-sm text-gray-800">Dr. John Smith</p>
@@ -278,7 +276,7 @@ export default function DoctorProfileComponent() {
                     </div>
                     <div>
                       <h3 className="text-xs font-semibold text-gray-600 mb-2">Email</h3>
-                      <p className="text-sm text-gray-800">john.smith@example.com</p>
+                      <p className="text-sm text-gray-800 break-words">john.smith@example.com</p>
                     </div>
                   </div>
 
@@ -286,26 +284,13 @@ export default function DoctorProfileComponent() {
                   <p className="text-sm text-gray-600 leading-relaxed">
                     Dr. Smith is a board-certified cardiologist with over 15 years of experience in treating cardiovascular diseases. He specializes in interventional cardiology and has performed over 1,000 cardiac catheterizations and stent placements. Dr. Smith is dedicated to providing compassionate care and the latest evidence-based treatments to his patients.
                   </p>
-
-                  {/* Navigation arrows */}
-                  <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                    <button className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300">
-                      <ChevronLeft size={20} />
-                    </button>
-                    <div className="flex-1 mx-4 h-1 bg-gray-300 rounded">
-                      <div className="h-full bg-gray-600 rounded" style={{ width: '25%' }}></div>
-                    </div>
-                    <button className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300">
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
                 </div>
               )}
 
               {activeTab === 'education' && (
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-6">Education</h2>
-                  
+
                   <div className="space-y-8">
                     <div>
                       <h3 className="text-base font-bold text-gray-900 mb-1">M.D.</h3>
@@ -337,20 +322,20 @@ export default function DoctorProfileComponent() {
               {activeTab === 'experience' && (
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-6">Professional Experience</h2>
-                  
+
                   <div className="space-y-6 text-sm text-gray-600 leading-relaxed">
                     <p>
                       <strong className="text-gray-800">Attending Cardiologist</strong><br />
                       New York Medical Center | 2012 - Present<br />
                       Leading the interventional cardiology department and performing complex cardiac procedures including angioplasty, stenting, and advanced cardiac catheterization.
                     </p>
-                    
+
                     <p>
                       <strong className="text-gray-800">Clinical Instructor</strong><br />
                       Columbia University Medical Center | 2015 - Present<br />
                       Teaching medical students and residents in cardiology, supervising clinical rotations, and conducting research in cardiovascular medicine.
                     </p>
-                    
+
                     <p>
                       <strong className="text-gray-800">Research Fellow</strong><br />
                       National Institutes of Health | 2010 - 2012<br />
@@ -363,7 +348,7 @@ export default function DoctorProfileComponent() {
               {activeTab === 'certifications' && (
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-6">Certifications & Awards</h2>
-                  
+
                   <div className="space-y-4 text-sm text-gray-600">
                     <p>• Board Certified in Cardiovascular Disease - American Board of Internal Medicine</p>
                     <p>• Board Certified in Interventional Cardiology - American Board of Internal Medicine</p>

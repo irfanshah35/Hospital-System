@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -204,7 +204,7 @@ export default function AssignedDepartment() {
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-wrap space-x-2">
             <h1 className="text-[20px] font-semibold">Assign Department</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
@@ -219,14 +219,14 @@ export default function AssignedDepartment() {
           <div className="max-w-full">
             <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                 <div className='flex items-center flex-[35%]'>
                   <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Assign Department</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -304,89 +304,158 @@ export default function AssignedDepartment() {
                   ) : patients.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">No patients found</div>
                   ) : (
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-white">
-                        <tr>
-                          <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <input
-                              type="checkbox"
-                              id="selectAll"
-                              onChange={(e) => handleSelectAll(e.target.checked)}
-                              className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                            />
-                          </th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Schedule</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Experience Level</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assignment Status</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assigned Date</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-
-                      <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                        {patients.map((item) => (
-                          <tr key={item.id} className="transition-colors duration-150">
-                            <td className="px-4 py-3 pl-[37px]">
+                    <>
+                      <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                        <thead className="bg-white">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               <input
                                 type="checkbox"
-                                checked={selectedIds.includes(item.id)}
-                                onChange={() => handleCheckboxChange(item.id)}
+                                id="selectAll"
+                                onChange={(e) => handleSelectAll(e.target.checked)}
                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                               />
-                            </td>
+                            </th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Schedule</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Experience Level</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assignment Status</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assigned Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+
+                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                          {patients.map((item) => (
+                            <tr key={item.id} className="transition-colors duration-150">
+                              <td className="px-4 py-3 pl-[37px]">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedIds.includes(item.id)}
+                                  onChange={() => handleCheckboxChange(item.id)}
+                                  className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                />
+                              </td>
 
 
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                  <div className="text-sm font-medium">
-                                    Dr. Chris Wilson
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                    <div className="text-sm font-medium">
+                                      Dr. Chris Wilson
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </td>
+                              </td>
 
-                            <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                              <td className="px-4 text-sm whitespace-nowrap">ENT</td>
 
-                            <td className="px-4 whitespace-nowrap">
-                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                Breast Cancer
-                              </span>
-                            </td>
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                Mon-Wed, 9 AM - 3 PM
-                              </div>
-                            </td>
-                            <td className="px-4 text-sm">Consultant</td>
-                            <td className="px-4 text-sm">
-                              <div className={`flex items-center `}>
-                                Active
-                              </div>
-                            </td>
+                              <td className="px-4 whitespace-nowrap">
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
+                                  Breast Cancer
+                                </span>
+                              </td>
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  Mon-Wed, 9 AM - 3 PM
+                                </div>
+                              </td>
+                              <td className="px-4 text-sm">Consultant</td>
+                              <td className="px-4 text-sm">
+                                <div className={`flex items-center `}>
+                                  Active
+                                </div>
+                              </td>
 
-                            <td className="px-4 text-sm">2023-07-25</td>
+                              <td className="px-4 text-sm">2023-07-25</td>
 
-                            <td className="px-4 text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                  <Edit className="w-5 h-5" />
-                                </button>
-                                <button onClick={() => {
-                                  deleteSelectedPatients(item.id);
-                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                  <Trash2 className="w-5 h-5" />
-                                </button>
+                              <td className="px-4 text-sm font-medium">
+                                <div className="flex space-x-2">
+                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => {
+                                    deleteSelectedPatients(item.id);
+                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+
+                        {patients.map((item) => (
+                          <div className={``}>
+                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                              <input
+                                checked={selectedIds.includes(item.id)}
+                                onChange={() => handleCheckboxChange(item.id)}
+                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                            </div>
+                            <div className="text-sm text-gray-800">
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                                  />
+                                  <span className="ml-1"> david</span>
+                                </div>
                               </div>
-                            </td>
-                          </tr>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Department:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Urology</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Specialization:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Pediatric Cardiology</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Experience Level:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Senior</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Assignment Status:</span>{" "}
+                                <div className='flex items-center'>
+                                  <Phone className="w-5 h-5 text-gray-500" />
+                                  <span className="ml-1">Active</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Assigned Date:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1 flex gap-2"> <Calendar className='w-5 h-5' /> 02/25/2024 </span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <div className="flex space-x-2">
+                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => {
+                                    deleteSelectedPatients(item.id);
+                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

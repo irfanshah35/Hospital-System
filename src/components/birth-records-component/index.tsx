@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, PhoneCall, MapPin } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -36,7 +36,9 @@ export default function BirthRecordsComponent() {
       const res = await fetch("/api/appointments");
       const data = await res.json();
       setAppointments(data);
-      
+      console.log(data, 'dsa');
+
+
     } catch (error) {
       console.error("Failed to fetch appointments:", error);
     } finally {
@@ -79,7 +81,7 @@ export default function BirthRecordsComponent() {
         Email: item.email,
         "Appointment Status": "Confirmed",
         "Visit Type": "General",
-      }))  
+      }))
     );
 
     const workbook = XLSX.utils.book_new();
@@ -90,7 +92,7 @@ export default function BirthRecordsComponent() {
   };
 
   const removeData = async (id: string) => {
-   {
+    {
       try {
         const response = await fetch(`/api/appointments/${id}`, {
           method: "DELETE",
@@ -178,14 +180,14 @@ export default function BirthRecordsComponent() {
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-[20px] font-semibold">All Patient</h1>
+          <div className="flex items-center flex-wrap space-x-2">
+            <h1 className="text-[20px] font-semibold">Birth Records</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
             <span>›</span>
-            <span className="text-sm">Patients</span>
+            <span className="text-sm">Records</span>
             <span>›</span>
-            <span className="text-sm">All Patient</span>
+            <span className="text-sm">Birth Records</span>
           </div>
         </div>
 
@@ -193,14 +195,14 @@ export default function BirthRecordsComponent() {
           <div className="max-w-full">
             <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                 <div className='flex items-center flex-[35%]'>
-                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Patients</h1>
+                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Birth Records</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -278,115 +280,204 @@ export default function BirthRecordsComponent() {
                   ) : appointments.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">No appointments found</div>
                   ) : (
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-white">
-                        <tr>
-                          <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <input
-                              type="checkbox"
-                              id="selectAll"
-                              onChange={(e) => handleSelectAll(e.target.checked)}
-                              className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                            />
-                          </th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Doctor</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Time</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Visit</th>
-                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-
-                      <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                        {appointments.map((item) => (
-                          <tr key={item.id} className="transition-colors duration-150">
-                            <td className="px-4 py-3 pl-[37px]">
+                    <>
+                      <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                        <thead className="bg-white">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               <input
                                 type="checkbox"
-                                checked={selectedIds.includes(item.id)}
-                                onChange={() => handleCheckboxChange(item.id)}
+                                id="selectAll"
+                                onChange={(e) => handleSelectAll(e.target.checked)}
                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                               />
-                            </td>
+                            </th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Case Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Death Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mother Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Father Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Address</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Notes</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
 
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                  <div className="text-sm font-medium">
-                                    {item.firstname} {item.lastname}
+                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                          {appointments.map((item) => (
+                            <tr key={item.id} className="transition-colors duration-150">
+                              <td className="px-4 py-3 pl-[37px]">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedIds.includes(item.id)}
+                                  onChange={() => handleCheckboxChange(item.id)}
+                                  className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                />
+                              </td>
+
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">
+                                  1527
+                                </div>
+                              </td>
+
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">
+                                      arham
+                                    </div>
                                   </div>
                                 </div>
+                              </td>
+
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                  }`}>
+                                  {item.gender}
+                                </span>
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                25/10/2025
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                oliva
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                David
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <Phone className="w-4 h-4 mr-1 text-gray-500" />
+                                  {item.mobile}
+                                </div>
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                njurwif
+                              </td>
+
+                              <td className="px-4 py-3 text-sm whitespace-nowrap">
+                                normal
+                              </td>
+
+                              <td className="px-4 py-3 text-sm font-medium">
+                                <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => handleEdit(item.id)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                    title="Edit"
+                                  >
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => removeData(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+
+                      <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+
+                        {appointments.map((item) => (
+                          <div className={``}>
+                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                              <input
+                                checked={selectedIds.includes(item.id)}
+                                onChange={() => handleCheckboxChange(item.id)}
+                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                            </div>
+                            <div className="text-sm text-gray-800">
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Case Number:</span>{" "}
+                                <div className='flex items-center'>
+                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                                  />
+                                  <span className="ml-1"> 3453</span>
+                                </div>
                               </div>
-                            </td>
-
-                            <td className="px-4 text-sm whitespace-nowrap">{item.consultingdoctor || "-"}</td>
-
-                            <td className="px-4 whitespace-nowrap">
-                              <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
-                                item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
-                                "bg-[#ffc10726] text-[#ffc107]"
-                              }`}>
-                                {item.gender}
-                              </span>
-                            </td>
-
-                            <td className="px-4 text-sm">{item.appointmentdate}</td>
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                <Clock className="w-4 h-4 text-[#6f42c1] mr-2" />
-                                <span>{item.appointmenttime}</span>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Child Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Jenson</span>
+                                </div>
                               </div>
-                            </td>
-
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                <Phone className="w-4 h-4 text-[#198754] mr-2" />
-                                <span>{item.mobile}</span>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Gender:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Male</span>
+                                </div>
                               </div>
-                            </td>
-
-                            <td className="px-4 text-sm">
-                              <div className="flex items-center">
-                                <Mail className="w-4 h-4 text-red-500 mr-2" />
-                                <span>{item.email}</span>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Birth Date:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1"> 10/01/2024 </span>
+                                </div>
                               </div>
-                            </td>
-
-                            <td className="px-4 whitespace-nowrap">
-                              <span className="px-2 inline-flex text-sm leading-5 rounded-full bg-green-100 text-green-800">
-                                Confirmed
-                              </span>
-                            </td>
-
-                            <td className="px-4 text-sm">General</td>
-
-                            <td className="px-4 text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button 
-                                  onClick={() => handleEdit(item.id)}
-                                  className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                >
-                                  <Edit className="w-5 h-5" />
-                                </button>
-                                <button 
-                                  onClick={() => removeData(item.id)}
-                                  className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                >
-                                  <Trash2 className="w-5 h-5" />
-                                </button>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mother Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Eva Willis</span>
+                                </div>
                               </div>
-                            </td>
-                          </tr>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Father Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Laurel Maxwell</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mobile:</span>{" "}
+                                <div className='flex items-center'>
+                                  <Phone className='w-5 h-5 text-green-500' />
+                                  <span className="ml-1"> 1234567890</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Address:</span>{" "}
+                                <div className='flex items-center'>
+                                  <MapPin className='w-5 h-5 text-blue-500' />
+                                  <span className="ml-1">  76 E. Lower River St. </span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Notes:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1"> Normal Delivery</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <div className="flex space-x-2">
+                                  <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+
+                    </>
                   )}
                 </div>
               </div>
