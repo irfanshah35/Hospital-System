@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useThemeStore } from "@/store/store";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   isCollapsed: boolean;
@@ -23,6 +24,7 @@ export default function Header({
   });
   const { sidebarTheme } = useThemeStore();
   const { headerColor } = useThemeStore();
+const router = useRouter();
 
   // User data state
   const [userData, setUserData] = useState({
@@ -210,28 +212,30 @@ export default function Header({
               </svg>
             </button>
 
-            <div
-              className={`flex items-center gap-[10px] px-[10px] ${
-                shouldExpand
-                  ? "w-[236px] justify-center !mr-4"
-                  : "px-0 justify-center mr-[3px]"
-              } transition-normal duration-300`}
-            >
-              <img
-                src="/assets/header/logo.png"
-                alt="Cliniva Logo"
-                className="h-8 w-8"
-              />
-              {shouldExpand && (
-                <span
-                  className={`text-[24px] font-[400] ${
-                    sidebarTheme === "dark" ? "text-white" : "text-gray-800"
-                  }`}
-                >
-                  Cliniva
-                </span>
-              )}
-            </div>
+           <div
+  onClick={() => router.push("/admin/dashboard")}
+  className={`flex items-center gap-[10px] px-[10px] cursor-pointer hover:opacity-80 ${
+    shouldExpand
+      ? "w-[236px] justify-center !mr-4"
+      : "px-0 justify-center mr-[3px]"
+  } transition-normal duration-300`}
+>
+  <img
+    src="/assets/header/logo.png"
+    alt="Cliniva Logo"
+    className="h-8 w-8"
+  />
+  {shouldExpand && (
+    <span
+      className={`text-[24px] font-[400] ${
+        sidebarTheme === "dark" ? "text-white" : "text-gray-800"
+      }`}
+    >
+      Cliniva
+    </span>
+  )}
+</div>
+
           </div>
 
           {/* Main Header Content */}

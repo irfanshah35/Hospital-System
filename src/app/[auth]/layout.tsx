@@ -19,6 +19,8 @@ const Layout = ({
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isHeadCollapsed, setIsHeadCollapsed] = useState(false);
+
   
   const shouldExpand = !isCollapsed || (isCollapsed && isHovered);
   const { websiteTheme } = useThemeStore();
@@ -98,34 +100,34 @@ const Layout = ({
   return (
     <>
       {/* Conditional Header */}
-      {isMobile ? (
-        <MobileHeader
-          isMobileMenuOpen={isMobileMenuOpen}
-          setIsMobileMenuOpen={setIsMobileMenuOpen}
-        />
-      ) : (
-        <Header
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-          shouldExpand={shouldExpand}
-        />
-      )}
+    {isMobile ? (
+  <MobileHeader
+    isMobileMenuOpen={isMobileMenuOpen}
+    setIsMobileMenuOpen={setIsMobileMenuOpen}
+    setIsHeadCollapsed={setIsHeadCollapsed} // 👈 new prop
+  />
+) : (
+  <Header
+    isCollapsed={isCollapsed}
+    setIsCollapsed={setIsCollapsed}
+    shouldExpand={shouldExpand}
+  />
+)}
+
 
       {/* Sidebar - same for both mobile and desktop */}
       <div className="flex flex-row">
         {renderSidebar()}
         
         <div
-          className={`flex flex-col mt-[61px] w-full transition-all duration-300 ${
-            isMobile 
-              ? "pl-0" 
-              : shouldExpand 
-                ? "pl-[260px]" 
-                : "pl-[60px]"
-          }`}
-        >
-          {children}
-        </div>
+  className={`flex flex-col transition-all duration-300 w-full
+    ${isMobile ? "pl-0" : shouldExpand ? "pl-[260px]" : "pl-[60px]"}
+    ${isMobile ? (isHeadCollapsed ? "mt-[100px]" : "mt-[61px]") : "mt-[61px]"}
+  `}
+>
+  {children}
+</div>
+
         
         {!isMobile && <RightSidebar />}
       </div>
