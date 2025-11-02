@@ -1,33 +1,54 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useActionState } from "react";
-import { Asterisk, BriefcaseMedical, Contact, File, Home, ShieldPlus, User } from "lucide-react";
+import { useState, ChangeEvent } from "react";
+import { AlertCircle, Home } from "lucide-react";
 import Link from "next/link";
 
-async function updatePatient(prevState: any, formData: FormData) {
-
-  console.log("Form Data:", Object.fromEntries(formData));
-  
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  return {
-    success: true,
-    message: "Patient updated successfully!",
-    errors: {}
-  };
+interface FormData {
+  firstName: string;
+  lastName: string;
+  gender: string;
+  dateOfBirth: string;
+  age: string;
+  maritalStatus: string;
+  nationalId: string;
+  patientId: string;
+  mobile: string;
+  email: string;
+  address: string;
+  city: string;
+  stateProvince: string;
+  zipPostalCode: string;
+  contactName: string;
+  relationship: string;
+  phoneNumber: string;
+  bloodGroup: string;
+  bloodPressure: string;
+  sugarLevel: string;
+  injuryCondition: string;
+  allergies: string;
+  chronicDiseases: string;
+  currentMedications: string;
+  insuranceProvider: string;
+  policyNumber: string;
+  coverageDetails: string;
+  admissionDate: string;
+  assignedDoctor: string;
+  wardNumber: string;
+  roomNumber: string;
+  reasonForAdmission: string;
+  document: File | null;
 }
 
+type FormErrors = Partial<Record<keyof FormData, string>>;
+type FormTouched = Partial<Record<keyof FormData, boolean>>;
+
 export default function EditPatientPage() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [state, formAction, isPending] = useActionState(updatePatient, null);
-  
-  // State for all form fields
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     gender: "",
-    dob: "",
+    dateOfBirth: "",
     age: "",
     maritalStatus: "",
     nationalId: "",
@@ -36,825 +57,713 @@ export default function EditPatientPage() {
     email: "",
     address: "",
     city: "",
-    state: "",
-    zipCode: "",
+    stateProvince: "",
+    zipPostalCode: "",
     contactName: "",
     relationship: "",
     phoneNumber: "",
     bloodGroup: "",
     bloodPressure: "",
     sugarLevel: "",
+    injuryCondition: "",
     allergies: "",
     chronicDiseases: "",
     currentMedications: "",
-    injuryCondition: "",
     insuranceProvider: "",
     policyNumber: "",
-    coverageInformation: ""
+    coverageDetails: "",
+    admissionDate: "",
+    assignedDoctor: "",
+    wardNumber: "",
+    roomNumber: "",
+    reasonForAdmission: "",
+    document: null,
   });
 
-  // State for focused fields
-  const [focusedFields, setFocusedFields] = useState<Set<string>>(new Set());
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<FormTouched>({});
 
-  const handleFileClick = () => {
-    fileInputRef.current?.click();
+  const validateField = (
+    name: keyof FormData,
+    value: string | File | null
+  ): string => {
+    let error = "";
+    const strValue = typeof value === "string" ? value : "";
+
+    switch (name) {
+      case "firstName":
+      case "lastName":
+        if (!strValue.trim()) error = "This field is required";
+        else if (strValue.length < 2) error = "Must be at least 2 characters";
+        break;
+      case "email":
+        if (!strValue.trim()) error = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(strValue))
+          error = "Invalid email format";
+        break;
+      case "mobile":
+      case "phoneNumber":
+        if (!strValue.trim()) error = "Phone number is required";
+        else if (!/^\+?[\d\s-()]{10,}$/.test(strValue))
+          error = "Invalid phone number";
+        break;
+      case "nationalId":
+        if (!strValue.trim()) error = "National ID is required";
+        break;
+      case "gender":
+      case "maritalStatus":
+        if (!strValue) error = "Please select an option";
+        break;
+      case "dateOfBirth":
+        if (!strValue) error = "Date of birth is required";
+        break;
+      case "address":
+        if (!strValue.trim()) error = "Address is required";
+        break;
+      case "city":
+      case "stateProvince":
+      case "zipPostalCode":
+        if (!strValue.trim()) error = "This field is required";
+        break;
+      case "contactName":
+        if (!strValue.trim()) error = "Emergency contact name is required";
+        break;
+      case "relationship":
+        if (!strValue.trim()) error = "Relationship is required";
+        break;
+      case "bloodGroup":
+        if (!strValue) error = "Blood group is required";
+        break;
+    }
+
+    return error;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const fieldName = name as keyof FormData;
+
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+
+    if (touched[fieldName]) {
+      const error = validateField(fieldName, value);
+      setErrors((prev) => ({ ...prev, [fieldName]: error }));
+    }
+
+    if (fieldName === "dateOfBirth" && value) {
+      const dob = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < dob.getDate())
+      ) {
+        age--;
+      }
+      setFormData((prev) => ({ ...prev, age: age.toString() }));
+    }
   };
 
-  const handleFocus = (fieldName: string) => {
-    setFocusedFields(prev => new Set(prev).add(fieldName));
+  const handleBlur = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    const fieldName = name as keyof FormData;
+
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+    const error = validateField(fieldName, value);
+    setErrors((prev) => ({ ...prev, [fieldName]: error }));
   };
 
-  const handleBlur = (fieldName: string) => {
-    setFocusedFields(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(fieldName);
-      return newSet;
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData((prev) => ({ ...prev, document: file }));
+  };
+
+  const handleSubmit = async () => {
+    const newErrors: FormErrors = {};
+    const requiredFields: (keyof FormData)[] = [
+      "firstName",
+      "lastName",
+      "gender",
+      "dateOfBirth",
+      "maritalStatus",
+      "nationalId",
+      "mobile",
+      "email",
+      "address",
+      "city",
+      "stateProvince",
+      "zipPostalCode",
+      "contactName",
+      "relationship",
+      "phoneNumber",
+      "bloodGroup",
+    ];
+
+    requiredFields.forEach((field) => {
+      const error = validateField(field, formData[field]);
+      if (error) newErrors[field] = error;
     });
+
+    setErrors(newErrors);
+
+    const allTouched: FormTouched = {};
+    (Object.keys(formData) as (keyof FormData)[]).forEach((key) => {
+      allTouched[key] = true;
+    });
+    setTouched(allTouched);
+
+    if (Object.keys(newErrors).length !== 0) return;
+
+    try {
+      const updatedFormData = {
+        ...formData,
+        age: formData.age || null,
+        bloodPressure: formData.bloodPressure || null,
+        sugarLevel: formData.sugarLevel || null,
+        injuryCondition: formData.injuryCondition || null,
+        allergies: formData.allergies || null,
+        chronicDiseases: formData.chronicDiseases || null,
+        currentMedications: formData.currentMedications || null,
+        insuranceProvider: formData.insuranceProvider || null,
+        policyNumber: formData.policyNumber || null,
+        coverageDetails: formData.coverageDetails || null,
+        admissionDate: formData.admissionDate || null,
+        assignedDoctor: formData.assignedDoctor || null,
+        wardNumber: formData.wardNumber || null,
+        roomNumber: formData.roomNumber || null,
+        reasonForAdmission: formData.reasonForAdmission || null,
+        document: formData.document || null,
+      };
+
+      const response = await fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFormData),
+      });
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit");
+      }
+
+      alert("Patient registered successfully!");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong! Check console.");
+    }
   };
-  const shouldLabelFloat = (fieldName: keyof typeof formData) => {
-    return formData[fieldName] !== "" || focusedFields.has(fieldName);
+
+  const handleCancel = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      gender: "",
+      dateOfBirth: "",
+      age: "",
+      maritalStatus: "",
+      nationalId: "",
+      patientId: "",
+      mobile: "",
+      email: "",
+      address: "",
+      city: "",
+      stateProvince: "",
+      zipPostalCode: "",
+      contactName: "",
+      relationship: "",
+      phoneNumber: "",
+      bloodGroup: "",
+      bloodPressure: "",
+      sugarLevel: "",
+      injuryCondition: "",
+      allergies: "",
+      chronicDiseases: "",
+      currentMedications: "",
+      insuranceProvider: "",
+      policyNumber: "",
+      coverageDetails: "",
+      admissionDate: "",
+      assignedDoctor: "",
+      wardNumber: "",
+      roomNumber: "",
+      reasonForAdmission: "",
+      document: null,
+    });
+    setErrors({});
+    setTouched({});
   };
+
+  interface InputFieldProps {
+    label: string;
+    name: keyof FormData;
+    type?: string;
+    required?: boolean;
+    disabled?: boolean;
+  }
+
+  const InputField = ({
+    label,
+    name,
+    type = "text",
+    required = false,
+    disabled = false,
+  }: InputFieldProps) => (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        id={name}
+        value={formData[name] as string}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        disabled={disabled}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all ${
+          errors[name] && touched[name]
+            ? "border-red-500 focus:border-red-600"
+            : "border-black focus:border-blue-500"
+        } ${disabled ? "bg-gray-100" : "bg-white"}`}
+        placeholder=" "
+      />
+      <label
+        htmlFor={name}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
+          formData[name] || type === "date"
+            ? "-top-[9px] text-xs text-grey-400 bg-white px-1"
+            : "top-4 text-base text-gray-500 peer-focus:-top-[9px] peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1"
+        }`}
+      >
+        {label}
+        {required && <span className="text-red-500">*</span>}
+      </label>
+      {errors[name] && touched[name] && (
+        <div className="flex items-center gap-1 mt-1 text-xs text-red-600">
+          <AlertCircle size={12} />
+          <span>{errors[name]}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  interface SelectFieldProps {
+    label: string;
+    name: keyof FormData;
+    options: string[];
+    required?: boolean;
+  }
+
+  const SelectField = ({
+    label,
+    name,
+    options,
+    required = false,
+  }: SelectFieldProps) => (
+    <div className="relative">
+      <select
+        name={name}
+        id={name}
+        value={formData[name] as string}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all appearance-none ${
+          errors[name] && touched[name]
+            ? "border-red-500 focus:border-red-600"
+            : "border-black focus:border-blue-500"
+        } ${!formData[name] ? "text-gray-500" : "text-gray-900"}`}
+      >
+        <option value=""></option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      <label
+        htmlFor={name}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
+          formData[name]
+            ? "top-2 text-xs text-blue-600"
+            : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
+        }`}
+      >
+        {label}
+        {required && <span className="text-red-500">*</span>}
+      </label>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+        <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+          <path
+            d="M1 1L6 6L11 1"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+      {errors[name] && touched[name] && (
+        <div className="flex items-center gap-1 mt-1 text-xs text-red-600">
+          <AlertCircle size={12} />
+          <span>{errors[name]}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  interface TextAreaFieldProps {
+    label: string;
+    name: keyof FormData;
+    required?: boolean;
+  }
+
+  const TextAreaField = ({
+    label,
+    name,
+    required = false,
+  }: TextAreaFieldProps) => (
+    <div className="relative">
+      <textarea
+        name={name}
+        id={name}
+        value={formData[name] as string}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        rows={3}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all resize-none ${
+          errors[name] && touched[name]
+            ? "border-red-500 focus:border-red-600"
+            : "border-black focus:border-blue-500"
+        }`}
+        placeholder=" "
+      />
+      <label
+        htmlFor={name}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
+          formData[name]
+            ? "top-2 text-xs text-blue-600"
+            : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
+        }`}
+      >
+        {label}
+        {required && <span className="text-red-500">*</span>}
+      </label>
+      {errors[name] && touched[name] && (
+        <div className="flex items-center gap-1 mt-1 text-xs text-red-600">
+          <AlertCircle size={12} />
+          <span>{errors[name]}</span>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div>
-      <div className="flex items-center space-x-2 px-4 sm:px-6 lg:px-8 pt-2">
-        <h1 className="text-lg font-semibold">Edit Patient</h1>
-        <span className="">›</span>
+      <div className="flex items-center flex-wrap space-x-2 text-gray-700 bg-[#ECF0F9] px-4 sm:px-6 lg:px-8 pt-2">
+        <h1 className="text-lg font-semibold text-gray-900">Edit Patient</h1>
+        <span className="text-gray-500">›</span>
         <Link href="/">
-          <Home size={18} className="" />
+          <Home size={18} className="text-gray-500" />
         </Link>
-        <span className="">›</span>
-        <span className="">Patients</span>
-        <span className="">›</span>
-        <span className="">Edit Patient</span>
+        <span className="text-gray-500">›</span>
+        <span className="text-gray-600">Patients</span>
+        <span className="text-gray-500">›</span>
+        <span className="text-gray-600">Edit Patient</span>
       </div>
-      <div className="min-h-screen  px-4 sm:px-6 lg:px-8 py-3">
-        <div className="bg-white rounded-xl shadow-lg ">
-          <div className="p-4">
-            <h1 className="text-[17x] font-bold mb-1">
-              Edit Patient
-            </h1>
+      <div className="min-h-screen bg-[#ECF0F9]  px-4 sm:px-6 lg:px-8 py-3">
+        <div className="bg-white rounded-xl shadow-lg sm:p-8">
+          <div className="px-6 py-3 border-b border-gray-300">
+            <h1 className="text-[17x] font-bold text-gray-900 mb-1">
+            Edit Patient
+          </h1>
           </div>
-
-          <form action={formAction} className="px-8">
-            <div className="mb-4">
-              <div className="flex items-center gap-2  text-blue-600 text-lg font-semibold">
-                <User className="w-5 h-5" />
-                <span>Personal Information</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[101px]">
-              {/* First Name */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  required
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('firstName')}
-                  onBlur={() => handleBlur('firstName')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="First name"
-                />
-                <label
-                  htmlFor="firstName"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('firstName') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
+          <div className="space-y-8 p-6">
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  First name<span className="text-red-500">*</span>
-                </label>
+                  <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Personal Information
+                </h2>
               </div>
-
-              {/* Last Name */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  required
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('lastName')}
-                  onBlur={() => handleBlur('lastName')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Last name"
-                />
-                <label
-                  htmlFor="lastName"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('lastName') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Last name<span className="text-red-500">*</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* Gender */}
-              <div className="relative">
-                <select
-                  id="gender"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-[640px]:gap-12">
+                <InputField label="First name" name="firstName" required />
+                <InputField label="Last name" name="lastName" required />
+                <SelectField
+                  label="Gender"
                   name="gender"
+                  options={["Male", "Female", "Other"]}
                   required
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('gender')}
-                  onBlur={() => handleBlur('gender')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all appearance-none bg-transparent "
-                >
-                  <option value="" disabled hidden></option>
-                  <option value="Male" className="text-gray-700">Male</option>
-                  <option value="Female" className="text-gray-700">Female</option>
-                  <option value="Other" className="text-gray-700">Other</option>
-                </select>
-                <label
-                  htmlFor="gender"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('gender') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Gender<span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Date of Birth */}
-              <div className="relative">
-                <input
+                />
+                <InputField
+                  label="Date Of Birth"
+                  name="dateOfBirth"
                   type="date"
-                  id="dob"
-                  name="dob"
                   required
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('dob')}
-                  onBlur={() => handleBlur('dob')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent text-gray-700"
-                  placeholder="Date of Birth"
                 />
-                <label
-                  htmlFor="dob"
-                  className={`absolute left-4 py-1 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('dob') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Date of Birth<span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Age */}
-              <div className="relative">
-                <input
-                  type="number"
-                  id="age"
-                  name="age"
-                  required
-                  value={formData.age}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('age')}
-                  onBlur={() => handleBlur('age')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent text-gray-700"
-                  placeholder="Age"
-                />
-                <label
-                  htmlFor="age"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('age') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Age<span className="text-red-500">*</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* Marital Status */}
-              <div className="relative h-[57px]">
-                <select
-                  id="maritalStatus"
+                <InputField label="Age" name="age" disabled />
+                <SelectField
+                  label="Marital Status"
                   name="maritalStatus"
+                  options={["Single", "Married", "Divorced", "Widowed"]}
                   required
-                  value={formData.maritalStatus}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('maritalStatus')}
-                  onBlur={() => handleBlur('maritalStatus')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all bg-transparent appearance-none"
-                >
-                  <option value="" disabled hidden></option>
-                  <option value="Single">Single</option>
-                  <option value="Married">Married</option>
-                  <option value="Divorced">Divorced</option>
-                  <option value="Widowed">Widowed</option>
-                </select>
-                <label
-                  htmlFor="maritalStatus"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('maritalStatus') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Marital Status<span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* National ID */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="nationalId"
-                  name="nationalId"
-                  required
-                  value={formData.nationalId}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('nationalId')}
-                  onBlur={() => handleBlur('nationalId')}
-                  placeholder="National ID"
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
                 />
-                <label
-                  htmlFor="nationalId"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('nationalId') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  National ID<span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Patient ID */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="patientId"
+                <InputField label="National ID" name="nationalId" required />
+                <InputField
+                  label="Patient ID (Auto-generated if left empty)"
                   name="patientId"
-                  value={formData.patientId}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('patientId')}
-                  onBlur={() => handleBlur('patientId')}
-                  placeholder="Patient ID"
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
                 />
-                <label
-                  htmlFor="patientId"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('patientId') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  Patient ID
-                </label>
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Contact Information
+                </h2>
               </div>
-            </div>
-
-            {/* second part */}
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-blue-600 font-semibold text-lg">
-                <Contact className="w-5 h-5" />
-                <span>Contact Information</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-[640px]:gap-12 mb-12">
+                <InputField label="Mobile" name="mobile" type="tel" required />
+                <InputField label="Email" name="email" type="email" required />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[101px]">
-              {/* Mobile */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="mobile"
-                  name="mobile"
+              <div className="mb-12">
+                <TextAreaField label="Address" name="address" required />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
+                <InputField label="City" name="city" required />
+                <InputField
+                  label="State/Province"
+                  name="stateProvince"
                   required
-                  value={formData.mobile}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('mobile')}
-                  onBlur={() => handleBlur('mobile')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Mobile"
                 />
-                <label
-                  htmlFor="mobile"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('mobile') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Mobile <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Email */}
-              <div className="relative h-[57px]">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
+                <InputField
+                  label="Zip/Postal Code"
+                  name="zipPostalCode"
                   required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('email')}
-                  onBlur={() => handleBlur('email')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Email"
                 />
-                <label
-                  htmlFor="email"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('email') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  Email <span className="text-red-500">*</span>
-                </label>
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Emergency Contact
+                </h2>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 h-[124px]">
-              {/* Address */}
-              <div className="relative h-[101px]">
-                <textarea
-                  id="address"
-                  name="address"
-                  required
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('address')}
-                  onBlur={() => handleBlur('address')}
-                  className="peer w-full h-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none resize-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Address"
-                ></textarea>
-                <label
-                  htmlFor="address"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('address') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Address <span className="text-red-500">*</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* City */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  required
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('city')}
-                  onBlur={() => handleBlur('city')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="City"
-                />
-                <label
-                  htmlFor="city"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('city') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  City <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* State */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  required
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('state')}
-                  onBlur={() => handleBlur('state')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="State"
-                />
-                <label
-                  htmlFor="state"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('state') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  State <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Zip Code */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="zipCode"
-                  name="zipCode"
-                  required
-                  value={formData.zipCode}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('zipCode')}
-                  onBlur={() => handleBlur('zipCode')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Zip Code"
-                />
-                <label
-                  htmlFor="zipCode"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('zipCode') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Zip Code <span className="text-red-500">*</span>
-                </label>
-              </div>
-            </div>
-
-            {/* THIRD part */}
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-blue-600 font-semibold text-lg">
-                <Asterisk className="w-5 h-5" />
-                <span>Emergency Contact</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* Contact Name */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="contactName"
-                  name="contactName"
-                  required
-                  value={formData.contactName}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('contactName')}
-                  onBlur={() => handleBlur('contactName')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Contact Name"
-                />
-                <label
-                  htmlFor="contactName"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('contactName') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Contact Name <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Relationship */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="relationship"
-                  name="relationship"
-                  required
-                  value={formData.relationship}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('relationship')}
-                  onBlur={() => handleBlur('relationship')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Relationship"
-                />
-                <label
-                  htmlFor="relationship"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('relationship') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Relationship <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Phone Number */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="phoneNumber"
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
+                <InputField label="Contact Name" name="contactName" required />
+                <InputField label="Relationship" name="relationship" required />
+                <InputField
+                  label="Phone Number"
                   name="phoneNumber"
+                  type="tel"
                   required
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('phoneNumber')}
-                  onBlur={() => handleBlur('phoneNumber')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Phone Number"
                 />
-                <label
-                  htmlFor="phoneNumber"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('phoneNumber') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
+                  <path
+                    fillRule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Medical Information
+                </h2>
               </div>
-            </div>
-
-            {/* 4th part */}
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-blue-600 font-semibold text-lg">
-                <BriefcaseMedical className="w-5 h-5" />
-                <span>Medical Information</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* Blood Group */}
-              <div className="relative h-[57px]">
-                <select
-                  id="bloodGroup"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-[640px]:gap-12 mb-6">
+                <SelectField
+                  label="Blood Group"
                   name="bloodGroup"
+                  options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]}
                   required
-                  value={formData.bloodGroup}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('bloodGroup')}
-                  onBlur={() => handleBlur('bloodGroup')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all bg-white text-gray-800 appearance-none"
-                >
-                  <option value="" disabled hidden></option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
-                <label
-                  htmlFor="bloodGroup"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('bloodGroup') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Blood Group <span className="text-red-500">*</span>
-                </label>
-              </div>
-
-              {/* Blood Pressure */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="bloodPressure"
-                  name="bloodPressure"
-                  value={formData.bloodPressure}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('bloodPressure')}
-                  onBlur={() => handleBlur('bloodPressure')}
-                  placeholder="Blood Pressure"
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
                 />
-                <label
-                  htmlFor="bloodPressure"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('bloodPressure') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Blood Pressure
-                </label>
+                <InputField label="Blood Pressure" name="bloodPressure" />
+                <InputField label="Sugar Level" name="sugarLevel" />
+                <InputField label="Injury/Condition" name="injuryCondition" />
               </div>
-
-              {/* Sugar Level */}
-              <div className="relative h-[57px]">
-                <input
-                  type="text"
-                  id="sugarLevel"
-                  name="sugarLevel"
-                  value={formData.sugarLevel}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('sugarLevel')}
-                  onBlur={() => handleBlur('sugarLevel')}
-                  placeholder="Sugar Level"
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                />
-                <label
-                  htmlFor="sugarLevel"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('sugarLevel') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Sugar Level
-                </label>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              {/* Allergies */}
-              <div className="relative">
-                <textarea
-                  id="allergies"
-                  name="allergies"
-                  rows={2}
-                  value={formData.allergies}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('allergies')}
-                  onBlur={() => handleBlur('allergies')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Allergies"
-                ></textarea>
-                <label
-                  htmlFor="allergies"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('allergies') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Allergies
-                </label>
-              </div>
-
-              {/* Chronic Diseases */}
-              <div className="relative">
-                <textarea
-                  id="chronicDiseases"
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12 mt-12">
+                <TextAreaField label="Allergies" name="allergies" />
+                <TextAreaField
+                  label="Chronic Diseases"
                   name="chronicDiseases"
-                  value={formData.chronicDiseases}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('chronicDiseases')}
-                  onBlur={() => handleBlur('chronicDiseases')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Chronic Diseases"
-                ></textarea>
-                <label
-                  htmlFor="chronicDiseases"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('chronicDiseases') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Chronic Diseases
-                </label>
-              </div>
-
-              {/* Current Medications */}
-              <div className="relative">
-                <textarea
-                  id="currentMedications"
+                />
+                <TextAreaField
+                  label="Current Medications"
                   name="currentMedications"
-                  value={formData.currentMedications}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('currentMedications')}
-                  onBlur={() => handleBlur('currentMedications')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Current Medications"
-                ></textarea>
-                <label
-                  htmlFor="currentMedications"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('currentMedications') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
+                />
+              </div>
+            </section>
+
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  Current Medications
-                </label>
+                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Insurance Information
+                </h2>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 mb-8">
-              {/* Injury / Condition */}
-              <div className="relative">
-                <textarea
-                  id="injuryCondition"
-                  name="injuryCondition"
-                  value={formData.injuryCondition}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('injuryCondition')}
-                  onBlur={() => handleBlur('injuryCondition')}
-                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Injury/Condition"
-                ></textarea>
-                <label
-                  htmlFor="injuryCondition"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('injuryCondition') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Injury / Condition
-                </label>
-              </div>
-            </div>
-
-            {/* 5th part */}
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-blue-600 font-semibold text-lg">
-                <ShieldPlus className="w-5 h-5" />
-                <span>Insurance Information</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[101px]">
-              {/* Insurance Provider */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="insuranceProvider"
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
+                <InputField
+                  label="Insurance Provider"
                   name="insuranceProvider"
-                  value={formData.insuranceProvider}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('insuranceProvider')}
-                  onBlur={() => handleBlur('insuranceProvider')}
-                  className="peer w-full h-[58px] px-4 pt-4 pb-1 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Insurance Provider"
                 />
-                <label
-                  htmlFor="insuranceProvider"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('insuranceProvider') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Insurance Provider
-                </label>
+                <InputField label="Policy Number" name="policyNumber" />
+                <InputField label="Coverage Details" name="coverageDetails" />
               </div>
+            </section>
 
-              {/* Policy Number */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="policyNumber"
-                  name="policyNumber"
-                  value={formData.policyNumber}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('policyNumber')}
-                  onBlur={() => handleBlur('policyNumber')}
-                  className="peer w-full h-[58px] px-4 pt-4 pb-1 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Policy Number"
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Admission Details
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-[640px]:gap-12 mb-6">
+                <InputField
+                  label="Admission Date"
+                  name="admissionDate"
+                  type="date"
                 />
-                <label
-                  htmlFor="policyNumber"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('policyNumber') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Policy Number
-                </label>
+                <InputField label="Assigned Doctor" name="assignedDoctor" />
               </div>
-
-              {/* Coverage Information */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="coverageInformation"
-                  name="coverageInformation"
-                  value={formData.coverageInformation}
-                  onChange={handleInputChange}
-                  onFocus={() => handleFocus('coverageInformation')}
-                  onBlur={() => handleBlur('coverageInformation')}
-                  className="peer w-full h-[58px] px-4 pt-4 pb-1 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
-                  placeholder="Coverage Information"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-[640px]:gap-12 mb-6 max-[640px]:mt-12">
+                <InputField label="Ward Number" name="wardNumber" />
+                <div className="max-[640px]mt-12">
+                <InputField label="Room Number" name="roomNumber" />
+                </div>
+                <TextAreaField
+                  label="Reason for Admission"
+                  name="reasonForAdmission"
                 />
-                <label
-                  htmlFor="coverageInformation"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1
-                    ${shouldLabelFloat('coverageInformation') ? '-top-2 text-xs text-blue-600' : 'top-4  text-base'}`}
-                >
-                  Coverage Information
-                </label>
               </div>
-            </div>
+            </section>
 
-            {/* 6th part */}
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-blue-600 font-semibold text-lg">
-                <File className="w-5 h-5" />
-                <span>Documents</span>
-              </div>
-            </div>
-
-            <div className="mb-6 h-[140px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Image
-              </label>
-
-              <div
-                onClick={handleFileClick}
-                className="border border-dashed border-gray-300 rounded-md p-5 flex items-center justify-center cursor-pointer hover:border-blue-500 transition h-[96px]"
-              >
-                <button
-                  type="button"
-                  className="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-[#1447e6] shadow-sm hover:bg-blue-50 font-medium"
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  Choose file
-                </button>
-                <span className="ml-1 text-sm ">
-                  or drag and drop file here
-                </span>
+                  <path
+                    fillRule="evenodd"
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  Documents
+                </h2>
+              </div>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
                 <input
                   type="file"
-                  ref={fileInputRef}
+                  id="document"
+                  onChange={handleFileChange}
                   className="hidden"
-                  accept="image/*"
-                  name="patientImage"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                 />
+                <label htmlFor="document" className="cursor-pointer">
+                  <div className="text-blue-600 mb-2">
+                    <svg
+                      className="w-12 h-12 mx-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-blue-600 font-medium mb-1">Choose file</p>
+                  <p className="text-gray-500 text-sm">
+                    or drag and drop file here
+                  </p>
+                  {formData.document && (
+                    <p className="text-green-600 text-sm mt-2">
+                      ✓ {formData.document.name}
+                    </p>
+                  )}
+                </label>
               </div>
-            </div>
+            </section>
 
-            {/* Form Status Message */}
-            {state?.message && (
-              <div className={`p-4 rounded-lg mb-4 ${
-                state.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
-                {state.message}
-              </div>
-            )}
-
-            <div className="flex justify-end space-x-3 pb-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6">
               <button
                 type="button"
-                className="bg-[#ba1a1a] text-white font-medium py-2 px-5 rounded-full transition"
+                onClick={handleCancel}
+                className="px-8 py-3 border-2 border-red-600 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
-
               <button
-                type="submit"
-                disabled={isPending}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-full shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
+                type="button"
+                onClick={handleSubmit}
+                className="px-8 py-3 bg-gray-400 text-white rounded-lg font-medium hover:bg-gray-500 transition-colors cursor-pointer"
               >
-                {isPending ? 'Updating...' : 'Update Patient'}
+                Register Patient
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

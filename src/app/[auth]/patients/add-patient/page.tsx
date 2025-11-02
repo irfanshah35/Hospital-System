@@ -324,20 +324,18 @@ export default function PatientRegistrationForm() {
         onChange={handleChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all ${
-          errors[name] && touched[name]
-            ? "border-red-500 focus:border-red-600"
-            : "border-black focus:border-blue-500"
-        } ${disabled ? "bg-gray-100" : "bg-white"}`}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all ${errors[name] && touched[name]
+          ? "border-red-500 focus:border-red-600"
+          : "border-black focus:border-blue-500"
+          } ${disabled ? "bg-gray-100" : "bg-white"}`}
         placeholder=" "
       />
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name] || type === "date"
-            ? "-top-[9px] text-xs text-grey-400 bg-white px-1"
-            : "top-4 text-base text-gray-500 peer-focus:-top-[9px] peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1"
-        }`}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name] || type === "date"
+          ? "-top-[9px] text-xs text-grey-400 bg-white px-1"
+          : "top-4 text-base text-gray-500 peer-focus:-top-[9px] peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1"
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -371,11 +369,10 @@ export default function PatientRegistrationForm() {
         value={formData[name] as string}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all appearance-none ${
-          errors[name] && touched[name]
-            ? "border-red-500 focus:border-red-600"
-            : "border-black focus:border-blue-500"
-        } ${!formData[name] ? "text-gray-500" : "text-gray-900"}`}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all appearance-none ${errors[name] && touched[name]
+          ? "border-red-500 focus:border-red-600"
+          : "border-black focus:border-blue-500"
+          } ${!formData[name] ? "text-gray-500" : "text-gray-900"}`}
       >
         <option value=""></option>
         {options.map((opt) => (
@@ -386,11 +383,10 @@ export default function PatientRegistrationForm() {
       </select>
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name]
-            ? "top-2 text-xs text-blue-600"
-            : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
-        }`}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name]
+          ? "top-2 text-xs text-blue-600"
+          : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -433,20 +429,18 @@ export default function PatientRegistrationForm() {
         onChange={handleChange}
         onBlur={handleBlur}
         rows={3}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all resize-none ${
-          errors[name] && touched[name]
-            ? "border-red-500 focus:border-red-600"
-            : "border-black focus:border-blue-500"
-        }`}
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all resize-none ${errors[name] && touched[name]
+          ? "border-red-500 focus:border-red-600"
+          : "border-black focus:border-blue-500"
+          }`}
         placeholder=" "
       />
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name]
-            ? "top-2 text-xs text-blue-600"
-            : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
-        }`}
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name]
+          ? "top-2 text-xs text-blue-600"
+          : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -462,7 +456,7 @@ export default function PatientRegistrationForm() {
 
   return (
     <div>
-      <div className="flex items-center space-x-2 text-gray-700 bg-[#ECF0F9] px-4 sm:px-6 lg:px-8 pt-2">
+      <div className="flex items-center flex-wrap space-x-2 text-gray-700 bg-[#ECF0F9] px-4 sm:px-6 lg:px-8 pt-2">
         <h1 className="text-lg font-semibold text-gray-900">Add Patient</h1>
         <span className="text-gray-500">›</span>
         <Link href="/">
@@ -474,14 +468,17 @@ export default function PatientRegistrationForm() {
         <span className="text-gray-600">Add Patient</span>
       </div>
       <div className="min-h-screen bg-[#ECF0F9]  px-4 sm:px-6 lg:px-8 py-3">
-        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-          <h1 className="text-[17x] font-bold text-gray-900 mb-1">
-            Patient Registration Form
-          </h1>
-          <p className="text-gray-600 mb-8 text-[14px]">
-            Fill in the details to add a patient registration
-          </p>
-          <div className="space-y-8">
+        <div className="bg-white rounded-xl shadow-lg sm:p-8">
+          <div className="px-6 py-3 border-b border-gray-300">
+            <h1 className="text-[17x] font-bold text-gray-900 mb-1">
+              Patient Registration Form
+            </h1>
+            <p className="text-gray-600 text-[14px]">
+              Fill in the details to add a patient registration
+            </p>
+          </div>
+
+          <div className="space-y-8 p-6">
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <svg
@@ -495,7 +492,7 @@ export default function PatientRegistrationForm() {
                   Personal Information
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-[640px]:gap-12">
                 <InputField label="First name" name="firstName" required />
                 <InputField label="Last name" name="lastName" required />
                 <SelectField
@@ -538,14 +535,14 @@ export default function PatientRegistrationForm() {
                   Contact Information
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-[640px]:gap-12 mb-12">
                 <InputField label="Mobile" name="mobile" type="tel" required />
                 <InputField label="Email" name="email" type="email" required />
               </div>
-              <div className="mb-6">
+              <div className="mb-12">
                 <TextAreaField label="Address" name="address" required />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
                 <InputField label="City" name="city" required />
                 <InputField
                   label="State/Province"
@@ -577,7 +574,7 @@ export default function PatientRegistrationForm() {
                   Emergency Contact
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
                 <InputField label="Contact Name" name="contactName" required />
                 <InputField label="Relationship" name="relationship" required />
                 <InputField
@@ -606,7 +603,7 @@ export default function PatientRegistrationForm() {
                   Medical Information
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-[640px]:gap-12 mb-6">
                 <SelectField
                   label="Blood Group"
                   name="bloodGroup"
@@ -617,7 +614,7 @@ export default function PatientRegistrationForm() {
                 <InputField label="Sugar Level" name="sugarLevel" />
                 <InputField label="Injury/Condition" name="injuryCondition" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12 mt-12">
                 <TextAreaField label="Allergies" name="allergies" />
                 <TextAreaField
                   label="Chronic Diseases"
@@ -648,7 +645,7 @@ export default function PatientRegistrationForm() {
                   Insurance Information
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-[640px]:gap-12">
                 <InputField
                   label="Insurance Provider"
                   name="insuranceProvider"
@@ -674,7 +671,7 @@ export default function PatientRegistrationForm() {
                   Admission Details
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-[640px]:gap-12 mb-6">
                 <InputField
                   label="Admission Date"
                   name="admissionDate"
@@ -682,9 +679,11 @@ export default function PatientRegistrationForm() {
                 />
                 <InputField label="Assigned Doctor" name="assignedDoctor" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-[640px]:gap-12 mb-6 max-[640px]:mt-12">
                 <InputField label="Ward Number" name="wardNumber" />
-                <InputField label="Room Number" name="roomNumber" />
+                <div className="max-[640px]mt-12">
+                  <InputField label="Room Number" name="roomNumber" />
+                </div>
                 <TextAreaField
                   label="Reason for Admission"
                   name="reasonForAdmission"

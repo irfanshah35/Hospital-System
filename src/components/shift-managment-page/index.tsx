@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -204,7 +204,7 @@ export default function ShiftManagmentPage() {
         <>
             <div className='px-4 sm:px-6 py-[20px] mt-0'>
                 <div className="flex items-center justify-between relative top-[-5px]">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center flex-wrap space-x-2">
                         <h1 className="text-[20px] font-semibold">Shift</h1>
                         <span className="text-[20px] font-bold">›</span>
                         <Home size={18} />
@@ -219,14 +219,14 @@ export default function ShiftManagmentPage() {
                     <div className="max-w-full">
                         <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
-                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
                                     <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Shift Management</h1>
                                     <label className='relative'>
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -297,7 +297,7 @@ export default function ShiftManagmentPage() {
                             </div>
 
                             {/* Table */}
-                            <div className='overflow-auto scrollbar-hide'>
+                            <div className='overflow-auto scrollbar-hide hidden md:table'>
                                 <div className="overflow-x-auto scrollbar-hide">
                                     {loading ? (
                                         <div className="p-8 text-center text-gray-500">Loading patients...</div>
@@ -397,6 +397,90 @@ export default function ShiftManagmentPage() {
                                         </table>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+
+                                {patients.map((item) => (
+                                    <div className={``}>
+                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                                            <input
+                                                checked={selectedIds.includes(item.id)}
+                                                onChange={() => handleCheckboxChange(item.id)}
+                                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                                        </div>
+                                        <div className="text-sm text-gray-800">
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Name:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                                                    />
+                                                    <span className="ml-1"> david</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Department:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1">Urology</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Specialization:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1">Prostate</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Shift Start Date:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1 flex gap-2"><Calendar className='w-5 h-5' /> 02/01/2024 </span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Shift End Date:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1 flex gap-2"><Calendar className='w-5 h-5' /> 02/01/2024 </span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Work Days:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1">Mon-Fri</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Shift Hours:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1">9:00 AM - 5:00 PM</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Shift Type:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1">Day Shift</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <span className="font-semibold">Availability Status:</span>{" "}
+                                                <div className='flex items-center'>
+                                                    <span className="ml-1"> Available</span>
+                                                </div>
+                                            </div>
+                                            <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                <div className="flex space-x-2">
+                                                    <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                        <Edit className="w-5 h-5" />
+                                                    </button>
+                                                    <button onClick={() => {
+                                                        deleteSelectedPatients(item.id);
+                                                    }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
