@@ -156,16 +156,16 @@ export default function DoctorAppointment() {
 
         <div className='px-4 sm:px-6 lg:px-8 py-3 '>
             <div className="flex items-center justify-between pb-3">
-                <div className="flex items-center space-x-2">
-                    <h1 className="text-lg font-semibold">Appointment Calendar</h1>
-                    <span className="">›</span>
-                    <Home size={18} className="" />
-                    <span className="">›</span>
-                    <span className="">Appointment</span>
-                    <span className="">›</span>
-                    <span className="">Calendar</span>
-                </div>
-            </div>
+      <div className="flex items-center space-x-2 flex-wrap text-sm md:text-base">
+        <h1 className="text-base md:text-lg font-semibold">Appointment Calendar</h1>
+        <span className="hidden sm:inline">›</span>
+        <Home size={18} className="hidden sm:block" />
+        <span className="hidden sm:inline">›</span>
+        <span className="hidden sm:inline">Appointment</span>
+        <span className="hidden sm:inline">›</span>
+        <span className="hidden sm:inline">Calendar</span>
+      </div>
+    </div>
 
 
             <div className="min-h-screen ">
@@ -188,7 +188,7 @@ export default function DoctorAppointment() {
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
-                                                stroke-width="2"
+                                                strokeWidth="2"
                                             >
                                                 <path strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                             </svg>
@@ -201,7 +201,7 @@ export default function DoctorAppointment() {
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
-                                                stroke-width="2"
+                                                strokeWidth="2"
                                             >
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                             </svg>
