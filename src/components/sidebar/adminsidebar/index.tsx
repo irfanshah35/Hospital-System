@@ -225,11 +225,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Ambulance Call List",
-              // path: "/admin/ambulance/call-list",
+              path: "/admin/ambulance/call-list",
             },
             {
               title: "Ambulance List",
-              // path: "/admin/ambulance/list"
+              path: "/admin/ambulance/list"
             },
           ],
         },
@@ -239,11 +239,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Medicine List",
-              // path: "/admin/pharmacy/medicine-list"
+              path: "/admin/pharmacy/medicine-list"
             },
             {
               title: "Add Medicine",
-              // path: "/admin/pharmacy/add-medicine"
+              path: "/admin/pharmacy/add-medicine"
             },
           ],
         },
@@ -253,15 +253,15 @@ export default function AdminSideBar({
           children: [
             {
               title: "Blood Stock",
-              // path: "/admin/blood-bank/blood-stock"
+              path: "/admin/blood-bank/blood-stock"
             },
             {
               title: "Blood Donor",
-              // path: "/admin/blood-bank/blood-donor"
+              path: "/admin/blood-bank/blood-donor"
             },
             {
               title: "Blood Issued",
-              // path: "/admin/blood-bank/blood-issued"
+              path: "/admin/blood-bank/blood-issued"
             },
           ],
         },
@@ -315,11 +315,11 @@ export default function AdminSideBar({
           children: [
             {
               title: "Item Stock List",
-              // path: "/admin/inventory/item-stock-list",
+              path: "/admin/Inventory/item-stock-list",
             },
             {
               title: "Issued Items",
-              // path: "/admin/inventory/issued-items"
+              path: "/admin/Inventory/issued-items"
             },
           ],
         },

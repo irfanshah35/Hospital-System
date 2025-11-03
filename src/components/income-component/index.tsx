@@ -157,14 +157,14 @@ export default function IncomeComponent() {
           <div className="max-w-full">
             <div className="bg-[#dce3f0] rounded-t-xl shadow-md overflow-hidden">
               {/* Header */}
-              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center justify-between">
+              <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap justify-between">
                 <div className='flex items-center'>
                   <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium text-gray-700">Income</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -235,7 +235,7 @@ export default function IncomeComponent() {
               {/* Table */}
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
-                  <table className="min-w-full divide-y divide-gray-200">
+                  <table className="min-w-full divide-y divide-gray-200 hidden md:table">
                     <thead className="bg-white">
                       <tr>
                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
@@ -286,11 +286,10 @@ export default function IncomeComponent() {
                           <td className="px-4 py-3 text-sm text-gray-700">{item.outstandingAmount}</td>
                           <td className="px-4 py-3 text-sm text-gray-700">{item.paymentDate}</td>
                           <td className="px-4 py-3">
-                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${
-                              item.paymentStatus === 'Completed' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${item.paymentStatus === 'Completed'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                              }`}>
                               {item.paymentStatus}
                             </span>
                           </td>
@@ -314,6 +313,134 @@ export default function IncomeComponent() {
                       ))}
                     </tbody>
                   </table>
+
+                  <div
+                    className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                      }`}
+                  >
+                    {appointments.map((item) => (
+                      <div key={item.id} className="border-b border-gray-200 py-4">
+                        {/* Checkbox Row */}
+                        <div className="flex items-center justify-between mb-3">
+                          <input
+                            checked={selectedIds.includes(item.id)}
+                            onChange={() => handleCheckboxChange(item.id)}
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 rounded"
+                          />
+                        </div>
+
+                        {/* Appointment Info */}
+                        <div className="space-y-2 text-sm text-gray-800">
+                          {/* Patient ID */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Patient ID:</span>
+                            <span>{item.patientId || "—"}</span>
+                          </div>
+
+                          {/* Patient Name */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Patient Name:</span>
+                            <span>{item.patientName || "N/A"}</span>
+                          </div>
+
+                          {/* Service Type */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Service Type:</span>
+                            <span>{item.serviceType || "—"}</span>
+                          </div>
+
+                          {/* Service Date */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Service Date:</span>
+                            <span>{item.serviceDate || "—"}</span>
+                          </div>
+
+                          {/* Amount Billed */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Amount Billed:</span>
+                            <span>{item.amountBilled || "—"}</span>
+                          </div>
+
+                          {/* Amount Paid */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Amount Paid:</span>
+                            <span>{item.amountPaid || "—"}</span>
+                          </div>
+
+                          {/* Payment Method */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Payment Method:</span>
+                            <span>{item.paymentMethod || "—"}</span>
+                          </div>
+
+                          {/* Insurance Amount */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Insurance Amount:</span>
+                            <span>{item.insuranceAmount || "—"}</span>
+                          </div>
+
+                          {/* Outstanding Amount */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Outstanding Amount:</span>
+                            <span>{item.outstandingAmount || "—"}</span>
+                          </div>
+
+                          {/* Payment Date */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Payment Date:</span>
+                            <span>{item.paymentDate || "—"}</span>
+                          </div>
+
+                          {/* Payment Status */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Payment Status:</span>
+                            <span
+                              className={`px-2 py-1 text-xs font-semibold rounded ${item.paymentStatus === "Paid"
+                                  ? "bg-[#19875426] text-[#198754]"
+                                  : item.paymentStatus === "Pending"
+                                    ? "bg-[#ffc10726] text-[#ffc107]"
+                                    : item.paymentStatus === "Unpaid"
+                                      ? "bg-[#dc354526] text-[#dc3545]"
+                                      : "bg-[#0dcaf026] text-[#0dcaf0]"
+                                }`}
+                            >
+                              {item.paymentStatus || "Pending"}
+                            </span>
+                          </div>
+
+                          {/* Income Type */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Income Type:</span>
+                            <span>{item.incomeType || "—"}</span>
+                          </div>
+
+                          {/* Invoice Number */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-40">Invoice Number:</span>
+                            <span>{item.invoiceNumber || "—"}</span>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-3 pt-2">
+                            <div className="flex space-x-2">
+                              <button
+                                className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                              >
+                                <Edit className="w-5 h-5" />
+                              </button>
+                              <button
+                                className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
               </div>
             </div>

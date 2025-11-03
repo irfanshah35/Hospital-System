@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -20,7 +20,7 @@ interface Patient {
     // Add more if needed
 }
 
-export default function ShiftManagmentPage() {
+export default function MedicineListPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -205,13 +205,13 @@ export default function ShiftManagmentPage() {
             <div className='px-4 sm:px-6 py-[20px] mt-0'>
                 <div className="flex items-center justify-between relative top-[-5px]">
                     <div className="flex items-center flex-wrap space-x-2">
-                        <h1 className="text-[20px] font-semibold">Shift</h1>
+                        <h1 className="text-[20px] font-semibold">Medicine List</h1>
                         <span className="text-[20px] font-bold">›</span>
                         <Home size={18} />
                         <span>›</span>
-                        <span className="text-sm">Doctors</span>
+                        <span className="text-sm">Medicines</span>
                         <span>›</span>
-                        <span className="text-sm">Shift</span>
+                        <span className="text-sm">Medicine List</span>
                     </div>
                 </div>
 
@@ -221,12 +221,12 @@ export default function ShiftManagmentPage() {
                             {/* Header */}
                             <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
-                                    <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Shift Management</h1>
+                                    <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Medicine List</h1>
                                     <label className='relative'>
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] pr-0 py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -297,215 +297,208 @@ export default function ShiftManagmentPage() {
                             </div>
 
                             {/* Table */}
-                            <div className='overflow-auto scrollbar-hide hidden md:table'>
+                            <div className='overflow-auto scrollbar-hide'>
                                 <div className="overflow-x-auto scrollbar-hide">
                                     {loading ? (
                                         <div className="p-8 text-center text-gray-500">Loading patients...</div>
                                     ) : patients.length === 0 ? (
                                         <div className="p-8 text-center text-gray-500">No patients found</div>
                                     ) : (
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-white">
-                                                <tr>
-                                                    <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="selectAll"
-                                                            onChange={(e) => handleSelectAll(e.target.checked)}
-                                                            className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                                                        />
-                                                    </th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Start Date</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift End Date</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Work Days</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Hours</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Type</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Availability Status</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                                                {patients.map((item) => (
-                                                    <tr key={item.id} className="transition-colors duration-150">
-                                                        <td className="px-4 py-3 pl-[37px]">
+                                        <>
+                                            <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                                                <thead role="rowgroup" className="bg-white">
+                                                    <tr>
+                                                        <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={selectedIds.includes(item.id)}
-                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                id="selectAll"
+                                                                onChange={(e) => handleSelectAll(e.target.checked)}
                                                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                                             />
-                                                        </td>
+                                                        </th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Medicine Number</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Medicine Name</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Company</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Purchase Date</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Price</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Expiry Date</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Stock</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                    {patients.map((item) => (
+                                                        <tr key={item.id} className="transition-colors duration-150 ">
+                                                            <td className="px-4 py-3 pl-[37px]">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedIds.includes(item.id)}
+                                                                    onChange={() => handleCheckboxChange(item.id)}
+                                                                    className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                                                />
+                                                            </td>
 
 
-                                                        <td className="px-4 py-3 whitespace-nowrap">
-                                                            <div className="flex items-center">
-                                                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                                                    <div className="text-sm font-medium">
-                                                                        Dr. Chris Wilson
+                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                                <div className="flex items-center">
+                                                                    <div className=" w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                                                        <div className="text-sm font-medium">
+                                                                            1
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                                                            <td className="px-4 text-sm whitespace-nowrap">Paracetamol</td>
 
-                                                        <td className="px-4 whitespace-nowrap">
-                                                            <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                                                Breast Cancer
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                2024-02-01
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 text-sm">2024-02-28</td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className={`flex items-center `}>
-                                                                Mon-Fri
-                                                            </div>
-                                                        </td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center gap-2">
+                                                                    Tablet
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm">9:00 AM - 5:00 PM</td>
-                                                        <td className="px-4 text-sm">Day Shift</td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className={`flex items-center `}>
-                                                                Available
-                                                            </div>
-                                                        </td>
+                                                            <td className="px-4 whitespace-nowrap">
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
+                                                                    Sky Pharma
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    2021-02-25
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm font-medium">
-                                                            <div className="flex space-x-2">
-                                                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Edit className="w-5 h-5" />
-                                                                </button>
-                                                                <button onClick={() => {
-                                                                    deleteSelectedPatients(item.id);
-                                                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Trash2 className="w-5 h-5" />
-                                                                </button>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    $50
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 text-sm">2024-02-25</td>
+
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    234
+                                                                </div>
+                                                            </td>
+
+                                                            <td className="px-4 text-sm font-medium">
+                                                                <div className="flex space-x-2">
+                                                                    <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button onClick={() => {
+                                                                        deleteSelectedPatients(item.id);
+                                                                    }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+
+                                            <div
+                                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                                                    }`}
+                                            >
+                                                {patients.map((item) => (
+                                                    <div key={item.id} className="border-b border-gray-200 py-4">
+                                                        {/* Checkbox Row */}
+                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                            <input
+                                                                checked={selectedIds.includes(item.id)}
+                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                type="checkbox"
+                                                                className="w-4 h-4 text-blue-600 rounded"
+                                                            />
+                                                        </div>
+
+                                                        {/* Patient Info */}
+                                                        <div className="space-y-2 text-sm">
+                                                            {/* Case Number */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Medicine Number:</span>
+                                                                <span>1</span>
                                                             </div>
-                                                        </td>
-                                                    </tr>
+
+                                                            {/* Patient Name */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Medicine Name:</span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>Paracetamol</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Patient Number */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Category:</span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span>Tablet</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Gender */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Company:</span>
+                                                                <span className={`flex items-center gap-1 `}
+                                                                >
+                                                                   Sky Pharma
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Date */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Purchase Date:</span>
+                                                                <span>2021-02-25</span>
+                                                            </div>
+
+                                                            {/* Vehicle Number */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Price:</span>
+                                                                <span>$50</span>
+                                                            </div>
+
+                                                            {/* Driver Name */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Expiry Date:</span>
+                                                                <span>2024-02-25</span>
+                                                            </div>
+
+                                                            {/* Driver Number */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                                <span className="font-semibold w-28">Stock:</span>
+                                                                <span>234</span>
+                                                            </div>
+
+                                                            {/* Actions */}
+                                                            <div className="flex items-center gap-3 p-2">
+                                                                <div className="flex space-x-2">
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
+                                                                        className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => deleteSelectedPatients(item.id)}
+                                                                        className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 ))}
-                                            </tbody>
-                                        </table>
+                                            </div>
+
+                                        </>
                                     )}
                                 </div>
                             </div>
-
-                            <div
-                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
-                                    }`}
-                            >
-                                {patients.map((item) => (
-                                    <div key={item.id} className="border-b border-gray-200 py-4">
-                                        {/* Checkbox Row */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <input
-                                                checked={selectedIds.includes(item.id)}
-                                                onChange={() => handleCheckboxChange(item.id)}
-                                                type="checkbox"
-                                                className="w-4 h-4 text-blue-600 rounded"
-                                            />
-                                        </div>
-
-                                        {/* Shift Info */}
-                                        <div className="space-y-2 text-sm text-gray-800">
-                                            {/* Name */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Name:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <img
-                                                        src="https://via.placeholder.com/40"
-                                                        alt="staff"
-                                                        className="w-8 h-8 rounded-full object-cover border-2 border-dashed border-gray-400"
-                                                    />
-                                                    <span>{item.name || "David"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Department */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Department:</span>
-                                                <span>{item.department || "Urology"}</span>
-                                            </div>
-
-                                            {/* Specialization */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Specialization:</span>
-                                                <span>{item.specialization || "Prostate"}</span>
-                                            </div>
-
-                                            {/* Shift Start Date */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Start Date:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                    <span>{item.shift_start || "02/01/2024"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Shift End Date */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift End Date:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                    <span>{item.shift_end || "02/01/2024"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Work Days */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Work Days:</span>
-                                                <span>{item.work_days || "Mon–Fri"}</span>
-                                            </div>
-
-                                            {/* Shift Hours */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Hours:</span>
-                                                <span>{item.shift_hours || "9:00 AM – 5:00 PM"}</span>
-                                            </div>
-
-                                            {/* Shift Type */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Type:</span>
-                                                <span>{item.shift_type || "Day Shift"}</span>
-                                            </div>
-
-                                            {/* Availability Status */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Availability Status:</span>
-                                                <span>{item.status || "Available"}</span>
-                                            </div>
-
-                                            {/* Actions */}
-                                            <div className="flex items-center gap-3 pt-2">
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleEditClick(item)}
-                                                        className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                                    >
-                                                        <Edit className="w-5 h-5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteSelectedPatients(item.id)}
-                                                        className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                                    >
-                                                        <Trash2 className="w-5 h-5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
                         </div>
                     </div>
                 </div>

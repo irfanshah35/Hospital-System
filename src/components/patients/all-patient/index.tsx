@@ -38,8 +38,8 @@ export default function AllPatient() {
       const res = await fetch("/api/patients");
       const data = await res.json();
       setPatients(data);
-      console.log(data,"dsa");
-      
+      console.log(data, "dsa");
+
 
     } catch (error) {
       console.error("Failed to fetch patients:", error);
@@ -356,7 +356,7 @@ export default function AllPatient() {
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm whitespace-nowrap">Malaria</td>                              
+                              <td className="px-4 text-sm whitespace-nowrap">Malaria</td>
 
                               <td className="px-4 whitespace-nowrap">
                                 <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
@@ -382,7 +382,7 @@ export default function AllPatient() {
                                 </div>
                               </td>
 
-                              
+
 
                               <td className="px-4 text-sm">
                                 <div className="flex items-center">
@@ -392,7 +392,7 @@ export default function AllPatient() {
 
                               <td className="px-4 whitespace-nowrap">
                                 <span className="px-2 inline-flex text-sm leading-5 ">
-                                   01/20/2024 
+                                  01/20/2024
                                 </span>
                               </td>
 
@@ -415,90 +415,122 @@ export default function AllPatient() {
                         </tbody>
                       </table>
 
-                      <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-
+                      <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                         {patients.map((item) => (
-                          <div className={``}>
+                          <div key={item.id} className="border-b border-gray-200 py-4">
+                            {/* Checkbox Row */}
                             <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                               <input
                                 checked={selectedIds.includes(item.id)}
                                 onChange={() => handleCheckboxChange(item.id)}
-                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                                type="checkbox"
+                                className="w-4 h-4 text-blue-600 rounded"
+                              />
                             </div>
+
+                            {/* Patient Info */}
                             <div className="text-sm text-gray-800">
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Name:</span>{" "}
-                                <div className='flex items-center'>
-                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                              {/* Name */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Name:</span>
+                                <div className="flex items-center">
+                                  <img
+                                    src={item.image || "https://via.placeholder.com/40"}
+                                    alt="patient"
+                                    className="w-10 h-10 rounded-full object-cover"
                                   />
                                   <span className="ml-1">{item.first_name} {item.last_name}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Treatment:</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Treatment */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Treatment:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">Malaria</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Gender::</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className={`ml-1 py-1 px-2 rounded-[4px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
-                                  }`}>{item.gender}</span>
+
+                              {/* Gender */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Gender:</span>
+                                <div className="flex items-center">
+                                  <span className={`ml-1 py-1 px-2 rounded-[4px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"}`}>
+                                    {item.gender}
+                                  </span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Phone</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Phone */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Phone</span>
+                                <div className="flex items-center">
                                   <Phone className="w-4 h-4 text-[#198754] mr-2" />
                                   <span>{item.mobile}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Admission Date::</span>{" "}
-                                <div className='flex items-center'>
-                                  <Phone className="w-5 h-5 text-gray-500" />
+
+                              {/* Admission Date */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Admission Date:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">{new Date(item.created_at).toLocaleDateString()}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Doctor Assigned:</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Doctor Assigned */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Doctor Assigned:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">{item.assigned_doctor}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Address:</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Address */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Address:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">{item.address}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Blood Group:</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Blood Group */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Blood Group:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">{item.blood_group}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Discharge Date:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">  01/20/2024 </span>
+
+                              {/* Discharge Date */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Discharge Date:</span>
+                                <div className="flex items-center">
+                                  <span className="ml-1">01/20/2024</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Status:</span>{" "}
-                                <div className='flex items-center'>
+
+                              {/* Status */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-32">Status:</span>
+                                <div className="flex items-center">
                                   <span className="ml-1">Recovered</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+
+                              {/* Actions */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <div className="flex space-x-2">
-                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => {
-                                    deleteSelectedPatients(item.id);
-                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => deleteSelectedPatients(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>

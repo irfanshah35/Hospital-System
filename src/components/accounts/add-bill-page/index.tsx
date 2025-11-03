@@ -88,7 +88,7 @@ export default function AddBillPage() {
 
                     <div className="py-6 px-10 mt-3">
                         <form action={formAction} className="w-full">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 gap-10">
                                 {/* Bill No */}
                                 <div className="relative mb-4">
                                     <input
