@@ -294,8 +294,8 @@ export default function BillListComponent() {
                           <td className="px-4 py-3 text-sm text-gray-700">{item.doctorName}</td>
                           <td className="px-4 py-3">
                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${item.status === 'Paid'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-yellow-100 text-yellow-800'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
                               }`}>
                               {item.status}
                             </span>
@@ -323,76 +323,99 @@ export default function BillListComponent() {
                     </tbody>
                   </table>
 
-                  <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-
+                  <div
+                    className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                      }`}
+                  >
                     {bills.map((item) => (
-                      <div className={``}>
-                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                      <div key={item.id} className="border-b border-gray-200 py-4">
+                        {/* Checkbox Row */}
+                        <div className="flex items-center justify-between mb-3">
                           <input
                             checked={selectedIds.includes(item.id)}
                             onChange={() => handleCheckboxChange(item.id)}
-                            type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 rounded"
+                          />
                         </div>
-                        <div className="text-sm text-gray-800">
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Patient Name:</span>{" "}
-                            <div className='flex items-center'>
-                              <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+
+                        {/* Bill Info */}
+                        <div className="space-y-2 text-sm text-gray-800">
+                          {/* Patient Name */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Patient Name:</span>
+                            <div className="flex items-center gap-2">
+                              <img
+                                src="https://via.placeholder.com/40"
+                                alt="Patient"
+                                className="w-8 h-8 rounded-full object-cover border border-gray-300"
                               />
-                              <span className="ml-1">{item.patientName}</span>
+                              <span>{item.patientName || "N/A"}</span>
                             </div>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Admission ID:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1">{item.admissionId}</span>
-                            </div>
+
+                          {/* Admission ID */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Admission ID:</span>
+                            <span>{item.admissionId || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Doctor Name:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1">{item.doctorName}</span>
-                            </div>
+
+                          {/* Doctor Name */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Doctor Name:</span>
+                            <span>{item.doctorName || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Status:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${item.status === 'Paid'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                              }`}> {item.status} </span>
-                            </div>
+
+                          {/* Status */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Status:</span>
+                            <span
+                              className={`px-2 py-1 text-xs font-semibold rounded ${item.status === "Paid"
+                                  ? "bg-[#19875426] text-[#198754]"
+                                  : item.status === "Unpaid"
+                                    ? "bg-[#ffc10726] text-[#ffc107]"
+                                    : "bg-[#0dcaf026] text-[#0dcaf0]"
+                                }`}
+                            >
+                              {item.status || "Pending"}
+                            </span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Admission Date:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1">{item.admissionDate}</span>
-                            </div>
+
+                          {/* Admission Date */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Admission Date:</span>
+                            <span>{item.admissionDate || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Tax:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1">{item.tax}</span>
-                            </div>
+
+                          {/* Tax */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Tax:</span>
+                            <span>{item.tax || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Discount:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1">{item.discount}</span>
-                            </div>
+
+                          {/* Discount */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Discount:</span>
+                            <span>{item.discount || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                            <span className="font-semibold">Total Amount:</span>{" "}
-                            <div className='flex items-center'>
-                              <span className="ml-1"> {item.totalAmount} </span>
-                            </div>
+
+                          {/* Total Amount */}
+                          <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                            <span className="font-semibold w-32">Total Amount:</span>
+                            <span>{item.totalAmount || "—"}</span>
                           </div>
-                          <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-3 pt-2">
                             <div className="flex space-x-2">
-                              <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                              <button
+                                className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                              >
                                 <Edit className="w-5 h-5" />
                               </button>
-                              <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                              <button
+                                className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                              >
                                 <Trash2 className="w-5 h-5" />
                               </button>
                             </div>
@@ -401,6 +424,7 @@ export default function BillListComponent() {
                       </div>
                     ))}
                   </div>
+
                 </div>
               </div>
             </div>

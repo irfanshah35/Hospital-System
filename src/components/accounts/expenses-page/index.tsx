@@ -219,14 +219,14 @@ export default function ExpensesPage() {
                     <div className="max-w-full">
                         <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
-                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex items-center">
+                            <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
                                     <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Expenses</h1>
                                     <label className='relative'>
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -304,105 +304,236 @@ export default function ExpensesPage() {
                                     ) : patients.length === 0 ? (
                                         <div className="p-8 text-center text-gray-500">No patients found</div>
                                     ) : (
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-white">
-                                                <tr>
-                                                    <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="selectAll"
-                                                            onChange={(e) => handleSelectAll(e.target.checked)}
-                                                            className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                                                        />
-                                                    </th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Amount</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Vendor</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Invoice Number</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Method</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Approval Status</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Status</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Tax</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Total Cost</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                                                {patients.map((item) => (
-                                                    <tr key={item.id} className="transition-colors duration-150">
-                                                        <td className="px-4 py-3 pl-[37px]">
+                                        <>
+                                            <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                                                <thead className="bg-white">
+                                                    <tr>
+                                                        <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={selectedIds.includes(item.id)}
-                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                id="selectAll"
+                                                                onChange={(e) => handleSelectAll(e.target.checked)}
                                                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                                             />
-                                                        </td>
-                                                        <td className="px-4 text-sm whitespace-nowrap">2024-11-05</td>
-                                                        <td className="px-4 text-sm whitespace-nowrap">Utilities</td>
-
-                                                        <td className="px-4 whitespace-nowrap">
-                                                            <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                                                Water bill for Nov
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                150
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 text-sm">CityWater Corp</td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                WTR23456
-                                                            </div>
-                                                        </td>
-
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                Cheque
-                                                            </div>
-                                                        </td>
-
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                Facilities
-                                                            </div>
-                                                        </td>
-
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                Approved
-                                                            </div>
-                                                        </td>
-
-                                                        <td className="px-4 whitespace-nowrap">
-                                                            Paid
-                                                        </td>
-
-                                                        <td className="px-4 text-sm">15</td>
-                                                        <td className="px-4 text-sm">165</td>
-
-                                                        <td className="px-4 text-sm font-medium">
-                                                            <div className="flex space-x-2">
-                                                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Edit className="w-5 h-5" />
-                                                                </button>
-                                                                <button onClick={() => {
-                                                                    deleteSelectedPatients(item.id);
-                                                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Trash2 className="w-5 h-5" />
-                                                                </button>
-                                                            </div>
-                                                        </td>
+                                                        </th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Amount</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Vendor</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Invoice Number</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Method</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Approval Status</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Payment Status</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Tax</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Total Cost</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                                                     </tr>
+                                                </thead>
+
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                    {patients.map((item) => (
+                                                        <tr key={item.id} className="transition-colors duration-150">
+                                                            <td className="px-4 py-3 pl-[37px]">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedIds.includes(item.id)}
+                                                                    onChange={() => handleCheckboxChange(item.id)}
+                                                                    className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 text-sm whitespace-nowrap">2024-11-05</td>
+                                                            <td className="px-4 text-sm whitespace-nowrap">Utilities</td>
+
+                                                            <td className="px-4 whitespace-nowrap">
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
+                                                                    Water bill for Nov
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    150
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 text-sm">CityWater Corp</td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    WTR23456
+                                                                </div>
+                                                            </td>
+
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    Cheque
+                                                                </div>
+                                                            </td>
+
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    Facilities
+                                                                </div>
+                                                            </td>
+
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    Approved
+                                                                </div>
+                                                            </td>
+
+                                                            <td className="px-4 whitespace-nowrap">
+                                                                Paid
+                                                            </td>
+
+                                                            <td className="px-4 text-sm">15</td>
+                                                            <td className="px-4 text-sm">165</td>
+
+                                                            <td className="px-4 text-sm font-medium">
+                                                                <div className="flex space-x-2">
+                                                                    <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button onClick={() => {
+                                                                        deleteSelectedPatients(item.id);
+                                                                    }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+
+                                            <div
+                                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                                                    }`}
+                                            >
+                                                {patients.map((item) => (
+                                                    <div key={item.id} className="border-b border-gray-200 py-4">
+                                                        {/* Checkbox Row */}
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <input
+                                                                checked={selectedIds.includes(item.id)}
+                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                type="checkbox"
+                                                                className="w-4 h-4 text-blue-600 rounded"
+                                                            />
+                                                        </div>
+
+                                                        {/* Expense Info */}
+                                                        <div className="space-y-2 text-sm">
+                                                            {/* Date */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Date:</span>
+                                                                <span>{item.date || "—"}</span>
+                                                            </div>
+
+                                                            {/* Category */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Category:</span>
+                                                                <span>{item.category || "—"}</span>
+                                                            </div>
+
+                                                            {/* Description */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Description:</span>
+                                                                <span>{item.description || "—"}</span>
+                                                            </div>
+
+                                                            {/* Amount */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Amount:</span>
+                                                                <span>{item.amount || "—"}</span>
+                                                            </div>
+
+                                                            {/* Vendor */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Vendor:</span>
+                                                                <span>{item.vendor || "—"}</span>
+                                                            </div>
+
+                                                            {/* Invoice Number */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Invoice #:</span>
+                                                                <span>{item.invoiceNumber || "—"}</span>
+                                                            </div>
+
+                                                            {/* Payment Method */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Payment Method:</span>
+                                                                <span>{item.paymentMethod || "—"}</span>
+                                                            </div>
+
+                                                            {/* Department */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Department:</span>
+                                                                <span>{item.department || "—"}</span>
+                                                            </div>
+
+                                                            {/* Approval Status */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Approval Status:</span>
+                                                                <span
+                                                                    className={`px-2 py-1 text-xs font-semibold rounded ${item.approvalStatus === "Approved"
+                                                                            ? "bg-[#19875426] text-[#198754]"
+                                                                            : item.approvalStatus === "Pending"
+                                                                                ? "bg-[#ffc10726] text-[#ffc107]"
+                                                                                : "bg-[#dc354526] text-[#dc3545]"
+                                                                        }`}
+                                                                >
+                                                                    {item.approvalStatus || "—"}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Payment Status */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Payment Status:</span>
+                                                                <span
+                                                                    className={`px-2 py-1 text-xs font-semibold rounded ${item.paymentStatus === "Paid"
+                                                                            ? "bg-[#19875426] text-[#198754]"
+                                                                            : "bg-[#ffc10726] text-[#ffc107]"
+                                                                        }`}
+                                                                >
+                                                                    {item.paymentStatus || "—"}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Tax */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Tax:</span>
+                                                                <span>{item.tax || "—"}</span>
+                                                            </div>
+
+                                                            {/* Total Cost */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-32">Total Cost:</span>
+                                                                <span>{item.totalCost || "—"}</span>
+                                                            </div>
+
+                                                            {/* Actions */}
+                                                            <div className="flex items-center gap-3 pt-2">
+                                                                <div className="flex space-x-2">
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
+                                                                        className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => deleteSelectedPatients(item.id)}
+                                                                        className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 ))}
-                                            </tbody>
-                                        </table>
+                                            </div>
+
+                                        </>
                                     )}
                                 </div>
                             </div>

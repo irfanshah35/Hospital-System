@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -20,7 +20,7 @@ interface Patient {
   // Add more if needed
 }
 
-export default function AssignedDepartment() {
+export default function AmbulanceCallList() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -205,13 +205,13 @@ export default function AssignedDepartment() {
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
           <div className="flex items-center flex-wrap space-x-2">
-            <h1 className="text-[20px] font-semibold">Assign Department</h1>
+            <h1 className="text-[20px] font-semibold">Call List</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
             <span>›</span>
-            <span className="text-sm">Doctors</span>
+            <span className="text-sm">Ambulance</span>
             <span>›</span>
-            <span className="text-sm">Assign Department</span>
+            <span className="text-sm">Call List</span>
           </div>
         </div>
 
@@ -221,12 +221,12 @@ export default function AssignedDepartment() {
               {/* Header */}
               <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                 <div className='flex items-center flex-[35%]'>
-                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Assign Department</h1>
+                  <h1 className="m-0 text-[17px] leading-[28px] pr-[10px] font-medium">Call List</h1>
                   <label className='relative'>
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
+                      className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] pr-0 py-2 focus:outline-none"
                     />
                     <span className='absolute left-2 top-2'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -306,7 +306,7 @@ export default function AssignedDepartment() {
                   ) : (
                     <>
                       <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                        <thead className="bg-white">
+                        <thead role="rowgroup" className="bg-white">
                           <tr>
                             <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               <input
@@ -316,20 +316,22 @@ export default function AssignedDepartment() {
                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                               />
                             </th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Schedule</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Experience Level</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assignment Status</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Assigned Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Case Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Vehicle Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Driver Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Driver Number</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Address</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                           </tr>
                         </thead>
 
-                        <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                        <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                           {patients.map((item) => (
-                            <tr key={item.id} className="transition-colors duration-150">
+                            <tr key={item.id} className="transition-colors duration-150 ">
                               <td className="px-4 py-3 pl-[37px]">
                                 <input
                                   type="checkbox"
@@ -342,35 +344,54 @@ export default function AssignedDepartment() {
 
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                  <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                  <div className=" w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
                                     <div className="text-sm font-medium">
-                                      Dr. Chris Wilson
+                                      4344
                                     </div>
                                   </div>
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                              <td className="px-4 text-sm whitespace-nowrap">Madge Kelley</td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Phone className='w-5 h-5 text-green-500' />
+                                  15442896248
+                                </div>
+                              </td>
 
                               <td className="px-4 whitespace-nowrap">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                  Breast Cancer
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                  }`}>
+                                  male
                                 </span>
                               </td>
+
+                              <td className="px-4 text-sm">2021-02-10</td>
                               <td className="px-4 text-sm">
                                 <div className="flex items-center">
-                                  Mon-Wed, 9 AM - 3 PM
-                                </div>
-                              </td>
-                              <td className="px-4 text-sm">Consultant</td>
-                              <td className="px-4 text-sm">
-                                <div className={`flex items-center `}>
-                                  Active
+                                  GJ54XS2345
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm">2023-07-25</td>
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  Jackson Hubbard
+                                </div>
+                              </td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  1234567890
+                                </div>
+                              </td>
+
+                              <td className="px-4 text-sm">
+                                <div className="flex items-center">
+                                  11,Shyam appt. Rajkot
+                                </div>
+                              </td>
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
@@ -405,55 +426,75 @@ export default function AssignedDepartment() {
                               />
                             </div>
 
-                            {/* Doctor Info */}
-                            <div className="space-y-2 text-sm text-gray-800">
-                              {/* Name */}
+                            {/* Patient Info */}
+                            <div className="space-y-2 text-sm">
+                              {/* Case Number */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Name:</span>
+                                <span className="font-semibold w-28">Case Number:</span>
+                                <span>{item.case_no || "—"}</span>
+                              </div>
+
+                              {/* Patient Name */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Patient Name:</span>
                                 <div className="flex items-center gap-2">
-                                  <img
-                                    src={item.image || "https://via.placeholder.com/40"}
-                                    alt="doctor"
-                                    className="w-8 h-8 rounded-full object-cover border-2 border-dashed border-gray-400"
-                                  />
-                                  <span>{item.name || "—"}</span>
+                                  <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <span>{item.patient_name || "N/A"}</span>
                                 </div>
                               </div>
 
-                              {/* Department */}
+                              {/* Patient Number */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Department:</span>
-                                <span>{item.department || "—"}</span>
-                              </div>
-
-                              {/* Specialization */}
-                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Specialization:</span>
-                                <span>{item.specialization || "—"}</span>
-                              </div>
-
-                              {/* Experience Level */}
-                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Experience Level:</span>
-                                <span>{item.experience_level || "—"}</span>
-                              </div>
-
-                              {/* Assignment Status */}
-                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Assignment Status:</span>
-                                <div className="flex items-center gap-2">
+                                <span className="font-semibold w-28">Patient Number:</span>
+                                <div className="flex items-center gap-1">
                                   <Phone className="w-4 h-4 text-green-600" />
-                                  <span>{item.assignment_status || "Active"}</span>
+                                  <span>{item.patient_no || "—"}</span>
                                 </div>
                               </div>
 
-                              {/* Assigned Date */}
+                              {/* Gender */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                <span className="font-semibold w-32">Assigned Date:</span>
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-gray-500" />
-                                  <span>{item.assigned_date || "—"}</span>
-                                </div>
+                                <span className="font-semibold w-28">Gender:</span>
+                                <span
+                                  className={`px-2 py-1 text-xs font-semibold rounded ${item.gender === "Female"
+                                      ? "bg-[#6f42c126] text-[#6f42c1]"
+                                      : item.gender === "Male"
+                                        ? "bg-[#19875426] text-[#198754]"
+                                        : "bg-[#ffc10726] text-[#ffc107]"
+                                    }`}
+                                >
+                                  {item.gender || "—"}
+                                </span>
+                              </div>
+
+                              {/* Date */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Date:</span>
+                                <span>{item.date || "—"}</span>
+                              </div>
+
+                              {/* Vehicle Number */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Vehicle Number:</span>
+                                <span>{item.vehicle_no || "—"}</span>
+                              </div>
+
+                              {/* Driver Name */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Driver Name:</span>
+                                <span>{item.driver_name || "—"}</span>
+                              </div>
+
+                              {/* Driver Number */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Driver Number:</span>
+                                <span>{item.driver_no || "—"}</span>
+                              </div>
+
+                              {/* Patient Address */}
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                <span className="font-semibold w-28">Patient Address:</span>
+                                <span>{item.patient_address || "—"}</span>
                               </div>
 
                               {/* Actions */}
