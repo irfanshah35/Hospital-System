@@ -329,39 +329,39 @@ export default function AdminSideBar({
           children: [
             {
               title: "Leave Requests",
-              // path: "/admin/human-resources/leave-requests",
+              path: "/admin/human-resources/leave-requests",
             },
             {
               title: "Leave Balance",
-              // path: "/admin/human-resources/leave-balance",
+              path: "/admin/human-resources/leave-balance",
             },
             {
               title: "Leave Types",
-              // path: "/admin/human-resources/leave-types",
+              path: "/admin/human-resources/leave-types",
             },
             {
               title: "Holidays",
-              // path: "/admin/human-resources/holidays"
+              path: "/admin/human-resources/holidays"
             },
             {
               title: "Today's Attendance",
-              // path: "/admin/human-resources/todays-attendance",
+              path: "/admin/human-resources/todays-attendance",
             },
             {
               title: "Employee Attendance",
-              // path: "/admin/human-resources/emp-attendance",
+              path: "/admin/human-resources/employee-attendance",
             },
             {
               title: "Attendance Sheet",
-              // path: "/admin/human-resources/attendance-sheet",
+              path: "/admin/human-resources/attendance-sheet",
             },
             {
               title: "Employee Salary",
-              // path: "/admin/human-resources/employee-salary",
+              path: "/admin/human-resources/employee-salary",
             },
             {
               title: "Payslip",
-              // path: "/admin/human-resources/payslip"
+              path: "/admin/human-resources/payslip"
             },
           ],
         },
