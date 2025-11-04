@@ -287,11 +287,11 @@ export default function AdminSideBar({
             },
             {
               title: "Income Report",
-              // path: "/admin/accounts/income-report"
+              path: "/admin/accounts/income-report"
             },
             {
               title: "Invoice",
-              // path: "/admin/accounts/invoice"
+              path: "/admin/accounts/invoice"
             },
           ],
         },
@@ -371,19 +371,19 @@ export default function AdminSideBar({
           children: [
             {
               title: "Patient Insurance",
-              // path: "/admin/insurance/patient-insurance",
+              path: "/admin/insurance/patient-insurance",
             },
             {
               title: "New Claim",
-              // path: "/admin/insurance/new-claim"
+              path: "/admin/insurance/new-claim"
             },
             {
               title: "Claim Status",
-              // path: "/admin/insurance/claim-status"
+              path: "/admin/insurance/claim-status"
             },
             {
               title: "Insurance Provider",
-              // path: "/admin/insurance/insurance-provider",
+              path: "/admin/insurance/insurance-provider",
             },
           ],
         },
