@@ -55,13 +55,35 @@ const router = useRouter();
     }
   }, []);
 
-  const handleLogout = () => {
+ const handleLogout = () => {
+    // Clear all auth-related items from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
     localStorage.removeItem("username");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPicture");
     localStorage.removeItem("loginMethod");
+    
+    // Clear ALL cookies (must match the cookies set during login)
+    const cookiesToClear = [
+      "authToken",
+      "userRole", 
+      "username",
+      "userEmail",
+      "userPicture",
+      "loginMethod"
+    ];
+    
+    cookiesToClear.forEach(cookieName => {
+      // Clear with all possible paths and attributes to ensure removal
+      document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
+      document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+    });
+    
+    // Close any dropdowns
+    setProfileDropdown(false);
+    
+    // Use window.location for a hard redirect (ensures middleware runs)
     window.location.href = "/";
   };
 
