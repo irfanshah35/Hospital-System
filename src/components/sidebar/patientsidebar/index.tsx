@@ -79,12 +79,12 @@ export default function SideBar({
     {
       title: "Prescriptions",
       icon: FileText,
-      path: "",
+      path: "/patient/prescriptions",
     },
     {
       title: "Medical Record",
       icon: FileArchive,
-      path: "",
+      path: "/patient/medical-record",
     },
     {
       title: "Billing",
