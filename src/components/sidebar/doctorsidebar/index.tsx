@@ -63,7 +63,7 @@ export default function DoctorSideBar({
     {
       title: "Doctors",
       icon: UserCog,
-      // path: "#/doctor/doctors",
+      path: "/doctor/doctors-page",
     },
     {
       title: "Patients",
