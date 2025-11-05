@@ -150,7 +150,7 @@ const router = useRouter();
       code: "de",
     },
     {
-      language: "اردو",
+      language: "Urdu",
       flag: "/assets/pak.png",
       code: "ur",
     },
@@ -372,7 +372,7 @@ const router = useRouter();
                               <span
                                 className={
                                   country.code === "ur"
-                                    ? "text-right flex-1"
+                                    ? "text-left flex-1"
                                     : ""
                                 }
                               >
