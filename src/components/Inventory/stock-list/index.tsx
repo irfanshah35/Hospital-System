@@ -238,13 +238,13 @@ export default function StockList() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setStockItems(prev => 
-                prev.map(item => 
+
+            setStockItems(prev =>
+                prev.map(item =>
                     item.id === editingItem?.id ? editingItem : item
                 )
             );
-            
+
             alert("Stock item updated successfully!");
             setIsEditModalOpen(false);
         } catch (error) {
@@ -434,14 +434,14 @@ export default function StockList() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteSelectedItem(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -575,7 +575,7 @@ export default function StockList() {
                                     <input
                                         type="text"
                                         value={editingItem.itemName}
-                                        onChange={(e) => setEditingItem({...editingItem, itemName: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, itemName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -587,7 +587,7 @@ export default function StockList() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.category}
-                                        onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Medicines">Medicines</option>
@@ -610,7 +610,7 @@ export default function StockList() {
                                     <input
                                         type="number"
                                         value={editingItem.quantity}
-                                        onChange={(e) => setEditingItem({...editingItem, quantity: parseInt(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: parseInt(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -623,7 +623,7 @@ export default function StockList() {
                                     <input
                                         type="date"
                                         value={editingItem.date}
-                                        onChange={(e) => setEditingItem({...editingItem, date: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, date: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -637,7 +637,7 @@ export default function StockList() {
                                         type="number"
                                         step="0.01"
                                         value={editingItem.price}
-                                        onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -650,7 +650,7 @@ export default function StockList() {
                             <div className="relative">
                                 <textarea
                                     value={editingItem.details}
-                                    onChange={(e) => setEditingItem({...editingItem, details: e.target.value})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, details: e.target.value })}
                                     rows={3}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
                                 />

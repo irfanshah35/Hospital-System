@@ -59,7 +59,7 @@ const RightSidebar = () => {
         <div className="fade show active bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 w-full">
           {/* --- Title --- */}
           <div className="flex items-center justify-center px-5 py-[18px] dark:text-gray-300 text-[16px] font-medium tracking-[0.3px] border-b border-black/5 dark:border-gray-600 bg-[var(--tableHeaderBg)] shadow-[0_1px_3px_#0000000d] relative"
-          style={{ color: "var(--text-primary)" }}>
+            style={{ color: "var(--text-primary)" }}>
             Setting Panel
           </div>
 

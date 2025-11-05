@@ -201,8 +201,8 @@ export default function LeaveTypesComponent() {
   };
 
   const getStatusColor = (status: string) => {
-    return status === "Active" 
-      ? "bg-[#19875426] text-[#198754]" 
+    return status === "Active"
+      ? "bg-[#19875426] text-[#198754]"
       : "bg-[#ff990026] text-[#ff9900]";
   };
 

@@ -149,7 +149,7 @@ export default function HospitalSurvey() {
           <div className="flex items-end justify-between gap-6">
             {/* Left side - Revenue details */}
             <div className="flex flex-col gap-2">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-4">Revenue</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Revenue</h3>
 
               <span className="text-xl font-bold text-gray-900">$4,589</span>
               <span className="flex items-center gap-1 text-sm font-semibold text-blue-600">

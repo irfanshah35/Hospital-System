@@ -248,8 +248,8 @@ export default function InsuranceProviderPage() {
 
         try {
             // Simulate API call
-            setProviders(prev => 
-                prev.map(provider => 
+            setProviders(prev =>
+                prev.map(provider =>
                     provider.id === editingProvider.id ? editingProvider : provider
                 )
             );
@@ -440,7 +440,7 @@ export default function InsuranceProviderPage() {
 
                                                             <td className="px-4 py-3 text-sm max-w-[200px] truncate">
                                                                 <div className="flex items-center gap-2">
-                                                                    <MapPin className="w-4 h-4 text-blue-400"/>
+                                                                    <MapPin className="w-4 h-4 text-blue-400" />
                                                                     {item.address}
                                                                 </div>
                                                             </td>
@@ -482,14 +482,14 @@ export default function InsuranceProviderPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteProvider(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteProvider(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -657,7 +657,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.providerName}
-                                        onChange={(e) => setEditingProvider({...editingProvider, providerName: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, providerName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -670,7 +670,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.providerCode}
-                                        onChange={(e) => setEditingProvider({...editingProvider, providerCode: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, providerCode: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -683,7 +683,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.contactPhone}
-                                        onChange={(e) => setEditingProvider({...editingProvider, contactPhone: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, contactPhone: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -696,7 +696,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="email"
                                         value={editingProvider.contactEmail}
-                                        onChange={(e) => setEditingProvider({...editingProvider, contactEmail: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, contactEmail: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -709,7 +709,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.websiteUrl}
-                                        onChange={(e) => setEditingProvider({...editingProvider, websiteUrl: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, websiteUrl: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -722,7 +722,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.customerSupportNumber}
-                                        onChange={(e) => setEditingProvider({...editingProvider, customerSupportNumber: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, customerSupportNumber: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -735,7 +735,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="date"
                                         value={editingProvider.contractStartDate}
-                                        onChange={(e) => setEditingProvider({...editingProvider, contractStartDate: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, contractStartDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -748,7 +748,7 @@ export default function InsuranceProviderPage() {
                                     <input
                                         type="text"
                                         value={editingProvider.reimbursementRate}
-                                        onChange={(e) => setEditingProvider({...editingProvider, reimbursementRate: e.target.value})}
+                                        onChange={(e) => setEditingProvider({ ...editingProvider, reimbursementRate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -761,7 +761,7 @@ export default function InsuranceProviderPage() {
                             <div className="relative">
                                 <textarea
                                     value={editingProvider.address}
-                                    onChange={(e) => setEditingProvider({...editingProvider, address: e.target.value})}
+                                    onChange={(e) => setEditingProvider({ ...editingProvider, address: e.target.value })}
                                     placeholder=" "
                                     rows={3}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
@@ -775,7 +775,7 @@ export default function InsuranceProviderPage() {
                             <div className="relative">
                                 <select
                                     value={editingProvider.status}
-                                    onChange={(e) => setEditingProvider({...editingProvider, status: e.target.value as any})}
+                                    onChange={(e) => setEditingProvider({ ...editingProvider, status: e.target.value as any })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 >
                                     <option value="Active">Active</option>

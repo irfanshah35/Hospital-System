@@ -16,7 +16,7 @@ interface MobileHeaderProps {
 export default function MobileHeader({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
-  setIsHeadCollapsed, 
+  setIsHeadCollapsed,
 }: MobileHeaderProps) {
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [countryDropdown, setCountryDropdown] = useState(false);
@@ -30,7 +30,7 @@ export default function MobileHeader({
   });
   const { sidebarTheme } = useThemeStore();
   const { headerColor } = useThemeStore();
-const router = useRouter();
+  const router = useRouter();
 
 
   // User data state
@@ -214,31 +214,31 @@ const router = useRouter();
                 <Menu className="w-6 h-6" />
               )}
             </button>
-<div
-  onClick={() => router.push("/admin/dashboard")}
-  className={`flex items-center gap-[10px] relative top-[5px] left-[8px] px-[10px] transition-normal duration-300 cursor-pointer hover:opacity-80`}
->
-  <img
-    src="/assets/header/logo.png"
-    alt="Cliniva Logo"
-    className="h-8 w-8"
-  />
-  <span
-    className={`text-[24px] font-[400] ${sidebarTheme === "dark" ? "text-white" : "text-gray-800"}`}
-  >
-    Cliniva
-  </span>
-</div>
+            <div
+              onClick={() => router.push("/admin/dashboard")}
+              className={`flex items-center gap-[10px] relative top-[5px] left-[8px] px-[10px] transition-normal duration-300 cursor-pointer hover:opacity-80`}
+            >
+              <img
+                src="/assets/header/logo.png"
+                alt="Cliniva Logo"
+                className="h-8 w-8"
+              />
+              <span
+                className={`text-[24px] font-[400] ${sidebarTheme === "dark" ? "text-white" : "text-gray-800"}`}
+              >
+                Cliniva
+              </span>
+            </div>
 
-           <button
-  className="mr-7"
-  onClick={() => {
-    setHeadColapsed(!headColapsed);
-    setIsHeadCollapsed?.(!headColapsed); 
-  }}
->
-  <ArrowDownUp className="w-5 h-5" />
-</button>
+            <button
+              className="mr-7"
+              onClick={() => {
+                setHeadColapsed(!headColapsed);
+                setIsHeadCollapsed?.(!headColapsed);
+              }}
+            >
+              <ArrowDownUp className="w-5 h-5" />
+            </button>
 
           </div>
           {headColapsed ? (

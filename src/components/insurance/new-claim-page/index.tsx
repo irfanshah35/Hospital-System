@@ -467,7 +467,7 @@ export default function NewClaimPage() {
               <div className="grid grid-cols-1 gap-6">
                 {/* Medical Report Upload */}
                 <div className="relative mb-6">
-                    <h3 className="text-sm mb-1">Upload Medical Report</h3>
+                  <h3 className="text-sm mb-1">Upload Medical Report</h3>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex items-center gap-2">
                     <input
                       type="file"
@@ -488,9 +488,9 @@ export default function NewClaimPage() {
 
                 {/* Invoice Receipt Upload */}
                 <div className="relative mb-6">
-                    <h3 className="text-sm mb-1">Upload Invoice Receipt</h3>
+                  <h3 className="text-sm mb-1">Upload Invoice Receipt</h3>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex items-center gap-2">
-                    
+
                     <input
                       type="file"
                       id="invoiceReceipt"

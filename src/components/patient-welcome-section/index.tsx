@@ -51,16 +51,16 @@ const PatientWelcomeSection = () => {
 
   return (
     <div className={`p-4 md:p-6 space-y-4 md:space-y-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
-         style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
+      style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       {/* Welcome Card */}
       <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-4 md:p-8 border border-[var(--border-color)]">
         <div className="flex flex-col md:flex-row items-center md:gap-8 gap-4">
           {/* Doctor Illustrations */}
           <div className="flex-shrink-0">
-            <img 
-              src="/assets/welcome.png" 
-              alt="Doctors" 
-              className="w-32 h-auto md:w-48" 
+            <img
+              src="/assets/welcome.png"
+              alt="Doctors"
+              className="w-32 h-auto md:w-48"
             />
           </div>
 

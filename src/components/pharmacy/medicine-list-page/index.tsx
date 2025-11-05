@@ -445,7 +445,7 @@ export default function MedicineListPage() {
                                                                 <span className="font-semibold w-28">Company:</span>
                                                                 <span className={`flex items-center gap-1 `}
                                                                 >
-                                                                   Sky Pharma
+                                                                    Sky Pharma
                                                                 </span>
                                                             </div>
 

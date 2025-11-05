@@ -251,13 +251,13 @@ export default function IssuedItemsPage() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setIssuedItems(prev => 
-                prev.map(item => 
+
+            setIssuedItems(prev =>
+                prev.map(item =>
                     item.id === editingItem?.id ? editingItem : item
                 )
             );
-            
+
             alert("Issued item updated successfully!");
             setIsEditModalOpen(false);
         } catch (error) {
@@ -446,11 +446,10 @@ export default function IssuedItemsPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-                                                                    item.status === "Returned" ? "bg-green-100 text-green-800" :
-                                                                    item.status === "Issued" ? "bg-blue-100 text-blue-800" :
-                                                                    "bg-red-100 text-red-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${item.status === "Returned" ? "bg-green-100 text-green-800" :
+                                                                        item.status === "Issued" ? "bg-blue-100 text-blue-800" :
+                                                                            "bg-red-100 text-red-800"
+                                                                    }`}>
                                                                     {item.status === "Returned" ? (
                                                                         <CheckCircle className="w-3 h-3" />
                                                                     ) : item.status === "Issued" ? (
@@ -464,14 +463,14 @@ export default function IssuedItemsPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteSelectedItem(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -552,11 +551,10 @@ export default function IssuedItemsPage() {
                                                             {/* Status */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-28">Status:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-                                                                    item.status === "Returned" ? "bg-green-100 text-green-800" :
-                                                                    item.status === "Issued" ? "bg-blue-100 text-blue-800" :
-                                                                    "bg-red-100 text-red-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${item.status === "Returned" ? "bg-green-100 text-green-800" :
+                                                                        item.status === "Issued" ? "bg-blue-100 text-blue-800" :
+                                                                            "bg-red-100 text-red-800"
+                                                                    }`}>
                                                                     {item.status === "Returned" ? (
                                                                         <CheckCircle className="w-3 h-3" />
                                                                     ) : item.status === "Issued" ? (
@@ -625,7 +623,7 @@ export default function IssuedItemsPage() {
                                     <input
                                         type="text"
                                         value={editingItem.itemName}
-                                        onChange={(e) => setEditingItem({...editingItem, itemName: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, itemName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -637,7 +635,7 @@ export default function IssuedItemsPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.category}
-                                        onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Medical Devices">Medical Devices</option>
@@ -660,7 +658,7 @@ export default function IssuedItemsPage() {
                                     <input
                                         type="date"
                                         value={editingItem.issueDate}
-                                        onChange={(e) => setEditingItem({...editingItem, issueDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, issueDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -673,7 +671,7 @@ export default function IssuedItemsPage() {
                                     <input
                                         type="date"
                                         value={editingItem.returnDate}
-                                        onChange={(e) => setEditingItem({...editingItem, returnDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, returnDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -686,7 +684,7 @@ export default function IssuedItemsPage() {
                                     <input
                                         type="text"
                                         value={editingItem.issuedTo}
-                                        onChange={(e) => setEditingItem({...editingItem, issuedTo: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, issuedTo: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -699,7 +697,7 @@ export default function IssuedItemsPage() {
                                     <input
                                         type="number"
                                         value={editingItem.quantity}
-                                        onChange={(e) => setEditingItem({...editingItem, quantity: parseInt(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: parseInt(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -712,7 +710,7 @@ export default function IssuedItemsPage() {
                             <div className="relative">
                                 <select
                                     value={editingItem.status}
-                                    onChange={(e) => setEditingItem({...editingItem, status: e.target.value as "Issued" | "Returned" | "Overdue"})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, status: e.target.value as "Issued" | "Returned" | "Overdue" })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 >
                                     <option value="Issued">Issued</option>

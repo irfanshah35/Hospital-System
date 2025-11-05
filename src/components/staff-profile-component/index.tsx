@@ -29,12 +29,12 @@ export default function StaffProfileComponent() {
             <div className="bg-[#2c3e50] text-white text-center pt-8 pb-16 relative">
               <h2 className="text-2xl font-semibold mb-1">Jayna Patil</h2>
               <p className="text-sm text-gray-300">Nurse</p>
-              
+
               {/* Profile Image */}
               <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
                 <div className="w-32 h-32 rounded-full border-4 border-white bg-white overflow-hidden shadow-lg">
-                  <img 
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop" 
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop"
                     alt="Jayna Patil"
                     className="w-full h-full object-cover"
                   />
@@ -73,21 +73,19 @@ export default function StaffProfileComponent() {
             <div className="grid grid-cols-2 border-b border-gray-200">
               <button
                 onClick={() => setLeftTab('about')}
-                className={`py-3 text-sm font-medium transition-colors ${
-                  leftTab === 'about'
+                className={`py-3 text-sm font-medium transition-colors ${leftTab === 'about'
                     ? 'text-[#5b73e8] border-b-2 border-[#5b73e8]'
                     : 'text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 About
               </button>
               <button
                 onClick={() => setLeftTab('skills')}
-                className={`py-3 text-sm font-medium transition-colors ${
-                  leftTab === 'skills'
+                className={`py-3 text-sm font-medium transition-colors ${leftTab === 'skills'
                     ? 'text-[#5b73e8] border-b-2 border-[#5b73e8]'
                     : 'text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 Skills
               </button>
@@ -100,12 +98,12 @@ export default function StaffProfileComponent() {
                   <p className="text-sm text-gray-600 leading-relaxed">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
                   </p>
-                  
+
                   <div>
                     <h3 className="text-xs text-gray-500 mb-2">Email address:</h3>
                     <p className="text-sm text-gray-800">john@gmail.com</p>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-xs text-gray-500 mb-2">Phone:</h3>
                     <p className="text-sm text-gray-800">+91 1234567890</p>
@@ -124,24 +122,22 @@ export default function StaffProfileComponent() {
             {/* Tabs Header */}
             <div className="border-b border-gray-200">
               <div className="flex items-center">
-                <button 
+                <button
                   onClick={() => setRightTab('aboutme')}
-                  className={`flex items-center space-x-2 w-[50%] text-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                    rightTab === 'aboutme' 
-                      ? 'text-gray-800 border-[#5b73e8]' 
+                  className={`flex items-center space-x-2 w-[50%] text-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${rightTab === 'aboutme'
+                      ? 'text-gray-800 border-[#5b73e8]'
                       : 'text-gray-600 border-transparent hover:text-gray-800'
-                  }`}
+                    }`}
                 >
                   <Smile size={18} />
                   <span>About Me</span>
                 </button>
-                <button 
+                <button
                   onClick={() => setRightTab('settings')}
-                  className={`flex items-center space-x-2 w-[50%] text-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                    rightTab === 'settings' 
-                      ? 'text-gray-800 border-[#5b73e8]' 
+                  className={`flex items-center space-x-2 w-[50%] text-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${rightTab === 'settings'
+                      ? 'text-gray-800 border-[#5b73e8]'
                       : 'text-gray-600 border-transparent hover:text-gray-800'
-                  }`}
+                    }`}
                 >
                   <Settings size={18} />
                   <span>Settings</span>
@@ -156,7 +152,7 @@ export default function StaffProfileComponent() {
                   {/* About Section */}
                   <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-800 mb-6">About</h2>
-                    
+
                     {/* Info Grid */}
                     <div className="grid grid-cols-4 gap-6 mb-6">
                       <div>

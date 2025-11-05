@@ -96,9 +96,8 @@ export default function DoctorSideBar({
 
         {/* Mobile Sidebar */}
         <aside
-          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
+          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
         >
           <div className="sidebar-scroll h-full overflow-y-auto overflow-x-hidden pb-2">
             <ul>
@@ -113,9 +112,8 @@ export default function DoctorSideBar({
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Ashton Cox
@@ -126,9 +124,8 @@ export default function DoctorSideBar({
 
               <li>
                 <div
-                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
-                  }`}
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                    }`}
                 >
                   Main
                 </div>
@@ -139,18 +136,16 @@ export default function DoctorSideBar({
                 return (
                   <li key={index}>
                     <Link
-                      className={`relative flex items-center justify-content-center overflow-hidden ${
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      } text-[14px] leading-8 cursor-pointer
-                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-                        isActive
+                      className={`relative flex items-center justify-content-center overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        } text-[14px] leading-8 cursor-pointer
+                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${isActive
                           ? shouldUseWhiteTheme
                             ? "bg-[#2D3748]"
                             : "bg-[#f0f3fb]"
                           : shouldUseWhiteTheme
-                          ? "hover:bg-[#2D3748]"
-                          : "hover:bg-[#f0f3fb]"
-                      }`}
+                            ? "hover:bg-[#2D3748]"
+                            : "hover:bg-[#f0f3fb]"
+                        }`}
                       href={item.path || "#"}
                       onClick={() => item.path && handleLinkClick(item.path)}
                     >
@@ -177,11 +172,9 @@ export default function DoctorSideBar({
   return (
     <>
       <aside
-        className={`${
-          shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${
-          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
-        } z-[9999] group transition-all duration-300`}
+        className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
+          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+          } z-[9999] group transition-all duration-300`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -209,9 +202,8 @@ export default function DoctorSideBar({
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Ashton Cox
@@ -224,9 +216,8 @@ export default function DoctorSideBar({
             {shouldExpand && (
               <li>
                 <div
-                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
-                  }`}
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                    }`}
                 >
                   Main
                 </div>
@@ -238,22 +229,19 @@ export default function DoctorSideBar({
               return (
                 <li key={index}>
                   <Link
-                    className={`relative flex items-center ${
-                      shouldExpand
+                    className={`relative flex items-center ${shouldExpand
                         ? "justify-content-center"
                         : "justify-center px-0"
-                    } overflow-hidden ${
-                      shouldUseWhiteTheme ? "text-white" : "text-black"
-                    } text-[14px] leading-8 cursor-pointer
-                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-                      isActive
+                      } overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                      } text-[14px] leading-8 cursor-pointer
+                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${isActive
                         ? shouldUseWhiteTheme
                           ? "bg-[#2D3748]"
                           : "bg-[#f0f3fb]"
                         : shouldUseWhiteTheme
-                        ? "hover:bg-[#2D3748]"
-                        : "hover:bg-[#f0f3fb]"
-                    }`}
+                          ? "hover:bg-[#2D3748]"
+                          : "hover:bg-[#f0f3fb]"
+                      }`}
                     href={item.path || "#"}
                     onClick={() => item.path && setActivePath(item.path)}
                   >

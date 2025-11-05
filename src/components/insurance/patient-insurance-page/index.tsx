@@ -242,8 +242,8 @@ export default function PatientInsurancePage() {
 
         try {
             // Simulate API call
-            setInsurances(prev => 
-                prev.map(insurance => 
+            setInsurances(prev =>
+                prev.map(insurance =>
                     insurance.id === editingInsurance.id ? editingInsurance : insurance
                 )
             );
@@ -461,14 +461,14 @@ export default function PatientInsurancePage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteInsurance(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteInsurance(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -622,7 +622,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.insuranceId}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, insuranceId: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, insuranceId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -635,7 +635,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.patientId}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, patientId: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, patientId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -648,7 +648,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.insuranceCompanyName}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, insuranceCompanyName: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, insuranceCompanyName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -661,7 +661,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.insurancePolicyNumber}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, insurancePolicyNumber: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, insurancePolicyNumber: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -673,7 +673,7 @@ export default function PatientInsurancePage() {
                                 <div className="relative">
                                     <select
                                         value={editingInsurance.policyType}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, policyType: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, policyType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Health Insurance">Health Insurance</option>
@@ -691,7 +691,7 @@ export default function PatientInsurancePage() {
                                 <div className="relative">
                                     <select
                                         value={editingInsurance.planType}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, planType: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, planType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Gold Plan">Gold Plan</option>
@@ -711,7 +711,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="date"
                                         value={editingInsurance.coverageStartDate}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, coverageStartDate: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, coverageStartDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -724,7 +724,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="date"
                                         value={editingInsurance.coverageEndDate}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, coverageEndDate: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, coverageEndDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -737,7 +737,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.coverageAmount}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, coverageAmount: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, coverageAmount: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -750,7 +750,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.coPayment}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, coPayment: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, coPayment: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -763,7 +763,7 @@ export default function PatientInsurancePage() {
                                     <input
                                         type="text"
                                         value={editingInsurance.policyHolderName}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, policyHolderName: e.target.value})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, policyHolderName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -775,7 +775,7 @@ export default function PatientInsurancePage() {
                                 <div className="relative col-span-2">
                                     <select
                                         value={editingInsurance.insuranceStatus}
-                                        onChange={(e) => setEditingInsurance({...editingInsurance, insuranceStatus: e.target.value as any})}
+                                        onChange={(e) => setEditingInsurance({ ...editingInsurance, insuranceStatus: e.target.value as any })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Active">Active</option>

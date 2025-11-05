@@ -53,9 +53,8 @@ const MobileSidebar = ({ isOpen, setIsOpen, userRole }: MobileSidebarProps) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[280px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[280px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <nav className="p-4">
           <div className="mb-4">

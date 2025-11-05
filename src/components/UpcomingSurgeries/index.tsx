@@ -191,9 +191,8 @@ export default function UpcomingSurgeries() {
 
   return (
     <div
-      className={`min-h-screen max-[767px]:mt-4 max-[767px]:px-[9px] md:p-6 ${
-        websiteTheme === "dark" ? "dark-theme" : "light-theme"
-      }`}
+      className={`min-h-screen max-[767px]:mt-4 max-[767px]:px-[9px] md:p-6 ${websiteTheme === "dark" ? "dark-theme" : "light-theme"
+        }`}
       style={{
         backgroundColor: "var(--background)",
         color: "var(--text-primary)",
@@ -330,18 +329,16 @@ export default function UpcomingSurgeries() {
                     <div
                       className="w-3 bg-indigo-500 rounded-t"
                       style={{
-                        height: `${
-                          (patientData.male[index] / maxPatients) * 100
-                        }%`,
+                        height: `${(patientData.male[index] / maxPatients) * 100
+                          }%`,
                       }}
                     ></div>
                     {/* Female bar */}
                     <div
                       className="w-3 bg-gray-400 rounded-t"
                       style={{
-                        height: `${
-                          (patientData.female[index] / maxPatients) * 100
-                        }%`,
+                        height: `${(patientData.female[index] / maxPatients) * 100
+                          }%`,
                       }}
                     ></div>
                   </div>
@@ -462,11 +459,10 @@ export default function UpcomingSurgeries() {
               {[1, 2, 3, 4, 5].map((star) => (
                 <svg
                   key={star}
-                  className={`w-6 h-6 ${
-                    star === 5
+                  className={`w-6 h-6 ${star === 5
                       ? "text-gray-300 dark:text-gray-600"
                       : "text-yellow-400"
-                  }`}
+                    }`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -502,7 +498,7 @@ export default function UpcomingSurgeries() {
                   stroke="#10B981"
                   strokeWidth="28"
                   strokeDasharray="257 440"
-                  // strokeLinecap="round"
+                // strokeLinecap="round"
                 />
 
                 {/* Yellow arc - Good (33.0%) */}
@@ -515,7 +511,7 @@ export default function UpcomingSurgeries() {
                   strokeWidth="28"
                   strokeDasharray="145 440"
                   strokeDashoffset="-257"
-                  // strokeLinecap="round"
+                // strokeLinecap="round"
                 />
 
                 {/* Red arc - Poor (8.6%) */}
@@ -528,7 +524,7 @@ export default function UpcomingSurgeries() {
                   strokeWidth="28"
                   strokeDasharray="38 440"
                   strokeDashoffset="-402"
-                  // strokeLinecap="round"
+                // strokeLinecap="round"
                 />
               </svg>
 

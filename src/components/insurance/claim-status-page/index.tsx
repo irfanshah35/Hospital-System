@@ -239,8 +239,8 @@ export default function ClaimStatusPage() {
 
         try {
             // Simulate API call
-            setClaims(prev => 
-                prev.map(claim => 
+            setClaims(prev =>
+                prev.map(claim =>
                     claim.id === editingClaim.id ? editingClaim : claim
                 )
             );
@@ -449,14 +449,14 @@ export default function ClaimStatusPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteClaim(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteClaim(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -600,7 +600,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.claimId}
-                                        onChange={(e) => setEditingClaim({...editingClaim, claimId: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -613,7 +613,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.patientName}
-                                        onChange={(e) => setEditingClaim({...editingClaim, patientName: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, patientName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -625,7 +625,7 @@ export default function ClaimStatusPage() {
                                 <div className="relative">
                                     <select
                                         value={editingClaim.claimType}
-                                        onChange={(e) => setEditingClaim({...editingClaim, claimType: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Medical Treatment">Medical Treatment</option>
@@ -644,7 +644,7 @@ export default function ClaimStatusPage() {
                                 <div className="relative">
                                     <select
                                         value={editingClaim.claimStatus}
-                                        onChange={(e) => setEditingClaim({...editingClaim, claimStatus: e.target.value as any})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimStatus: e.target.value as any })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Pending">Pending</option>
@@ -663,7 +663,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.doctorName}
-                                        onChange={(e) => setEditingClaim({...editingClaim, doctorName: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, doctorName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -676,7 +676,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.hospitalName}
-                                        onChange={(e) => setEditingClaim({...editingClaim, hospitalName: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, hospitalName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -689,7 +689,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.claimAmount}
-                                        onChange={(e) => setEditingClaim({...editingClaim, claimAmount: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimAmount: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -702,7 +702,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="text"
                                         value={editingClaim.approvedAmount}
-                                        onChange={(e) => setEditingClaim({...editingClaim, approvedAmount: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, approvedAmount: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -715,7 +715,7 @@ export default function ClaimStatusPage() {
                                     <input
                                         type="date"
                                         value={editingClaim.claimDate}
-                                        onChange={(e) => setEditingClaim({...editingClaim, claimDate: e.target.value})}
+                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -728,7 +728,7 @@ export default function ClaimStatusPage() {
                             <div className="relative">
                                 <textarea
                                     value={editingClaim.rejectionReason}
-                                    onChange={(e) => setEditingClaim({...editingClaim, rejectionReason: e.target.value})}
+                                    onChange={(e) => setEditingClaim({ ...editingClaim, rejectionReason: e.target.value })}
                                     placeholder=" "
                                     rows={3}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"

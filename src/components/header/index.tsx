@@ -24,7 +24,7 @@ export default function Header({
   });
   const { sidebarTheme } = useThemeStore();
   const { headerColor } = useThemeStore();
-const router = useRouter();
+  const router = useRouter();
 
   // User data state
   const [userData, setUserData] = useState({
@@ -55,7 +55,7 @@ const router = useRouter();
     }
   }, []);
 
- const handleLogout = () => {
+  const handleLogout = () => {
     // Clear all auth-related items from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
@@ -63,26 +63,26 @@ const router = useRouter();
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPicture");
     localStorage.removeItem("loginMethod");
-    
+
     // Clear ALL cookies (must match the cookies set during login)
     const cookiesToClear = [
       "authToken",
-      "userRole", 
+      "userRole",
       "username",
       "userEmail",
       "userPicture",
       "loginMethod"
     ];
-    
+
     cookiesToClear.forEach(cookieName => {
       // Clear with all possible paths and attributes to ensure removal
       document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict`;
       document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
     });
-    
+
     // Close any dropdowns
     setProfileDropdown(false);
-    
+
     // Use window.location for a hard redirect (ensures middleware runs)
     window.location.href = "/";
   };
@@ -150,7 +150,7 @@ const router = useRouter();
       code: "de",
     },
     {
-      language: "اردو",
+      language: "Urdu",
       flag: "/assets/pak.png",
       code: "ur",
     },
@@ -214,11 +214,10 @@ const router = useRouter();
         <div className={`flex items-center w-full mx-auto`}>
           {/* Logo Section */}
           <div
-            className={`p-[8px] py-[12px] !pr-0 flex items-center ${
-              sidebarTheme === "dark"
+            className={`p-[8px] py-[12px] !pr-0 flex items-center ${sidebarTheme === "dark"
                 ? "bg-[#1A202E] text-white"
                 : "bg-white text-gray-800"
-            }`}
+              }`}
           >
             <button
               className={`${getTextColorClass()} hover:opacity-80 w-[48px] h-[48px] flex justify-center items-center lg:hidden`}
@@ -234,29 +233,27 @@ const router = useRouter();
               </svg>
             </button>
 
-           <div
-  onClick={() => router.push("/admin/dashboard")}
-  className={`flex items-center gap-[10px] px-[10px] cursor-pointer hover:opacity-80 ${
-    shouldExpand
-      ? "w-[236px] justify-center !mr-4"
-      : "px-0 justify-center mr-[3px]"
-  } transition-normal duration-300`}
->
-  <img
-    src="/assets/header/logo.png"
-    alt="Cliniva Logo"
-    className="h-8 w-8"
-  />
-  {shouldExpand && (
-    <span
-      className={`text-[24px] font-[400] ${
-        sidebarTheme === "dark" ? "text-white" : "text-gray-800"
-      }`}
-    >
-      Cliniva
-    </span>
-  )}
-</div>
+            <div
+              onClick={() => router.push("/admin/dashboard")}
+              className={`flex items-center gap-[10px] px-[10px] cursor-pointer hover:opacity-80 ${shouldExpand
+                  ? "w-[236px] justify-center !mr-4"
+                  : "px-0 justify-center mr-[3px]"
+                } transition-normal duration-300`}
+            >
+              <img
+                src="/assets/header/logo.png"
+                alt="Cliniva Logo"
+                className="h-8 w-8"
+              />
+              {shouldExpand && (
+                <span
+                  className={`text-[24px] font-[400] ${sidebarTheme === "dark" ? "text-white" : "text-gray-800"
+                    }`}
+                >
+                  Cliniva
+                </span>
+              )}
+            </div>
 
           </div>
 
@@ -358,11 +355,10 @@ const router = useRouter();
                                 setCountryDropdown(false);
                                 changeLanguage(country.code);
                               }}
-                              className={`flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer ${
-                                selectedCountry.code === country.code
+                              className={`flex items-center gap-3 h-[48px] px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 text-sm font-medium cursor-pointer ${selectedCountry.code === country.code
                                   ? "bg-blue-50 text-blue-600"
                                   : ""
-                              }`}
+                                }`}
                             >
                               <img
                                 src={country.flag}
@@ -372,7 +368,7 @@ const router = useRouter();
                               <span
                                 className={
                                   country.code === "ur"
-                                    ? "text-right flex-1"
+                                    ? "text-left flex-1"
                                     : ""
                                 }
                               >
@@ -395,7 +391,7 @@ const router = useRouter();
                 >
                   <span
                     className={`text-sm font-medium ${getTextColorClass()} truncate`}
-                  style={{ color: 'var(--tableHeadertext)' }}>
+                    style={{ color: 'var(--tableHeadertext)' }}>
                     {userData.name}
                   </span>
                   <img
