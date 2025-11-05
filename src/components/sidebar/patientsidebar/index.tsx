@@ -122,9 +122,8 @@ export default function SideBar({
 
         {/* Mobile Sidebar */}
         <aside
-          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
+          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
         >
           <div className="sidebar-scroll h-full overflow-y-auto overflow-x-hidden pb-2">
             <ul>
@@ -139,9 +138,8 @@ export default function SideBar({
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Cara Stevens{" "}
@@ -152,9 +150,8 @@ export default function SideBar({
 
               <li>
                 <div
-                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
-                  }`}
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                    }`}
                 >
                   Main
                 </div>
@@ -167,12 +164,10 @@ export default function SideBar({
                     <>
                       <button
                         onClick={() => setOpenDropdown(!openDropdown)}
-                        className={`relative flex items-center justify-between overflow-hidden pe-6 ${
-                          shouldUseWhiteTheme ? "text-white" : "text-black"
-                        } text-[14px] leading-8 cursor-pointer
-  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-    shouldUseWhiteTheme ? "hover:bg-[#2D3748]" : "hover:bg-[#f0f3fb]"
-  } w-full`}
+                        className={`relative flex items-center justify-between overflow-hidden pe-6 ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                          } text-[14px] leading-8 cursor-pointer
+  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme ? "hover:bg-[#2D3748]" : "hover:bg-[#f0f3fb]"
+                          } w-full`}
                       >
                         <div className="flex items-center gap-2">
                           <item.icon
@@ -210,18 +205,16 @@ export default function SideBar({
                                 <Link
                                   href={child.path}
                                   onClick={() => handleLinkClick(child.path)}
-                                  className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${
-                                    isActive
+                                  className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${isActive
                                       ? "text-[#2196f3]"
                                       : shouldUseWhiteTheme
-                                      ? "text-white hover:text-[#2196f3]"
-                                      : "text-gray-700 hover:text-[#2196f3]"
-                                  }`}
+                                        ? "text-white hover:text-[#2196f3]"
+                                        : "text-gray-700 hover:text-[#2196f3]"
+                                    }`}
                                 >
                                   <span
-                                    className={`text-base ${
-                                      isActive ? "opacity-100" : "opacity-0"
-                                    }`}
+                                    className={`text-base ${isActive ? "opacity-100" : "opacity-0"
+                                      }`}
                                   >
                                     ›
                                   </span>
@@ -235,16 +228,14 @@ export default function SideBar({
                     </>
                   ) : (
                     <Link
-                      className={`relative flex items-center justify-content-center overflow-hidden ${
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      } text-[14px] leading-8 cursor-pointer
-                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${
-                        item.title === "Logout"
+                      className={`relative flex items-center justify-content-center overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        } text-[14px] leading-8 cursor-pointer
+                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
                           ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
                           : shouldUseWhiteTheme
-                          ? "hover:bg-[#2D3748]"
-                          : "hover:bg-[#f0f3fb]"
-                      }`}
+                            ? "hover:bg-[#2D3748]"
+                            : "hover:bg-[#f0f3fb]"
+                        }`}
                       href={item.path || "#"}
                       onClick={() => item.path && handleLinkClick(item.path)}
                     >
@@ -271,11 +262,9 @@ export default function SideBar({
   return (
     <>
       <aside
-        className={`${
-          shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${
-          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
-        } z-[9999] group transition-all duration-300`}
+        className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
+          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+          } z-[9999] group transition-all duration-300`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -303,9 +292,8 @@ export default function SideBar({
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Cara Stevens{" "}
@@ -318,9 +306,8 @@ export default function SideBar({
             {shouldExpand && (
               <li>
                 <div
-                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                    shouldUseWhiteTheme ? "text-white" : "text-gray-700"
-                  }`}
+                  className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-gray-700"
+                    }`}
                 >
                   Main
                 </div>
@@ -334,12 +321,10 @@ export default function SideBar({
                   <>
                     <button
                       onClick={() => setOpenDropdown(!openDropdown)}
-                      className={`relative flex items-center justify-between overflow-hidden pe-6 ${
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      } text-[14px] leading-8 cursor-pointer
-  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-    shouldUseWhiteTheme ? "hover:bg-[#2D3748]" : "hover:bg-[#f0f3fb]"
-  } w-full`}
+                      className={`relative flex items-center justify-between overflow-hidden pe-6 ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        } text-[14px] leading-8 cursor-pointer
+  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme ? "hover:bg-[#2D3748]" : "hover:bg-[#f0f3fb]"
+                        } w-full`}
                     >
                       <div className="flex items-center gap-2">
                         <item.icon
@@ -377,18 +362,16 @@ export default function SideBar({
                               <Link
                                 href={child.path}
                                 onClick={() => setActiveChild(child.path)}
-                                className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${
-                                  isActive
+                                className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${isActive
                                     ? "text-[#2196f3]"
                                     : shouldUseWhiteTheme
-                                    ? "text-white hover:text-[#2196f3]"
-                                    : "text-gray-700 hover:text-[#2196f3]"
-                                }`}
+                                      ? "text-white hover:text-[#2196f3]"
+                                      : "text-gray-700 hover:text-[#2196f3]"
+                                  }`}
                               >
                                 <span
-                                  className={`text-base ${
-                                    isActive ? "opacity-100" : "opacity-0"
-                                  }`}
+                                  className={`text-base ${isActive ? "opacity-100" : "opacity-0"
+                                    }`}
                                 >
                                   ›
                                 </span>
@@ -402,20 +385,17 @@ export default function SideBar({
                   </>
                 ) : (
                   <Link
-                    className={`relative flex items-center ${
-                      shouldExpand
+                    className={`relative flex items-center ${shouldExpand
                         ? "justify-content-center"
                         : "justify-center px-0"
-                    } overflow-hidden ${
-                      shouldUseWhiteTheme ? "text-white" : "text-black"
-                    } text-[14px] leading-8 cursor-pointer
-                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${
-                      item.title === "Logout"
+                      } overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                      } text-[14px] leading-8 cursor-pointer
+                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
                         ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
                         : shouldUseWhiteTheme
-                        ? "hover:bg-[#2D3748]"
-                        : "hover:bg-[#f0f3fb]"
-                    }`}
+                          ? "hover:bg-[#2D3748]"
+                          : "hover:bg-[#f0f3fb]"
+                      }`}
                     href={item.path || item.children?.[0]?.path || "#"}
                   >
                     <item.icon

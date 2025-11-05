@@ -397,12 +397,12 @@ export default function IncomeComponent() {
                             <span className="font-semibold w-40">Payment Status:</span>
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${item.paymentStatus === "Paid"
-                                  ? "bg-[#19875426] text-[#198754]"
-                                  : item.paymentStatus === "Pending"
-                                    ? "bg-[#ffc10726] text-[#ffc107]"
-                                    : item.paymentStatus === "Unpaid"
-                                      ? "bg-[#dc354526] text-[#dc3545]"
-                                      : "bg-[#0dcaf026] text-[#0dcaf0]"
+                                ? "bg-[#19875426] text-[#198754]"
+                                : item.paymentStatus === "Pending"
+                                  ? "bg-[#ffc10726] text-[#ffc107]"
+                                  : item.paymentStatus === "Unpaid"
+                                    ? "bg-[#dc354526] text-[#dc3545]"
+                                    : "bg-[#0dcaf026] text-[#0dcaf0]"
                                 }`}
                             >
                               {item.paymentStatus || "Pending"}

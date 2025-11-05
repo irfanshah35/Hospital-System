@@ -405,9 +405,8 @@ export default function AdminSideBar({
 
         {/* Mobile Sidebar */}
         <aside
-          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
+          className={`fixed top-[61px] left-0 h-[calc(100vh-61px)] w-[260px] z-50 transition-transform duration-300 overflow-y-auto ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            } ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"}`}
         >
           <div className="sidebar-scroll h-full overflow-y-auto overflow-x-hidden pb-2">
             <ul>
@@ -422,9 +421,8 @@ export default function AdminSideBar({
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Sarah Smith{" "}
@@ -437,9 +435,8 @@ export default function AdminSideBar({
                 <React.Fragment key={sectionIndex}>
                   <li>
                     <div
-                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      }`}
+                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        }`}
                     >
                       {section.section}
                     </div>
@@ -453,11 +450,10 @@ export default function AdminSideBar({
                             onClick={() => toggleDropdown(item.title)}
                             className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
 p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
-${
-  shouldUseWhiteTheme
-    ? "text-white hover:bg-[#2D3748]"
-    : "text-gray-800 hover:bg-[#f0f3fb]"
-} w-full`}
+${shouldUseWhiteTheme
+                                ? "text-white hover:bg-[#2D3748]"
+                                : "text-gray-800 hover:bg-[#f0f3fb]"
+                              } w-full`}
                           >
                             <div className="flex items-center gap-2">
                               <item.icon
@@ -474,9 +470,8 @@ ${
                             <div className="flex items-center gap-2">
                               {(item as any).badge && (
                                 <span
-                                  className={`${
-                                    (item as any).badge.color
-                                  } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                                  className={`${(item as any).badge.color
+                                    } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                                 >
                                   {(item as any).badge.text}
                                 </span>
@@ -513,20 +508,18 @@ ${
                                       href={child.path || "#"}
                                       onClick={() => handleLinkClick(child.path)}
                                       className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
-              ${
-                isActive
-                  ? shouldUseWhiteTheme
-                    ? "text-white bg-[#2D3748]"
-                    : "text-black bg-[#f0f3fb]"
-                  : shouldUseWhiteTheme
-                  ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
-                  : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
-              }`}
+              ${isActive
+                                          ? shouldUseWhiteTheme
+                                            ? "text-white bg-[#2D3748]"
+                                            : "text-black bg-[#f0f3fb]"
+                                          : shouldUseWhiteTheme
+                                            ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+                                            : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+                                        }`}
                                     >
                                       <span
-                                        className={`text-base transition-opacity ${
-                                          isActive ? "opacity-100" : "opacity-0"
-                                        }`}
+                                        className={`text-base transition-opacity ${isActive ? "opacity-100" : "opacity-0"
+                                          }`}
                                       >
                                         ›
                                       </span>
@@ -541,11 +534,10 @@ ${
                       ) : (
                         <Link
                           className={`relative flex items-center justify-between overflow-hidden text-[14px] leading-8 cursor-pointer
-                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-                            shouldUseWhiteTheme
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
                               ? "text-white hover:bg-[#2D3748]"
                               : "text-black hover:bg-[#f0f3fb]"
-                          }`}
+                            }`}
                           href={(item as any).path || "#"}
                           onClick={() => handleLinkClick((item as any).path)}
                         >
@@ -561,9 +553,8 @@ ${
                           </div>
                           {(item as any).badge && (
                             <span
-                              className={`${
-                                (item as any).badge.color
-                              } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                              className={`${(item as any).badge.color
+                                } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                             >
                               {(item as any).badge.text}
                             </span>
@@ -597,11 +588,9 @@ ${
   return (
     <>
       <aside
-        className={`${
-          shouldExpand ? "w-[260px]" : "w-[60px]"
-        } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-56px)] fixed top-[56px] z-[9999] group transition-all duration-300    ${
-          sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
-        }`}
+        className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
+          } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-56px)] fixed top-[56px] z-[9999] group transition-all duration-300    ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
+          }`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -629,9 +618,8 @@ ${
                   </div>
                 </div>
                 <div
-                  className={`text-center ${
-                    shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
-                  }`}
+                  className={`text-center ${shouldUseWhiteTheme ? "text-white" : "text-[#060606]"
+                    }`}
                 >
                   <div className="text-[14px] font-[roboto] font-medium">
                     Sarah Smith{" "}
@@ -646,9 +634,8 @@ ${
                 {shouldExpand && (
                   <li>
                     <div
-                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      }`}
+                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        }`}
                     >
                       {section.section}
                     </div>
@@ -663,11 +650,10 @@ ${
                           onClick={() => toggleDropdown(item.title)}
                           className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
 p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
-${
-  shouldUseWhiteTheme
-    ? "text-white hover:bg-[#2D3748]"
-    : "text-gray-800 hover:bg-[#f0f3fb]"
-} w-full`}
+${shouldUseWhiteTheme
+                              ? "text-white hover:bg-[#2D3748]"
+                              : "text-gray-800 hover:bg-[#f0f3fb]"
+                            } w-full`}
                         >
                           <div className="flex items-center gap-2">
                             <item.icon
@@ -684,9 +670,8 @@ ${
                           <div className="flex items-center gap-2">
                             {(item as any).badge && (
                               <span
-                                className={`${
-                                  (item as any).badge.color
-                                } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                                className={`${(item as any).badge.color
+                                  } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                               >
                                 {(item as any).badge.text}
                               </span>
@@ -723,20 +708,18 @@ ${
                                     href={child.path || "#"}
                                     onClick={() => child.path && setActiveChild(child.path)}
                                     className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
-              ${
-                isActive
-                  ? shouldUseWhiteTheme
-                    ? "text-white bg-[#2D3748]"
-                    : "text-black bg-[#f0f3fb]"
-                  : shouldUseWhiteTheme
-                  ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
-                  : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
-              }`}
+              ${isActive
+                                        ? shouldUseWhiteTheme
+                                          ? "text-white bg-[#2D3748]"
+                                          : "text-black bg-[#f0f3fb]"
+                                        : shouldUseWhiteTheme
+                                          ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+                                          : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+                                      }`}
                                   >
                                     <span
-                                      className={`text-base transition-opacity ${
-                                        isActive ? "opacity-100" : "opacity-0"
-                                      }`}
+                                      className={`text-base transition-opacity ${isActive ? "opacity-100" : "opacity-0"
+                                        }`}
                                     >
                                       ›
                                     </span>
@@ -750,15 +733,13 @@ ${
                       </>
                     ) : (
                       <Link
-                        className={`relative flex items-center ${
-                          shouldExpand
+                        className={`relative flex items-center ${shouldExpand
                             ? "justify-between"
                             : "justify-center px-0"
-                        } overflow-hidden text-[14px] leading-8 cursor-pointer
-                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${
-                            shouldUseWhiteTheme
-                              ? "text-white hover:bg-[#2D3748]"
-                              : "text-black hover:bg-[#f0f3fb]"
+                          } overflow-hidden text-[14px] leading-8 cursor-pointer
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
+                            ? "text-white hover:bg-[#2D3748]"
+                            : "text-black hover:bg-[#f0f3fb]"
                           }`}
                         href={(item as any).path || "#"}
                       >
@@ -774,9 +755,8 @@ ${
                         </div>
                         {shouldExpand && (item as any).badge && (
                           <span
-                            className={`${
-                              (item as any).badge.color
-                            } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                            className={`${(item as any).badge.color
+                              } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
                           >
                             {(item as any).badge.text}
                           </span>

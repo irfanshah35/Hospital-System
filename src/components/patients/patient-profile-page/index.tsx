@@ -186,8 +186,8 @@ export default function PatientProfilePage() {
                   <div className="flex mb-2">
                     <div className="w-1/3 text-gray-500">Allergies</div>
                     <div className="w-2/3 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium text-sm font-medium">Penicillin</span>
-                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium text-sm font-medium">Peanuts</span>
+                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium  ">Penicillin</span>
+                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium  ">Peanuts</span>
                     </div>
                   </div>
 
@@ -195,8 +195,8 @@ export default function PatientProfilePage() {
                   <div className="flex mb-2">
                     <div className="w-1/3 text-gray-500">Chronic Conditions</div>
                     <div className="w-2/3 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium text-sm font-medium">Asthma</span>
-                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium text-sm font-medium">Hypertension</span>
+                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium  ">Asthma</span>
+                      <span className="px-3 py-1 border rounded-[8px] text-sm font-medium  ">Hypertension</span>
                     </div>
                   </div>
 
@@ -357,13 +357,13 @@ export default function PatientProfilePage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
               </div>
-            </div>
 
+            </div>
           </div>
         </div>
-      </div>
-    </div >
+      </div >
 
     </>
   )

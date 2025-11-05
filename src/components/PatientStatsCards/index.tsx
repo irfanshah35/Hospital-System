@@ -224,7 +224,7 @@ const PatientStatsCards = () => {
 
   return (
     <div className={`p-6 ${websiteTheme === 'dark' ? 'dark-theme' : 'light-theme'}`}
-         style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
+      style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)' }}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Resting Heart Rate Card */}
         <div className="bg-[var(--header-bg)] rounded-2xl shadow-sm p-6 flex flex-col h-[450px] border border-[var(--border-color)]">

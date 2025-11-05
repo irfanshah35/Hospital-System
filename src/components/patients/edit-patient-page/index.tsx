@@ -324,20 +324,18 @@ export default function EditPatientPage() {
         onChange={handleChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all ${
-          errors[name] && touched[name]
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all ${errors[name] && touched[name]
             ? "border-red-500 focus:border-red-600"
             : "border-black focus:border-blue-500"
-        } ${disabled ? "bg-gray-100" : "bg-white"}`}
+          } ${disabled ? "bg-gray-100" : "bg-white"}`}
         placeholder=" "
       />
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name] || type === "date"
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name] || type === "date"
             ? "-top-[9px] text-xs text-grey-400 bg-white px-1"
             : "top-4 text-base text-gray-500 peer-focus:-top-[9px] peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1"
-        }`}
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -371,11 +369,10 @@ export default function EditPatientPage() {
         value={formData[name] as string}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all appearance-none ${
-          errors[name] && touched[name]
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all appearance-none ${errors[name] && touched[name]
             ? "border-red-500 focus:border-red-600"
             : "border-black focus:border-blue-500"
-        } ${!formData[name] ? "text-gray-500" : "text-gray-900"}`}
+          } ${!formData[name] ? "text-gray-500" : "text-gray-900"}`}
       >
         <option value=""></option>
         {options.map((opt) => (
@@ -386,11 +383,10 @@ export default function EditPatientPage() {
       </select>
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name]
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name]
             ? "top-2 text-xs text-blue-600"
             : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
-        }`}
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -433,20 +429,18 @@ export default function EditPatientPage() {
         onChange={handleChange}
         onBlur={handleBlur}
         rows={3}
-        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all resize-none ${
-          errors[name] && touched[name]
+        className={`peer w-full px-4 pt-6 pb-2 border rounded-lg outline-none transition-all resize-none ${errors[name] && touched[name]
             ? "border-red-500 focus:border-red-600"
             : "border-black focus:border-blue-500"
-        }`}
+          }`}
         placeholder=" "
       />
       <label
         htmlFor={name}
-        className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-          formData[name]
+        className={`absolute left-4 transition-all duration-200 pointer-events-none ${formData[name]
             ? "top-2 text-xs text-blue-600"
             : "top-4 text-base text-gray-500 peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600"
-        }`}
+          }`}
       >
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -476,9 +470,9 @@ export default function EditPatientPage() {
       <div className="min-h-screen bg-[#ECF0F9]  px-4 sm:px-6 lg:px-8 py-3">
         <div className="bg-white rounded-xl shadow-lg sm:p-8">
           <div className="px-6 py-3 border-b border-gray-300">
-            <h1 className="text-[17x] font-bold text-gray-900 mb-1">
-            Edit Patient
-          </h1>
+            <h1 className="text-[17x] font-bold  mb-1">
+              Edit Patient
+            </h1>
           </div>
           <div className="space-y-8 p-6">
             <section>
@@ -684,7 +678,7 @@ export default function EditPatientPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-[640px]:gap-12 mb-6 max-[640px]:mt-12">
                 <InputField label="Ward Number" name="wardNumber" />
                 <div className="max-[640px]mt-12">
-                <InputField label="Room Number" name="roomNumber" />
+                  <InputField label="Room Number" name="roomNumber" />
                 </div>
                 <TextAreaField
                   label="Reason for Admission"

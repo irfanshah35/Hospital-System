@@ -406,7 +406,7 @@ export default function LeaveBalanceComponent() {
                                   <button onClick={() => deleteBalance(item.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer" title="Delete">
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-                                 
+
                                 </div>
                               </td>
                             </tr>
@@ -503,7 +503,7 @@ export default function LeaveBalanceComponent() {
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-                                 
+
                                 </div>
                               </div>
                             </div>

@@ -40,7 +40,7 @@ export default function MedicalRecordComponent() {
       content: (
         <div>
           <p className="text-gray-700 mb-4">Write prescriptio by <span className="text-blue-500 cursor-pointer hover:underline">Dr. Sarah Smith</span> and necessary advice to patient.</p>
-          
+
           <div className="flex items-center gap-4 mb-3">
             <div className="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
               <FileText size={32} className="text-red-500" />
@@ -51,7 +51,7 @@ export default function MedicalRecordComponent() {
               </svg>
             </div>
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
             <Paperclip size={16} />
             <span>2 attachments — </span>
@@ -72,33 +72,33 @@ export default function MedicalRecordComponent() {
       content: (
         <div>
           <p className="text-gray-700 mb-4">Pianoforte principles our unaffected not for astonished travelling are particular.</p>
-          
+
           <p className="text-sm font-semibold text-gray-800 mb-3">Doctor Team</p>
-          
+
           <div className="flex flex-wrap gap-4">
             <div className="w-28 h-28 rounded-lg overflow-hidden border-2 border-gray-300">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop"
                 alt="Doctor"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="w-28 h-28 rounded-lg overflow-hidden border-2 border-gray-300">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop"
                 alt="Doctor"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="w-28 h-28 rounded-lg overflow-hidden border-2 border-gray-300">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop"
                 alt="Doctor"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="w-28 h-28 rounded-lg overflow-hidden border-2 border-gray-300">
-              <img 
+              <img
                 src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop"
                 alt="Doctor"
                 className="w-full h-full object-cover"
@@ -118,7 +118,7 @@ export default function MedicalRecordComponent() {
       content: (
         <div>
           <p className="text-gray-700 mb-3">Consultation with <span className="text-blue-500 cursor-pointer hover:underline">Dr. Sarah Smith</span></p>
-          
+
           <p className="text-gray-700 italic">"Debating me breeding be answered an he. Spoil event was words her off cause any. Tears woman which no is world miles woody. Wished be do mutual except in effect answer."</p>
         </div>
       )
