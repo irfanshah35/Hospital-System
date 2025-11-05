@@ -67,13 +67,13 @@ export default function SideBar({
       title: "Appointments",
       icon: ClipboardList,
       children: [
-        { title: "Book Appointment", path: "" },
-        { title: "Today Appointments", path: "" },
+        { title: "Book Appointment", path: "/patient/appointment/book" },
+        { title: "Today Appointments", path: "/patient/appointment/today" },
         {
           title: "Upcoming Appointments",
-          path: "",
+          path: "/patient/appointment/upcoming",
         },
-        { title: "Past Appointments", path: "" },
+        { title: "Past Appointments", path: "/patient/appointment/past" },
       ],
     },
     {
