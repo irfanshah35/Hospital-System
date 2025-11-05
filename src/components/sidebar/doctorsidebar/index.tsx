@@ -58,7 +58,7 @@ export default function DoctorSideBar({
     {
       title: "Appointments",
       icon: ClipboardList,
-      // path: "#/doctor/appointments",
+      path: "/doctor/appointments",
     },
     {
       title: "Doctors",
@@ -68,17 +68,17 @@ export default function DoctorSideBar({
     {
       title: "Patients",
       icon: User,
-      // path: "#/doctor/patients",
+      path: "/doctor/patient",
     },
     {
       title: "Settings",
       icon: Settings,
-      // path: "/doctor/settings",
+      path: "/doctor/settings",
     },
     {
       title: "Chat",
       icon: MessageSquare,
-      // path: "#/doctor/chat",
+      path: "/doctor/chat",
     },
   ];
 
