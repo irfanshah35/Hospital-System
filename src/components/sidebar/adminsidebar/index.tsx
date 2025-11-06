@@ -20,6 +20,7 @@ import {
   LogOut,
   Plus,
   Minus,
+  ClipboardCheck,
 } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
@@ -388,6 +389,15 @@ export default function AdminSideBar({
           ],
         },
       ],
+      section2: "Apps",
+      Apps: [
+        {
+          title: "Task",
+          icon: ClipboardCheck,
+          path: "/admin/tasks",
+        },
+      ],
+
     },
   ];
 
@@ -734,8 +744,8 @@ ${shouldUseWhiteTheme
                     ) : (
                       <Link
                         className={`relative flex items-center ${shouldExpand
-                            ? "justify-between"
-                            : "justify-center px-0"
+                          ? "justify-between"
+                          : "justify-center px-0"
                           } overflow-hidden text-[14px] leading-8 cursor-pointer
                           p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
                             ? "text-white hover:bg-[#2D3748]"
@@ -763,6 +773,57 @@ ${shouldUseWhiteTheme
                         )}
                       </Link>
                     )}
+                  </li>
+                ))}
+              </React.Fragment>
+            ))}
+
+
+            {sidebarMenu.map((section, sectionIndex) => (
+              <React.Fragment key={sectionIndex}>
+                {shouldExpand && (
+                  <li>
+                    <div
+                      className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                        }`}
+                    >
+                      {section.section2}
+                    </div>
+                  </li>
+                )}
+
+                {section.Apps.map((item, index) => (
+                  <li key={index}>
+                    <Link
+                      className={`relative flex items-center ${shouldExpand
+                        ? "justify-between"
+                        : "justify-center px-0"
+                        } overflow-hidden text-[14px] leading-8 cursor-pointer
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
+                          ? "text-white hover:bg-[#2D3748]"
+                          : "text-black hover:bg-[#f0f3fb]"
+                        }`}
+                      href={(item as any).path || "#"}
+                    >
+                      <div className="flex items-center gap-2">
+                        <item.icon
+                          size={18}
+                          strokeWidth={1.8}
+                          className={
+                            shouldUseWhiteTheme ? "text-white" : "text-black"
+                          }
+                        />
+                        {shouldExpand && <span>{item.title}</span>}
+                      </div>
+                      {shouldExpand && (item as any).badge && (
+                        <span
+                          className={`${(item as any).badge.color
+                            } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                        >
+                          {(item as any).badge.text}
+                        </span>
+                      )}
+                    </Link>
                   </li>
                 ))}
               </React.Fragment>
