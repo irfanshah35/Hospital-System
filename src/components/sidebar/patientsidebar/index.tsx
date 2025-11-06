@@ -207,10 +207,10 @@ export default function SideBar({
                                   href={child.path}
                                   onClick={() => handleLinkClick(child.path)}
                                   className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${isActive
-                                      ? "text-[#2196f3]"
-                                      : shouldUseWhiteTheme
-                                        ? "text-white hover:text-[#2196f3]"
-                                        : "text-gray-700 hover:text-[#2196f3]"
+                                    ? "text-[#2196f3]"
+                                    : shouldUseWhiteTheme
+                                      ? "text-white hover:text-[#2196f3]"
+                                      : "text-gray-700 hover:text-[#2196f3]"
                                     }`}
                                 >
                                   <span
@@ -228,7 +228,7 @@ export default function SideBar({
                       )}
                     </>
                   ) : (
-                    <Link 
+                    <Link
                       className={`relative flex items-center justify-content-center overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
                         } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
@@ -243,7 +243,9 @@ export default function SideBar({
                       <item.icon
                         size={18}
                         strokeWidth={1.8}
-                        className="!text-white"
+                        className={
+                          shouldUseWhiteTheme ? "text-white" : "text-black"
+                        }
                       />
                       <span className="ml-3">{item.title}</span>
                     </Link>
@@ -326,13 +328,13 @@ export default function SideBar({
                         } w-full`}
                     >
                       <div className="flex items-center gap-2">
-                        <item.icon
+                        {/* <item.icon
                           size={18}
                           strokeWidth={1.8}
                           className={
                             shouldUseWhiteTheme ? "text-white" : "text-black"
                           }
-                        />
+                        /> */}
                         <span>{item.title}</span>
                       </div>
                       {openDropdown ? (
@@ -362,10 +364,10 @@ export default function SideBar({
                                 href={child.path}
                                 onClick={() => setActiveChild(child.path)}
                                 className={`flex items-center gap-2 py-2 px-4 text-[13px] transition-colors ${isActive
-                                    ? "text-[#2196f3]"
-                                    : shouldUseWhiteTheme
-                                      ? "text-white hover:text-[#2196f3]"
-                                      : "text-gray-700 hover:text-[#2196f3]"
+                                  ? "text-[#2196f3]"
+                                  : shouldUseWhiteTheme
+                                    ? "text-white hover:text-[#2196f3]"
+                                    : "text-gray-700 hover:text-[#2196f3]"
                                   }`}
                               >
                                 <span
@@ -385,8 +387,8 @@ export default function SideBar({
                 ) : (
                   <Link
                     className={`relative flex mb-2 items-center ${shouldExpand
-                        ? "justify-content-center"
-                        : "justify-center px-0"
+                      ? "justify-content-center"
+                      : "justify-center px-0"
                       } overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
                       } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] ml-[13px] mr-[19px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
@@ -400,7 +402,9 @@ export default function SideBar({
                     <item.icon
                       size={18}
                       strokeWidth={1.8}
-                      className="text-white"
+                      className={
+                        shouldUseWhiteTheme ? "text-white" : "text-black"
+                      }
                     />
                     {shouldExpand && <span className="ml-[14px]">{item.title}</span>}
                   </Link>
