@@ -4,7 +4,7 @@ import React from 'react'
 export default function AddBill() {
   return (
     <div>
-        <AddBillPage />
+      <AddBillPage />
     </div>
   )
 }
