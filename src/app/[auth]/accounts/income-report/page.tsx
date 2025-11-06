@@ -4,7 +4,7 @@ import React from 'react'
 export default function IncomeReport() {
   return (
     <div>
-        <IncomeReportpage />
+      <IncomeReportpage />
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import BillListComponent from '@/components/bill-list-component'
 import React from 'react'
 
-   const BillList = () => {
+const BillList = () => {
   return (
-   <BillListComponent/>
+    <BillListComponent />
   )
 }
 

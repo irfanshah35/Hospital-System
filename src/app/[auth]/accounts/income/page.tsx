@@ -1,9 +1,9 @@
 import IncomeComponent from '@/components/income-component'
 import React from 'react'
 
-   const Income = () => {
+const Income = () => {
   return (
-   <IncomeComponent/>
+    <IncomeComponent />
   )
 }
 
