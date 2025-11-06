@@ -12,6 +12,7 @@ import {
   LogOut,
   Plus,
   Minus,
+  Power,
 } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
@@ -89,22 +90,22 @@ export default function SideBar({
     {
       title: "Billing",
       icon: Receipt,
-      path: "",
+      path: "/patient/billing",
     },
     {
       title: "Chat",
       icon: MessageSquare,
-      path: "",
+      path: "/patient/app/chat",
     },
     {
       title: "Settings",
       icon: Settings,
-      path: "",
+      path: "/patient/settings",
     },
     {
       title: "Logout",
-      icon: LogOut,
-      path: "",
+      icon: Power,
+      path: "/",
     },
   ];
 
@@ -227,7 +228,7 @@ export default function SideBar({
                       )}
                     </>
                   ) : (
-                    <Link
+                    <Link 
                       className={`relative flex items-center justify-content-center overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
                         } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
@@ -242,9 +243,7 @@ export default function SideBar({
                       <item.icon
                         size={18}
                         strokeWidth={1.8}
-                        className={
-                          shouldUseWhiteTheme ? "text-white" : "text-black"
-                        }
+                        className="!text-white"
                       />
                       <span className="ml-3">{item.title}</span>
                     </Link>
@@ -264,7 +263,7 @@ export default function SideBar({
       <aside
         className={`${shouldExpand ? "w-[260px]" : "w-[60px]"
           } overflow-x-hidden overflow-y-hidden h-[calc(100dvh-68px)] fixed top-[68px] ${sidebarTheme === "dark" ? "bg-[#1A202E]" : "bg-white"
-          } z-[9999] group transition-all duration-300`}
+          } z-[9999] group transition-all duration-300 shadow-md`}
         onMouseEnter={() => {
           // Only allow hover expansion when sidebar is collapsed
           if (isCollapsed) {
@@ -385,12 +384,12 @@ export default function SideBar({
                   </>
                 ) : (
                   <Link
-                    className={`relative flex items-center ${shouldExpand
+                    className={`relative flex mb-2 items-center ${shouldExpand
                         ? "justify-content-center"
                         : "justify-center px-0"
                       } overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
                       } text-[14px] leading-8 cursor-pointer
-                    p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
+                    p-[9px] mt-[8px] ml-[13px] mr-[19px] rounded-lg transition-all duration-300 ease-in-out  ${item.title === "Logout"
                         ? "bg-[#f44336] text-white hover:bg-[#ea1c0d]"
                         : shouldUseWhiteTheme
                           ? "hover:bg-[#2D3748]"
@@ -401,11 +400,9 @@ export default function SideBar({
                     <item.icon
                       size={18}
                       strokeWidth={1.8}
-                      className={
-                        shouldUseWhiteTheme ? "text-white" : "text-black"
-                      }
+                      className="text-white"
                     />
-                    {shouldExpand && <span className="ml-3">{item.title}</span>}
+                    {shouldExpand && <span className="ml-[14px]">{item.title}</span>}
                   </Link>
                 )}
               </li>

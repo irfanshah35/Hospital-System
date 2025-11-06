@@ -41,7 +41,7 @@ const messages: Message[] = [
     { id: 4, sender: "Maria", text: "I am good, We think for next weekend.", time: "10:10 AM, Today", isMe: false }
 ];
 
-export default function ChatPage() {
+export default function PatientChatPage() {
     const [selectedUser, setSelectedUser] = useState<User>(users[1]);
     const [searchTerm, setSearchTerm] = useState('');
     const [newMessage, setNewMessage] = useState('');

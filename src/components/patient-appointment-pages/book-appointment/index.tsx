@@ -1,7 +1,7 @@
 'use client';
 
-import { useActionState } from 'react';
-import { Home, Calendar, Upload } from 'lucide-react';
+import { useActionState, useState } from 'react';
+import { Home, Calendar, Upload, Check } from 'lucide-react';
 import Link from 'next/link';
 
 interface FormState {
@@ -63,6 +63,8 @@ export default function BookAppointment() {
         'Dr. Emily Chen',
         'Dr. Robert Taylor'
     ];
+    const [selected, setSelected] = useState("11:00-11:30");
+    const disabledSlots = ["11:30-12:00"];
 
     return (
         <div className="min-h-screen">
@@ -235,7 +237,6 @@ export default function BookAppointment() {
                                 >
                                     Date Of Birth<span className="text-red-500">*</span>
                                 </label>
-                                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                             </div>
                         </div>
 
@@ -290,27 +291,49 @@ export default function BookAppointment() {
                                     >
                                         Date Of Appointment<span className="text-red-500">*</span>
                                     </label>
-                                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                 </div>
                             </div>
 
                             {/* Time Slots */}
                             <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">Time Of Appointment:</label>
-                                <div className="grid grid-cols-2 md:grid-cols-10 gap-3">
-                                    {timeSlots.map((slot, index) => (
-                                        <label key={index} className="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="timeSlot"
-                                                value={`slot${index + 1}`}
-                                                className="text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <span className="text-sm text-gray-700">{slot}</span>
-                                        </label>
-                                    ))}
+                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    Time Of Appointment:
+                                </label>
+
+                                <div className="flex overflow-x-auto pb-2 scrollbar-hide">
+                                    <div className="flex bg-gray-50 border border-gray-200 rounded-full overflow-auto scrollbar-hide">
+                                        {timeSlots.map((slot, index) => {
+                                            const isDisabled = disabledSlots.includes(slot);
+                                            const isSelected = selected === slot;
+
+                                            return (
+                                                <button
+                                                    type='button'
+                                                    key={slot}
+                                                    disabled={isDisabled}
+                                                    onClick={() => !isDisabled && setSelected(slot)}
+                                                    className={`relative flex items-center justify-center px-5 py-2 text-sm border-r font-medium transition-all whitespace-nowrap duration-300 cursor-pointer 
+                  ${isDisabled
+                                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                            : isSelected
+                                                                ? "bg-[#dae2f9] px-7 hover:bg-[#EDEDED]"
+                                                                : "text-gray-700 hover:bg-[#EDEDED]"
+                                                        } 
+                  ${index === 0 ? "rounded-l-full" : ""}
+                  ${index === timeSlots.length - 1 ? "rounded-r-full" : ""}
+                `}
+                                                >
+                                                    {isSelected && (
+                                                        <Check className="absolute left-2 w-5 h-5  transition-all duration-300" />
+                                                    )}
+                                                    <span className="pl-3">{slot}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
+
 
                             {/* Injury/Condition */}
                             <div className="relative mb-6">
