@@ -21,6 +21,8 @@ import {
   Plus,
   Minus,
   ClipboardCheck,
+  Star,
+  BookUser,
 } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
@@ -396,6 +398,34 @@ export default function AdminSideBar({
           icon: ClipboardCheck,
           path: "/admin/tasks",
         },
+        {
+          title: "Contacts",
+          icon: BookUser,
+          path: "/admin/contacts",
+        },
+        {
+          title: "More Apps",
+          icon: Star,
+          amount: 4,
+          children: [
+            {
+              title: "Chat",
+              path: "/admin/apps/chat"
+            },
+            {
+              title: "Contact Grid",
+              path: "/admin/apps/contact-grid"
+            },
+            {
+              title: "Drag Drop",
+              path: "/admin/apps/dragdrop"
+            },
+            {
+              title: "Support",
+              path: "/admin/apps/support",
+            },
+          ],
+        },
       ],
 
     },
@@ -562,6 +592,148 @@ ${shouldUseWhiteTheme
                             <span>{item.title}</span>
                           </div>
                           {(item as any).badge && (
+                            <span
+                              className={`${(item as any).badge.color
+                                } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                            >
+                              {(item as any).badge.text}
+                            </span>
+                          )}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </React.Fragment>
+              ))}
+
+              {sidebarMenu.map((section, sectionIndex) => (
+                <React.Fragment key={sectionIndex}>
+                  {shouldExpand && (
+                    <li>
+                      <div
+                        className={`mt-[45px] ml-[28px] mb-[5px] text-[12px] uppercase ${shouldUseWhiteTheme ? "text-white" : "text-black"
+                          }`}
+                      >
+                        {section.section2}
+                      </div>
+                    </li>
+                  )}
+
+                  {section.Apps.map((item, index) => (
+                    <li key={index}>
+                      {item.children && shouldExpand ? (
+                        <>
+                          <button
+                            onClick={() => toggleDropdown(item.title)}
+                            className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
+p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
+${shouldUseWhiteTheme
+                                ? "text-white hover:bg-[#2D3748]"
+                                : "text-gray-800 hover:bg-[#f0f3fb]"
+                              } w-full`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <item.icon
+                                size={18}
+                                strokeWidth={1.8}
+                                className={
+                                  shouldUseWhiteTheme
+                                    ? "text-white"
+                                    : "text-gray-800"
+                                }
+                              />
+                              <span>{item.title}</span>
+                            </div>
+                            <div className="flex items-center gap-2 relative">
+                              {(item as any).badge && (
+                                <span
+                                  className={`${(item as any).badge.color
+                                    } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                                >
+                                  {(item as any).badge.text}
+                                </span>
+                              )}
+                              {item.amount ? (
+                                <span className="rounded-full h-[18px] w-[18px] text-white bg-[#FD7E14] flex justify-center items-center">4</span>
+                              ) : ('')}
+                              {openDropdowns.includes(item.title) ? (
+                                <Minus
+                                  size={16}
+                                  className={
+                                    shouldUseWhiteTheme
+                                      ? "text-white"
+                                      : "text-gray-600"
+                                  }
+                                />
+                              ) : (
+                                <Plus
+                                  size={16}
+                                  className={
+                                    shouldUseWhiteTheme
+                                      ? "text-white"
+                                      : "text-gray-600"
+                                  }
+                                />
+                              )}
+                            </div>
+                          </button>
+
+                          {openDropdowns.includes(item.title) && (
+                            <ul className="ml-6 mt-1 mb-2">
+                              {item.children.map((child: any, i) => {
+                                const isActive = activeChild === child.path;
+                                return (
+                                  <li key={i} className="relative">
+                                    <Link
+                                      href={child.path || "#"}
+                                      onClick={() => child.path && setActiveChild(child.path)}
+                                      className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
+              ${isActive
+                                          ? shouldUseWhiteTheme
+                                            ? "text-white bg-[#2D3748]"
+                                            : "text-black bg-[#f0f3fb]"
+                                          : shouldUseWhiteTheme
+                                            ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+                                            : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+                                        }`}
+                                    >
+                                      <span
+                                        className={`text-base transition-opacity ${isActive ? "opacity-100" : "opacity-0"
+                                          }`}
+                                      >
+                                        ›
+                                      </span>
+                                      <span>{child.title}</span>
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </>
+                      ) : (
+                        <Link
+                          className={`relative flex items-center ${shouldExpand
+                            ? "justify-between"
+                            : "justify-center px-0"
+                            } overflow-hidden text-[14px] leading-8 cursor-pointer
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
+                              ? "text-white hover:bg-[#2D3748]"
+                              : "text-black hover:bg-[#f0f3fb]"
+                            }`}
+                          href={(item as any).path || "#"}
+                        >
+                          <div className="flex items-center gap-2">
+                            <item.icon
+                              size={18}
+                              strokeWidth={1.8}
+                              className={
+                                shouldUseWhiteTheme ? "text-white" : "text-black"
+                              }
+                            />
+                            {shouldExpand && <span>{item.title}</span>}
+                          </div>
+                          {shouldExpand && (item as any).badge && (
                             <span
                               className={`${(item as any).badge.color
                                 } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
@@ -794,36 +966,128 @@ ${shouldUseWhiteTheme
 
                 {section.Apps.map((item, index) => (
                   <li key={index}>
-                    <Link
-                      className={`relative flex items-center ${shouldExpand
-                        ? "justify-between"
-                        : "justify-center px-0"
-                        } overflow-hidden text-[14px] leading-8 cursor-pointer
-                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
-                          ? "text-white hover:bg-[#2D3748]"
-                          : "text-black hover:bg-[#f0f3fb]"
-                        }`}
-                      href={(item as any).path || "#"}
-                    >
-                      <div className="flex items-center gap-2">
-                        <item.icon
-                          size={18}
-                          strokeWidth={1.8}
-                          className={
-                            shouldUseWhiteTheme ? "text-white" : "text-black"
-                          }
-                        />
-                        {shouldExpand && <span>{item.title}</span>}
-                      </div>
-                      {shouldExpand && (item as any).badge && (
-                        <span
-                          className={`${(item as any).badge.color
-                            } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                    {item.children && shouldExpand ? (
+                      <>
+                        <button
+                          onClick={() => toggleDropdown(item.title)}
+                          className={`relative flex items-center justify-between overflow-hidden pe-6 text-[14px] leading-8 cursor-pointer font-semibold
+p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out
+${shouldUseWhiteTheme
+                              ? "text-white hover:bg-[#2D3748]"
+                              : "text-gray-800 hover:bg-[#f0f3fb]"
+                            } w-full`}
                         >
-                          {(item as any).badge.text}
-                        </span>
-                      )}
-                    </Link>
+                          <div className="flex items-center gap-2">
+                            <item.icon
+                              size={18}
+                              strokeWidth={1.8}
+                              className={
+                                shouldUseWhiteTheme
+                                  ? "text-white"
+                                  : "text-gray-800"
+                              }
+                            />
+                            <span>{item.title}</span>
+                          </div>
+                          <div className="flex items-center gap-2 relative">
+                            {(item as any).badge && (
+                              <span
+                                className={`${(item as any).badge.color
+                                  } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                              >
+                                {(item as any).badge.text}
+                              </span>
+                            )}
+                            {item.amount ? (
+                              <span className="rounded-full h-[18px] w-[18px] text-white bg-[#FD7E14] flex justify-center items-center">4</span>
+                            ) : ('')}
+                            {openDropdowns.includes(item.title) ? (
+                              <Minus
+                                size={16}
+                                className={
+                                  shouldUseWhiteTheme
+                                    ? "text-white"
+                                    : "text-gray-600"
+                                }
+                              />
+                            ) : (
+                              <Plus
+                                size={16}
+                                className={
+                                  shouldUseWhiteTheme
+                                    ? "text-white"
+                                    : "text-gray-600"
+                                }
+                              />
+                            )}
+                          </div>
+                        </button>
+
+                        {openDropdowns.includes(item.title) && (
+                          <ul className="ml-6 mt-1 mb-2">
+                            {item.children.map((child: any, i) => {
+                              const isActive = activeChild === child.path;
+                              return (
+                                <li key={i} className="relative">
+                                  <Link
+                                    href={child.path || "#"}
+                                    onClick={() => child.path && setActiveChild(child.path)}
+                                    className={`flex items-center gap-2 rounded-[8px] py-2 px-4 text-[13px] transition-colors duration-200
+              ${isActive
+                                        ? shouldUseWhiteTheme
+                                          ? "text-white bg-[#2D3748]"
+                                          : "text-black bg-[#f0f3fb]"
+                                        : shouldUseWhiteTheme
+                                          ? "text-gray-300 hover:bg-[#2D3748] hover:text-white"
+                                          : "text-gray-700 hover:text-blue-500 hover:bg-[#F5F7FA]"
+                                      }`}
+                                  >
+                                    <span
+                                      className={`text-base transition-opacity ${isActive ? "opacity-100" : "opacity-0"
+                                        }`}
+                                    >
+                                      ›
+                                    </span>
+                                    <span>{child.title}</span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </>
+                    ) : (
+                      <Link
+                        className={`relative flex items-center ${shouldExpand
+                          ? "justify-between"
+                          : "justify-center px-0"
+                          } overflow-hidden text-[14px] leading-8 cursor-pointer
+                          p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${shouldUseWhiteTheme
+                            ? "text-white hover:bg-[#2D3748]"
+                            : "text-black hover:bg-[#f0f3fb]"
+                          }`}
+                        href={(item as any).path || "#"}
+                      >
+                        <div className="flex items-center gap-2">
+                          <item.icon
+                            size={18}
+                            strokeWidth={1.8}
+                            className={
+                              shouldUseWhiteTheme ? "text-white" : "text-black"
+                            }
+                          />
+                          {shouldExpand && <span>{item.title}</span>}
+                        </div>
+                        {shouldExpand && (item as any).badge && (
+                          <span
+                            className={`${(item as any).badge.color
+                              } text-white text-[10px] font-semibold rounded-full px-[6px] py-[1px]`}
+                          >
+                            {(item as any).badge.text}
+                          </span>
+                        )}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </React.Fragment>
