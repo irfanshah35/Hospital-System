@@ -8,6 +8,7 @@ import {
   User,
   Settings,
   MessageSquare,
+  LogOut,
 } from "lucide-react";
 import { useThemeStore } from "@/store/store";
 
@@ -161,6 +162,16 @@ export default function DoctorSideBar({
                   </li>
                 );
               })}
+              <li>
+                <Link
+                  className="relative flex items-center justify-center overflow-hidden text-white text-[14px] leading-8 cursor-pointer
+                                p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out bg-[#f44336] hover:bg-[#ea1c0d]"
+                  href="/logout"
+                >
+                  <LogOut size={18} strokeWidth={1.8} />
+                  {shouldExpand && <span className="ml-3">Logout</span>}
+                </Link>
+              </li>
             </ul>
           </div>
         </aside>
@@ -230,8 +241,8 @@ export default function DoctorSideBar({
                 <li key={index}>
                   <Link
                     className={`relative flex items-center ${shouldExpand
-                        ? "justify-content-center"
-                        : "justify-center px-0"
+                      ? "justify-content-center"
+                      : "justify-center px-0"
                       } overflow-hidden ${shouldUseWhiteTheme ? "text-white" : "text-black"
                       } text-[14px] leading-8 cursor-pointer
                     p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out ${isActive
@@ -257,6 +268,17 @@ export default function DoctorSideBar({
                 </li>
               );
             })}
+
+            <li>
+              <Link
+                className="relative flex items-center justify-center overflow-hidden text-white text-[14px] leading-8 cursor-pointer
+                  p-[9px] mt-[8px] mx-[13px] rounded-lg transition-all duration-300 ease-in-out bg-[#f44336] hover:bg-[#ea1c0d]"
+                href="/logout"
+              >
+                <LogOut size={18} strokeWidth={1.8} />
+                {shouldExpand && <span className="ml-3">Logout</span>}
+              </Link>
+            </li>
           </ul>
         </div>
       </aside>

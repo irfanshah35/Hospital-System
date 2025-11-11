@@ -3,7 +3,7 @@ import { Home } from 'lucide-react';
 import React, { useState } from 'react'
 
 export default function DoctorAppointment() {
-    const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 1)); 
+    const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 1));
     const [view, setView] = useState('month');
 
     // Sample appointment data
@@ -156,16 +156,16 @@ export default function DoctorAppointment() {
 
         <div className='px-4 sm:px-6 lg:px-8 py-3 '>
             <div className="flex items-center justify-between pb-3">
-      <div className="flex items-center space-x-2 flex-wrap text-sm md:text-base">
-        <h1 className="text-base md:text-lg font-semibold">Appointment Calendar</h1>
-        <span className="hidden sm:inline">›</span>
-        <Home size={18} className="hidden sm:block" />
-        <span className="hidden sm:inline">›</span>
-        <span className="hidden sm:inline">Appointment</span>
-        <span className="hidden sm:inline">›</span>
-        <span className="hidden sm:inline">Calendar</span>
-      </div>
-    </div>
+                <div className="flex items-center space-x-2 flex-wrap text-sm md:text-base">
+                    <h1 className="text-base md:text-lg font-semibold">Appointment Calendar</h1>
+                    <span className="hidden sm:inline">›</span>
+                    <Home size={18} className="hidden sm:block" />
+                    <span className="hidden sm:inline">›</span>
+                    <span className="hidden sm:inline">Appointment</span>
+                    <span className="hidden sm:inline">›</span>
+                    <span className="hidden sm:inline">Calendar</span>
+                </div>
+            </div>
 
 
             <div className="min-h-screen ">
@@ -177,7 +177,7 @@ export default function DoctorAppointment() {
                         </div>
 
                         {/* Calendar Controls */}
-                        <div className="px-6 py-4 border-b border-gray-200">
+                        <div className={`px-6 py-4`}>
                             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                                 <div className="flex items-center space-x-2">
                                     <div className="flex rounded-md gap-2">
@@ -318,6 +318,9 @@ export default function DoctorAppointment() {
                         {view === 'week' && (
                             <WeekViewCalendar />
                         )}
+                        {view === 'day' && (
+                            <DayAppointment />
+                        )}
                     </div>
                 </div>
             </div>
@@ -457,7 +460,7 @@ const WeekViewCalendar = () => {
         <>
             <div className="p-4">
                 <div className="border border-gray-200 overflow-hidden">
-                    
+
                     <div className="grid grid-cols-8 border-b border-gray-200">
                         <div className="p-3 border-r border-gray-200"></div>
                         {weekDays.map((day, index) => (
@@ -596,5 +599,54 @@ const WeekViewCalendar = () => {
         </>
     );
 };
+
+export function DayAppointment() {
+    return (
+        <>
+            <div className="min-h-screen p-4">
+                {/* Calendar Grid */}
+                <div className="bg-white shadow-sm overflow-hidden border border-gray-300">
+                    {/* Day Header */}
+                    <div className="border-b border-gray-300">
+                        <div className="flex">
+                            <div className="w-14 border-r border-gray-300 p-2"></div>
+                            <div className="flex-1 p-[15px] text-center font-medium">
+                                Tuesday
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* All Day Section */}
+                    <div className="border-b border-gray-300">
+                        <div className="flex">
+                            <div className="w-14 border-r border-gray-300 p-1 text-center flex justify-center items-center text-sm text-gray-500">all-day</div>
+                            <div className="flex-1 p-2 min-h-12 bg-[#EBF8FB]"></div>
+                        </div>
+                    </div>
+
+                    {/* Time Slots */}
+                    <div className="max-h-96 overflow-y-auto">
+                        {[
+                            '12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am',
+                            '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'
+                        ].map((time, index) => (
+                            <div key={time} className="flex border-b border-gray-300 last:border-b-0">
+                                {/* Time Label */}
+                                <div className="w-14 border-r border-gray-300 text-end p-1 text-sm text-gray-500 flex-shrink-0">
+                                    {time}
+                                </div>
+
+                                {/* Time Slot Content */}
+                                <div className="flex-1 p-2 bg-[#FFFADF] cursor-pointer">
+                                    {/* You can add events here */}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
 
 
