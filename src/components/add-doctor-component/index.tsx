@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Home,
   User,
@@ -10,6 +10,10 @@ import {
   Clock,
   Phone,
   FileText,
+  EyeOff,
+  ChevronDown,
+  Eye,
+  Users,
 } from "lucide-react";
 
 interface FormErrors {
@@ -20,135 +24,144 @@ interface FieldState {
   [key: string]: boolean;
 }
 
+interface FormData {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  gender: string;
+  dateOfBirth: string;
+  bloodGroup: string;
+  email: string;
+  mobile: string;
+  alternativeContact: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  password: string;
+  reEnterPassword: string;
+  designation: string;
+  department: string;
+  specialization: string;
+  experience: string;
+  licenseNumber: string;
+  licenseExpiryDate: string;
+  education: string;
+  certifications: string;
+  joiningDate: string;
+  employeeId: string;
+  roomCabinNumber: string;
+  availableDays: string;
+  startTime: string;
+  endTime: string;
+  emergencyContactName: string;
+  emergencyContactNumber: string;
+  relationship: string;
+  profilePhoto: File | null;
+  licenseDocument: File | null;
+  educationCertificates: File | null;
+  additionalDocuments: File | null;
+}
+
 export default function AddDoctorComponent() {
   const [fieldStates, setFieldStates] = useState<FieldState>({});
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
-  const [formValues, setFormValues] = useState<Record<string, any>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-const handleFieldFocus = (field: string) => {
-  setFieldStates((prev) => ({ ...prev, [field]: true }));
-};
-
-const handleFieldBlur = (field: string) => {
-  setFieldStates((prev) => {
-    const value = formValues[field] ?? "";
-    return { ...prev, [field]: value.length > 0 };
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    gender: "",
+    dateOfBirth: "",
+    bloodGroup: "",
+    email: "",
+    mobile: "",
+    alternativeContact: "",
+    address: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    password: "",
+    reEnterPassword: "",
+    designation: "",
+    department: "",
+    specialization: "",
+    experience: "",
+    licenseNumber: "",
+    licenseExpiryDate: "",
+    education: "",
+    certifications: "",
+    joiningDate: "",
+    employeeId: "",
+    roomCabinNumber: "",
+    availableDays: "",
+    startTime: "",
+    endTime: "",
+    emergencyContactName: "",
+    emergencyContactNumber: "",
+    relationship: "",
+    profilePhoto: null,
+    licenseDocument: null,
+    educationCertificates: null,
+    additionalDocuments: null,
   });
-};
 
-const handleInputChange = (
-  e:
-    | React.ChangeEvent<HTMLInputElement>
-    | React.ChangeEvent<HTMLTextAreaElement>
-    | React.ChangeEvent<HTMLSelectElement>
-) => {
-  const { name, value } = e.target;
+  const handleFieldFocus = (field: string) => {
+    setFieldStates((prev) => ({ ...prev, [field]: true }));
+  };
 
-  // Always update the value
-  setFormValues((prev) => ({ ...prev, [name]: value }));
+  const handleFieldBlur = (field: string) => {
+    setFieldStates((prev) => {
+      const value = formData[field as keyof FormData];
+      if (value instanceof File) {
+        return { ...prev, [field]: true }; // Files are always considered "filled"
+      }
+      return { ...prev, [field]: String(value).length > 0 };
+    });
+  };
 
-  // Keep fieldState true if user typed something OR field is focused
-  setFieldStates((prev) => ({
-    ...prev,
-    [name]: value.length > 0 || prev[name] === true,
-  }));
-};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
 
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
+    setFieldStates((prev) => ({
+      ...prev,
+      [name]: value.trim().length > 0 || prev[name],
+    }));
 
-  const FloatingInput = ({
-    id,
-    label,
-    name,
-    type = "text",
-    required = false,
-    options = [],
-  }: any) => (
-    <div className="relative">
-      {type === "select" ? (
-        <>
-          <select
-            id={id || name}
-            name={name}
-            value={formValues[name] ?? ""}
-            className={`w-full px-3 py-3 border rounded-md focus:outline-none appearance-none bg-white peer ${errors[name]
-                ? "border-red-500"
-                : "border-gray-500 focus:border-blue-500"
-              }`}
-            // onFocus={() => handleFieldFocus(name)}
-            onChange={handleInputChange}
-          >
-            <option value=""></option>
-            {options.map((opt: string) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-3 top-3 pointer-events-none">
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-        </>
-      ) : type === "textarea" ? (
-        <textarea
-          id={id || name}
-          name={name}
-          rows={3}
-          value={formValues[name] ?? ""}
-          className={`w-full px-3 py-3 border rounded-md focus:outline-none resize-none peer ${errors[name]
-              ? "border-red-500"
-              : "border-gray-500 focus:border-blue-500"
-            }`}
-          // onFocus={() => handleFieldFocus(name)}
-          onBlur={(e) => handleFieldBlur( e.target.value)}
-          onChange={handleInputChange}
-        />
-      ) : (
-        <input
-          id={id || name}
-          type={type}
-          name={name}
-          value={formValues[name] ?? ""}
-          className={`w-full px-3 py-3 border rounded-md focus:outline-none peer ${errors[name]
-              ? "border-red-500"
-              : "border-gray-500 focus:border-blue-500"
-            }`}
-          // onFocus={() => handleFieldFocus(name)}
-          onBlur={(e) => handleFieldBlur( e.target.value)}
-          onChange={handleInputChange}
-        />
-      )}
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
 
-      <label
-        htmlFor={id || name}
-        className={`absolute left-3 transition-all duration-200 pointer-events-none ${fieldStates[name]
-            ? "text-xs -top-2 bg-white px-1 text-blue-500"
-            : "text-gray-500 top-3"
-          }`}
-      >
-        {label}
-        {required && <span className="text-red-500">*</span>}
-      </label>
+  // File upload handler - ab yeh bhi formData ko update karega
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (files && files[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
 
-      {errors[name] && (
-        <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
-      )}
-    </div>
-  );
+      setFieldStates((prev) => ({
+        ...prev,
+        [name]: true, // File selected, so field is filled
+      }));
+    }
+  };
 
   const FileUpload = ({ label, name, accept }: any) => (
     <div>
@@ -156,7 +169,14 @@ const handleInputChange = (
         {label}
       </label>
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
-        <input type="file" id={name} name={name} accept={accept} className="hidden" />
+        <input
+          type="file"
+          id={name}
+          name={name}
+          accept={accept}
+          className="hidden"
+          onChange={handleFileChange}
+        />
         <button
           type="button"
           className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition mb-2"
@@ -165,6 +185,11 @@ const handleInputChange = (
           Choose file
         </button>
         <p className="text-sm text-gray-500">or drag and drop file here</p>
+        {formData[name as keyof FormData] && (
+          <p className="text-sm text-green-600 mt-2">
+            ✅ {(formData[name as keyof FormData] as File)?.name}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -180,11 +205,16 @@ const handleInputChange = (
     e.preventDefault();
     setIsSubmitting(true);
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data = Object.fromEntries(formData);
-    const newErrors: FormErrors = {};
+    const submitFormData = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value instanceof File) {
+        if (value) submitFormData.append(key, value);
+      } else {
+        submitFormData.append(key, String(value));
+      }
+    });
 
-    // Required fields validation
+    const newErrors: FormErrors = {};
     const requiredFields: Record<string, string> = {
       firstName: "First name is required",
       gender: "Gender is required",
@@ -207,48 +237,101 @@ const handleInputChange = (
     };
 
     Object.entries(requiredFields).forEach(([field, message]) => {
-      if (!data[field] || String(data[field]).trim().length === 0) {
+      const value = formData[field as keyof typeof formData];
+      if (!value || String(value).trim().length === 0) {
         newErrors[field] = message;
       }
     });
-
-    // Email validation
-    if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(data.email))) {
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
 
-    // Mobile validation
-    if (data.mobile && !/^\d{10}$/.test(String(data.mobile).trim())) {
-      newErrors.mobile = "Mobile number must be 10 digits";
+    if (formData.mobile) {
+      const digitsOnly = formData.mobile.replace(/\D/g, "");
+      if (digitsOnly.length < 8 || digitsOnly.length > 20) {
+        newErrors.mobile = "Mobile number must contain 8-20 digits";
+      }
     }
-
-    // Password validation
-    if (data.password && String(data.password).length < 6) {
+    if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (data.password !== data.reEnterPassword) {
+    if (formData.password !== formData.reEnterPassword) {
       newErrors.reEnterPassword = "Passwords do not match";
     }
 
-    setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setMessage({ type: "error", text: "⚠️ Please fix the errors below" });
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    // Simulate API call
     setTimeout(() => {
-      console.log("Doctor Data:", data);
+      console.log("🎯 COMPLETE DOCTOR DATA:");
+
+      const logData: any = {};
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value instanceof File) {
+          logData[key] = `FILE: ${value.name} (${value.size} bytes)`;
+        } else {
+          logData[key] = value;
+        }
+      });
+      console.table(logData);
+
       setMessage({ type: "success", text: "✅ Doctor registered successfully!" });
       setIsSubmitting(false);
-      (e.target as HTMLFormElement).reset();
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        gender: "",
+        dateOfBirth: "",
+        bloodGroup: "",
+        email: "",
+        mobile: "",
+        alternativeContact: "",
+        address: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        password: "",
+        reEnterPassword: "",
+        designation: "",
+        department: "",
+        specialization: "",
+        experience: "",
+        licenseNumber: "",
+        licenseExpiryDate: "",
+        education: "",
+        certifications: "",
+        joiningDate: "",
+        employeeId: "",
+        roomCabinNumber: "",
+        availableDays: "",
+        startTime: "",
+        endTime: "",
+        emergencyContactName: "",
+        emergencyContactNumber: "",
+        relationship: "",
+        profilePhoto: null,
+        licenseDocument: null,
+        educationCertificates: null,
+        additionalDocuments: null,
+      });
+
       setFieldStates({});
-      setFormValues({});
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+      setErrors({});
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }, 500);
   };
+
 
   return (
     <div className="px-4 sm:px-6 py-5 bg-gray-50 min-h-screen">
@@ -278,101 +361,344 @@ const handleInputChange = (
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
             {/* Personal Information */}
             <div>
               <SectionHeader icon={User} title="Personal Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                <FloatingInput label="First name" name="firstName" id="firstName" required />
-                <FloatingInput label="Middle name" id="middleName" name="middleName" />
-                <FloatingInput label="Last name" name="lastName" id="lastName" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <FloatingInput
+                  label="First Name"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  icon={User}
+                  required
+                  error={errors.firstName}
+                />
+                <FloatingInput
+                  label="Middle Name"
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleChange}
+                  icon={User}
+                />
+                <FloatingInput
+                  label="Last Name"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  icon={User}
+                />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <FloatingInput label="Gender" name="gender" type="select" id="gender" required
-                  options={["Male", "Female", "Other"]} />
-                <FloatingInput label="Date Of Birth" name="dateOfBirth" id="dob" type="date" required />
-                <FloatingInput label="Blood Group" name="bloodGroup" id="bloodGroup" type="select"
-                  options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FloatingSelect
+                  label="Gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  required
+                  error={errors.gender}
+                >
+                  <option value=""></option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </FloatingSelect>
+                <FloatingInput
+                  label="Date of Birth"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  type="date"
+                  required
+                  error={errors.dateOfBirth}
+                />
+                <FloatingSelect
+                  label="Blood Group"
+                  name="bloodGroup"
+                  value={formData.bloodGroup}
+                  onChange={handleChange}
+                  required
+                  error={errors.bloodGroup}
+                >
+                  <option value=""></option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </FloatingSelect>
               </div>
             </div>
 
             {/* Contact Information */}
             <div>
               <SectionHeader icon={MapPin} title="Contact Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                <FloatingInput label="Email" name="email" type="email" required id="email" />
-                <FloatingInput label="Mobile" name="mobile" type="tel" required id="mob" />
-                <FloatingInput label="Alternative Contact" name="alternativeContact" id="alternativeContact" type="tel" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <FloatingInput
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  error={errors.email}
+                />
+                <FloatingInput
+                  label="Mobile"
+                  name="mobile"
+                  type="tel"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  required
+                  error={errors.mobile}
+                />
+                <FloatingInput
+                  label="Alternative Contact"
+                  name="alternativeContact"
+                  type="tel"
+                  value={formData.alternativeContact}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="relative mb-12">
-                <FloatingInput label="Address" name="address" id="address" type="textarea" />
+              <div className="mb-6">
+                <FloatingTextarea
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  error={errors.address}
+                />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <FloatingInput label="City" name="city" />
-                <FloatingInput label="State" name="state" />
-                <FloatingInput label="Postal Code" name="postalCode" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FloatingInput
+                  label="City"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                />
+                <FloatingInput
+                  label="State"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                />
+                <FloatingInput
+                  label="Postal Code"
+                  name="postalCode"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
             {/* Account Information */}
             <div>
               <SectionHeader icon={Key} title="Account Information" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <FloatingInput label="Password" name="password" type="password" required />
-                <FloatingInput label="Re-Enter Password" name="reEnterPassword" type="password" required />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FloatingInput
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  error={errors.password}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                />
+                <FloatingInput
+                  label="Re-Enter Password"
+                  name="reEnterPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={formData.reEnterPassword}
+                  onChange={handleChange}
+                  required
+                  error={errors.reEnterPassword}
+                  showPassword={showConfirmPassword}
+                  setShowPassword={setShowConfirmPassword}
+                />
               </div>
             </div>
 
             {/* Professional Information */}
             <div>
               <SectionHeader icon={Briefcase} title="Professional Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                <FloatingInput label="Designation" name="designation" required />
-                <FloatingInput label="Select Department" name="department" type="select" required
-                  options={["Cardiology", "Neurology", "Orthopedics", "Pediatrics", "General Medicine"]} />
-                <FloatingInput label="Specialization" name="specialization" required />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <FloatingInput
+                  label="Designation"
+                  name="designation"
+                  value={formData.designation}
+                  onChange={handleChange}
+                  required
+                  error={errors.designation}
+                />
+                <FloatingSelect
+                  label="Department"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  required
+                  error={errors.department}
+                >
+                  <option value=""></option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Orthopedics">Orthopedics</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="General Medicine">General Medicine</option>
+                </FloatingSelect>
+                <FloatingInput
+                  label="Specialization"
+                  name="specialization"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                  required
+                  error={errors.specialization}
+                />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-                <FloatingInput label="Experience (Years)" name="experience" required />
-                <FloatingInput label="License Number" name="licenseNumber" required />
-                <FloatingInput label="License Expiry Date" name="licenseExpiryDate" type="date" required />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <FloatingInput
+                  label="Experience (Years)"
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleChange}
+                  required
+                  error={errors.experience}
+                />
+                <FloatingInput
+                  label="License Number"
+                  name="licenseNumber"
+                  value={formData.licenseNumber}
+                  onChange={handleChange}
+                  required
+                  error={errors.licenseNumber}
+                />
+                <FloatingInput
+                  label="License Expiry Date"
+                  name="licenseExpiryDate"
+                  type="date"
+                  value={formData.licenseExpiryDate}
+                  onChange={handleChange}
+                  required
+                  error={errors.licenseExpiryDate}
+                />
               </div>
-              <div className="relative mb-12">
-                <FloatingInput label="Education" name="education" type="textarea" required />
+              <div className="mb-6">
+                <FloatingTextarea
+                  label="Education"
+                  name="education"
+                  value={formData.education}
+                  onChange={handleChange}
+                  required
+                  error={errors.education}
+                />
               </div>
-              <div className="relative">
-                <FloatingInput label="Certifications" name="certifications" type="textarea" />
+              <div>
+                <FloatingTextarea
+                  label="Certifications"
+                  name="certifications"
+                  value={formData.certifications}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
             {/* Hospital Information */}
             <div>
               <SectionHeader icon={Building2} title="Hospital Specific Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <FloatingInput label="Joining Date" name="joiningDate" type="date" required />
-                <FloatingInput label="Employee ID" name="employeeId" required />
-                <FloatingInput label="Room/Cabin Number" name="roomCabinNumber" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FloatingInput
+                  label="Joining Date"
+                  name="joiningDate"
+                  type="date"
+                  value={formData.joiningDate}
+                  onChange={handleChange}
+                  required
+                  error={errors.joiningDate}
+                />
+                <FloatingInput
+                  label="Employee ID"
+                  name="employeeId"
+                  value={formData.employeeId}
+                  onChange={handleChange}
+                  required
+                  error={errors.employeeId}
+                />
+                <FloatingInput
+                  label="Room/Cabin Number"
+                  name="roomCabinNumber"
+                  value={formData.roomCabinNumber}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
             {/* Availability Information */}
             <div>
               <SectionHeader icon={Clock} title="Availability Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <FloatingInput label="Available Days" name="availableDays" type="select" required
-                  options={["Monday-Friday", "Monday-Saturday", "All Days", "Weekends Only"]} />
-                <FloatingInput label="Start Time" name="startTime" type="time" required />
-                <FloatingInput label="End Time" name="endTime" type="time" required />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FloatingSelect
+                  label="Available Days"
+                  name="availableDays"
+                  value={formData.availableDays}
+                  onChange={handleChange}
+                  required
+                  error={errors.availableDays}
+                >
+                  <option value=""></option>
+                  <option value="Monday-Friday">Monday-Friday</option>
+                  <option value="Monday-Saturday">Monday-Saturday</option>
+                  <option value="All Days">All Days</option>
+                  <option value="Weekends Only">Weekends Only</option>
+                </FloatingSelect>
+                <FloatingInput
+                  label="Start Time"
+                  name="startTime"
+                  type="time"
+                  value={formData.startTime}
+                  onChange={handleChange}
+                  required
+                  error={errors.startTime}
+                />
+                <FloatingInput
+                  label="End Time"
+                  name="endTime"
+                  type="time"
+                  value={formData.endTime}
+                  onChange={handleChange}
+                  required
+                  error={errors.endTime}
+                />
               </div>
             </div>
 
             {/* Emergency Contact */}
             <div>
               <SectionHeader icon={Phone} title="Emergency Contact Information" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <FloatingInput label="Emergency Contact Name" name="emergencyContactName" />
-                <FloatingInput label="Emergency Contact Number" name="emergencyContactNumber" type="tel" />
-                <FloatingInput label="Relationship" name="relationship" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FloatingInput
+                  label="Emergency Contact Name"
+                  name="emergencyContactName"
+                  value={formData.emergencyContactName}
+                  onChange={handleChange}
+                />
+                <FloatingInput
+                  label="Emergency Contact Number"
+                  name="emergencyContactNumber"
+                  type="tel"
+                  value={formData.emergencyContactNumber}
+                  onChange={handleChange}
+                />
+                <FloatingInput
+                  label="Relationship"
+                  name="relationship"
+                  value={formData.relationship}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
@@ -399,7 +725,7 @@ const handleInputChange = (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition disabled:opacity-50"
+                className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </button>
@@ -407,6 +733,137 @@ const handleInputChange = (
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function FloatingInput({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  icon: Icon,
+  required = false,
+  showPassword,
+  setShowPassword,
+  error,
+}: any) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const isDate = type === "date";
+  const isTime = type === "time";
+
+  const handleContainerClick = () => {
+    inputRef.current?.focus();
+  };
+
+  return (
+    <div
+      className="relative cursor-text"
+      onClick={handleContainerClick} // Focus input when anywhere in container is clicked
+    >
+      <input
+        ref={inputRef}
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        className={`peer w-full rounded-md border px-3 bg-white pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? "border-red-500" : "border-gray-300"
+          }`}
+      />
+      <label
+        className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"
+          } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}
+      >
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {Icon && !isDate && !isTime && (
+        <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />
+      )}
+
+      {type === "password" && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation(); // prevent container click
+            setShowPassword(!showPassword);
+          }}
+          className="absolute top-3.5 right-3 text-gray-500"
+        >
+          {showPassword ? (
+            <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
+          ) : (
+            <Eye className="w-4 h-4 md:w-5 md:h-5" />
+          )}
+        </button>
+      )}
+
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  );
+}
+
+
+function FloatingSelect({
+  label,
+  name,
+  value,
+  onChange,
+  icon: Icon,
+  required = false,
+  children,
+  error
+}: any) {
+  return (
+    <div className="relative">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className={`peer w-full appearance-none rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-300'}`}
+      >
+        {children}
+      </select>
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && <Icon className="absolute top-3.5 left-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      <ChevronDown className="absolute top-4 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  );
+}
+
+function FloatingTextarea({
+  label,
+  name,
+  value,
+  onChange,
+  icon: Icon,
+  required = false,
+  rows = 3,
+  error
+}: any) {
+  return (
+    <div className="relative">
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        rows={rows}
+        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+      />
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
     </div>
   );
 }
