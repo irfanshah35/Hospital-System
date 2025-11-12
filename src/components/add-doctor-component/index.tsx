@@ -168,7 +168,7 @@ export default function AddDoctorComponent() {
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {label}
       </label>
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition cursor-pointer flex items-center gap-2" onClick={() => document.getElementById(name)?.click()}>
         <input
           type="file"
           id={name}
@@ -179,21 +179,20 @@ export default function AddDoctorComponent() {
         />
         <button
           type="button"
-          className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition mb-2"
-          onClick={() => document.getElementById(name)?.click()}
+          className="px-4 py-2 bg-[#faf9fd] text-[#005cbb] hover:bg-[#E6ECF8] font-semibold rounded-full text-sm cursor-pointer shadow-md transition mb-2"
+
         >
           Choose file
         </button>
         <p className="text-sm text-gray-500">or drag and drop file here</p>
         {formData[name as keyof FormData] && (
           <p className="text-sm text-green-600 mt-2">
-            ✅ {(formData[name as keyof FormData] as File)?.name}
+            {(formData[name as keyof FormData] as File)?.name}
           </p>
         )}
       </div>
     </div>
   );
-
   const SectionHeader = ({ icon: Icon, title }: any) => (
     <div className="flex items-center mb-4">
       <Icon className="w-5 h-5 text-blue-500 mr-2" />

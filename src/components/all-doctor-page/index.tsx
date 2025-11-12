@@ -204,7 +204,7 @@ export default function AllDoctorPage() {
     <>
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
-          <div className="flex items-center flex-wrap space-x-2">
+          <div className="flex items-center space-x-2">
             <h1 className="text-[20px] font-semibold">All Doctor</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
@@ -305,7 +305,7 @@ export default function AllDoctorPage() {
                     <div className="p-8 text-center text-gray-500">No patients found</div>
                   ) : (
                     <>
-                      <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                      <table className="min-w-full divide-y divide-gray-200 hidden min-[601px]:table">
                         <thead role="rowgroup" className="bg-white">
                           <tr>
                             <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -416,8 +416,102 @@ export default function AllDoctorPage() {
                         </tbody>
                       </table>
 
-                      c
+                      <div className={`px-6 min-[601px]:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
 
+                        {patients.map((item, i) => (
+                          <div className={``} key={i}>
+                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                              <input
+                                checked={selectedIds.includes(item.id)}
+                                onChange={() => handleCheckboxChange(item.id)}
+                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                            </div>
+                            <div className="space-y-3 text-sm text-gray-800">
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Name:</span>{" "}
+                                <div className='flex items-center'>
+                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
+                                  />
+                                  <span className="ml-1"> david</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Department:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Urology</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Specialization:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Prostate</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Availability</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">Monday to Friday</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mobile:</span>{" "}
+                                <div className='flex items-center'>
+                                  <Phone className="w-5 h-5 text-gray-500" />
+                                  <span className="ml-1">1234567890</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Degree:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">MBBS, MS</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Experience (Years):</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">12</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Consultation Fee:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">500</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Email:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1"> john.doe@hospital.com</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Rating:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">4.5</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Clinic Location:</span>{" "}
+                                <div className='flex items-center'>
+                                  <span className="ml-1">City Hospital</span>
+                                </div>
+                              </div>
+                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <div className="flex space-x-2">
+                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button onClick={() => {
+                                    deleteSelectedPatients(item.id);
+                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </>
                   )}
                 </div>
