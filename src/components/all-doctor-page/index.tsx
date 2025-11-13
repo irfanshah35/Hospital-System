@@ -1,53 +1,72 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-interface Patient {
+interface Doctor {
   id: number;
-  firstName: string;
-  lastName: string;
-  gender: "Male" | "Female";
-  dateOfBirth: string;
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  gender: string;
+  dateofbirth: string;
   mobile: string;
   email: string;
-  assignedDoctor: string;
-  admissionDate: string;
-  bloodGroup: string;
-  // Add more if needed
+  department: string;
+  specialization: string;
+  availabledays: string;
+  experience: string;
+  education: string;
+  designation: string;
+  licensenumber: string;
+  employeeid: string;
+  roomcabinnumber: string;
+  starttime: string;
+  endtime: string;
+  profilephoto: string;
+  // Add more fields as needed
 }
 
 export default function AllDoctorPage() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [patients, setPatients] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingPatient, setEditingPatient] = useState<any | null>(null);
+  const [editingDoctor, setEditingDoctor] = useState<any | null>(null);
+
+
+  const router = useRouter();
+
+  const handleEdit = (doctor:any) => {
+    router.push(`/admin/doctors/${doctor.id}`);
+  };
+
 
   // Fetch data from API
-  const fetchPatients = async () => {
+  const fetchDoctors = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/patients");
+      const res = await fetch("/api/doctors");
       const data = await res.json();
-      setPatients(data);
-
+      setDoctors(data);
+      console.log(data, "api data");
     } catch (error) {
-      console.error("Failed to fetch patients:", error);
+      console.error("Failed to fetch doctors:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPatients();
+    fetchDoctors();
   }, []);
 
   // Click outside dropdown
@@ -64,40 +83,42 @@ export default function AllDoctorPage() {
 
   const handleRefresh = () => {
     setAnimate(true);
-    fetchPatients().then(() => {
+    fetchDoctors().then(() => {
       setTimeout(() => setAnimate(false), 300);
     });
   };
 
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      patients.map((item) => ({
-        Name: `${item.first_name} ${item.last_name}`,
-        Doctor: item.assigned_doctor || "-",
-        Gender: item.gender,
-        Date: item.created_at || "-",
-        Time: "-",
-        Mobile: item.mobile,
-        Email: item.email,
-        "Appointment Status": "Confirmed",
-        "Visit Type": "General",
+      doctors.map((item) => ({
+        Name: `Dr. ${item.firstname} ${item.lastname}`,
+        Department: item.department || "-",
+        Specialization: item.specialization || "-",
+        Availability: item.availabledays || "-",
+        Mobile: item.mobile || "-",
+        Degree: item.education || "-",
+        Experience: item.experience ? `${item.experience} years` : "-",
+        "Consultation Fee": "-", // Not in API
+        Email: item.email || "-",
+        Rating: "-", // Not in API
+        "Clinic Location": "-", // Not in API
       }))
     );
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Doctors");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "patients.xlsx");
+    saveAs(blob, "doctors.xlsx");
   };
 
   const removeData = () => {
     if (selectedIds.length === 0) {
-      alert("Please select at least one patient to delete.");
+      alert("Please select at least one doctor to delete.");
       return;
     }
-    if (window.confirm(`Delete ${selectedIds.length} patient(s)?`)) {
-      setPatients(prev => prev.filter(p => !selectedIds.includes(p.id)));
+    if (window.confirm(`Delete ${selectedIds.length} doctor(s)?`)) {
+      setDoctors(prev => prev.filter(d => !selectedIds.includes(d.id)));
       setSelectedIds([]);
     }
   };
@@ -109,93 +130,97 @@ export default function AllDoctorPage() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedIds(checked ? patients.map(p => p.id) : []);
+    setSelectedIds(checked ? doctors.map(d => d.id) : []);
   };
 
   useEffect(() => {
-    console.log(patients);
+    console.log(doctors);
     const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
     if (selectAllCheckbox) {
       selectAllCheckbox.indeterminate =
-        selectedIds.length > 0 && selectedIds.length < patients.length;
+        selectedIds.length > 0 && selectedIds.length < doctors.length;
     }
-  }, [selectedIds, patients]);
+  }, [selectedIds, doctors]);
 
   const checkboxItems = [
     { label: "Checkbox", checked: true },
     { label: "Name", checked: true },
-    { label: "Doctor", checked: true },
-    { label: "Gender", checked: true },
-    { label: "Date", checked: true },
-    { label: "Time", checked: true },
+    { label: "Department", checked: true },
+    { label: "Specialization", checked: true },
+    { label: "Availability", checked: true },
     { label: "Mobile", checked: true },
-    { label: "Injury", checked: false },
+    { label: "Degree", checked: true },
+    { label: "Experience (Years)", checked: true },
+    { label: "Consultation Fee", checked: false },
     { label: "Email", checked: true },
-    { label: "Appointment Status", checked: true },
-    { label: "Visit Type", checked: true },
-    { label: "Payment Status", checked: false },
-    { label: "Insurance Provider", checked: false },
-    { label: "Notes", checked: false },
+    { label: "Rating", checked: false },
+    { label: "Clinic Location", checked: false },
     { label: "Actions", checked: true },
   ];
 
-  const deleteSelectedPatients = async (id: any) => {
+  const deleteSelectedDoctors = async (id: any) => {
     try {
-      const response = await fetch(`/api/patients/${id}`, {
+      const response = await fetch(`/api/doctors/${id}`, {
         method: "DELETE",
       });
       const result = await response.json();
-      console.log(" Patient deleted:", result);
+      console.log("Doctor deleted:", result);
+      fetchDoctors(); // Refresh list after delete
     } catch (error) {
-      console.error(" Error deleting patient:", error);
+      console.error("Error deleting doctor:", error);
     }
   };
 
-
-  const handleEditClick = (patient: any) => {
-    setEditingPatient(patient);
+  const handleEditClick = (doctor: any) => {
+    setEditingDoctor(doctor);
     setIsEditModalOpen(true);
   };
 
-  const handleUpdatePatient = async (e: React.FormEvent) => {
+  const handleUpdateDoctor = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // 🧩 Map frontend snake_case -> backend camelCase
       const payload = {
-        firstName: editingPatient.first_name,
-        lastName: editingPatient.last_name,
-        gender: editingPatient.gender,
-        age: editingPatient.age,
-        mobile: editingPatient.mobile,
-        email: editingPatient.email,
-        address: editingPatient.address,
-        admissionDate: editingPatient.admission_date,
-        assignedDoctor: editingPatient.assigned_doctor,
-        // optional fields (only if exist)
-        dischargeDate: editingPatient.discharge_date || null,
-        status: editingPatient.status,
-        treatment: editingPatient.treatment,
+        firstname: editingDoctor.firstname,
+        middlename: editingDoctor.middlename,
+        lastname: editingDoctor.lastname,
+        gender: editingDoctor.gender,
+        dateofbirth: editingDoctor.dateofbirth,
+        mobile: editingDoctor.mobile,
+        email: editingDoctor.email,
+        department: editingDoctor.department,
+        specialization: editingDoctor.specialization,
+        experience: editingDoctor.experience,
+        education: editingDoctor.education,
+        availabledays: editingDoctor.availabledays,
+        designation: editingDoctor.designation,
+        employeeid: editingDoctor.employeeid,
       };
-      console.log("📌 Update Payload:", payload);
+      console.log("Update Doctor Payload:", payload);
 
-      const response = await fetch(`/api/patients/${editingPatient.id}`, {
+      const response = await fetch(`/api/doctors/${editingDoctor.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        alert("Patient updated successfully!");
+        alert("Doctor updated successfully!");
         setIsEditModalOpen(false);
-        fetchPatients(); // Refresh list after update
+        fetchDoctors(); // Refresh list after update
       } else {
         const err = await response.json();
-        alert(` Update failed: ${err.error || "Unknown error"}`);
+        alert(`Update failed: ${err.error || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error updating patient:", error);
+      console.error("Error updating doctor:", error);
       alert("An unexpected error occurred.");
     }
+  };
+
+  // Format time from "HH:MM:SS" to "HH:MM"
+  const formatTime = (timeString: string) => {
+    if (!timeString) return "N/A";
+    return timeString.substring(0, 5);
   };
 
 
@@ -205,13 +230,13 @@ export default function AllDoctorPage() {
       <div className='px-4 sm:px-6 py-[20px] mt-0'>
         <div className="flex items-center justify-between relative top-[-5px]">
           <div className="flex items-center space-x-2">
-            <h1 className="text-[20px] font-semibold">All Doctor</h1>
+            <h1 className="text-[20px] font-semibold">All Doctors</h1>
             <span className="text-[20px] font-bold">›</span>
             <Home size={18} />
             <span>›</span>
             <span className="text-sm">Doctors</span>
             <span>›</span>
-            <span className="text-sm">All Doctor</span>
+            <span className="text-sm">All Doctors</span>
           </div>
         </div>
 
@@ -280,8 +305,8 @@ export default function AllDoctorPage() {
                     )}
                   </div>
 
-                  <Link href="/add-patient">
-                    <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <Link href="/admin/doctors/add-doctor">
+                    <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add Doctor">
                       <CirclePlus className='w-[22px] h-[22px]' />
                     </button>
                   </Link>
@@ -300,9 +325,9 @@ export default function AllDoctorPage() {
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
                   {loading ? (
-                    <div className="p-8 text-center text-gray-500">Loading patients...</div>
-                  ) : patients.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No patients found</div>
+                    <div className="p-8 text-center text-gray-500">Loading doctors...</div>
+                  ) : doctors.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">No doctors found</div>
                   ) : (
                     <>
                       <table className="min-w-full divide-y divide-gray-200 hidden min-[601px]:table">
@@ -332,81 +357,69 @@ export default function AllDoctorPage() {
                         </thead>
 
                         <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                          {patients.map((item) => (
-                            <tr key={item.id} className="transition-colors duration-150 ">
+                          {doctors.map((doctor) => (
+                            <tr key={doctor.id} className="transition-colors duration-150">
                               <td className="px-4 py-3 pl-[37px]">
                                 <input
                                   type="checkbox"
-                                  checked={selectedIds.includes(item.id)}
-                                  onChange={() => handleCheckboxChange(item.id)}
+                                  checked={selectedIds.includes(doctor.id)}
+                                  onChange={() => handleCheckboxChange(doctor.id)}
                                   className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                 />
                               </td>
 
-
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  {/* <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" /> */}
+                                  <img className='h-[30px] w-[30px] rounded-full' src={doctor.profilephoto} alt="" />
                                   <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
                                     <div className="text-sm font-medium">
-                                      Dr. Chris Wilson
+                                      Dr. {doctor.firstname} {doctor.lastname}
                                     </div>
                                   </div>
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                              <td className="px-4 text-sm whitespace-nowrap">{doctor.department || "N/A"}</td>
 
-                              <td className="px-4 whitespace-nowrap">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
-                                  }`}>
-                                  male
-                                </span>
-                              </td>
-                              <td className="px-4 text-sm">
-                                <div className="flex items-center">
-                                  Monday to Thursday
-                                </div>
-                              </td>
-                              <td className="px-4 text-sm">1011121314</td>
-                              <td className="px-4 text-sm">
-                                <div className="flex items-center">
-                                  MBBS, MS
-                                </div>
+                              <td className="px-4 text-sm whitespace-nowrap">{doctor.specialization || "N/A"}</td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">
+                                {doctor.availabledays || "N/A"}
+                                {doctor.starttime && doctor.endtime && (
+                                  <div className="text-xs text-gray-500">
+                                    {formatTime(doctor.starttime)} - {formatTime(doctor.endtime)}
+                                  </div>
+                                )}
                               </td>
 
-                              <td className="px-4 text-sm">
-                                <div className="flex items-center">
-                                  14
-                                </div>
+                              <td className="px-4 text-sm whitespace-nowrap">{doctor.mobile || "N/A"}</td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">{doctor.education || "N/A"}</td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">
+                                {doctor.experience ? `${doctor.experience} years` : "N/A"}
                               </td>
 
-                              <td className="px-4 text-sm">
+                              <td className="px-4 text-sm whitespace-nowrap">-</td>
+
+                              <td className="px-4 text-sm whitespace-nowrap">
                                 <div className="flex items-center">
-                                  380
+                                  {doctor.email || "N/A"}
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm">
-                                <div className="flex items-center">
-                                  chris.wilson@entclinic.com
-                                </div>
-                              </td>
+                              <td className="px-4 text-sm whitespace-nowrap">-</td>
 
-                              <td className="px-4 whitespace-nowrap">
-                                4.2
-                              </td>
-
-                              <td className="px-4 text-sm">ENT Care Center</td>
+                              <td className="px-4 text-sm whitespace-nowrap">-</td>
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button onClick={()=> handleEdit(doctor)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => {
-                                    deleteSelectedPatients(item.id);
-                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  
+                                  <button onClick={() => deleteSelectedDoctors(doctor.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -416,94 +429,79 @@ export default function AllDoctorPage() {
                         </tbody>
                       </table>
 
+                      {/* Mobile View */}
                       <div className={`px-6 min-[601px]:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-
-                        {patients.map((item, i) => (
-                          <div className={``} key={i}>
-                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                        {doctors.map((doctor, i) => (
+                          <div key={i} className="border-b border-[#dadada] py-4">
+                            <div className="flex items-center h-13 justify-start py-2">
                               <input
-                                checked={selectedIds.includes(item.id)}
-                                onChange={() => handleCheckboxChange(item.id)}
+                                checked={selectedIds.includes(doctor.id)}
+                                onChange={() => handleCheckboxChange(doctor.id)}
                                 type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                             </div>
                             <div className="space-y-3 text-sm text-gray-800">
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Name:</span>{" "}
                                 <div className='flex items-center'>
-                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
-                                  />
-                                  <span className="ml-1"> david</span>
+                                  <div className="w-10 h-10 rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                  <span className="ml-2">Dr. {doctor.firstname} {doctor.lastname}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Department:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">Urology</span>
-                                </div>
+                                <span>{doctor.department || "N/A"}</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Specialization:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">Prostate</span>
-                                </div>
+                                <span>{doctor.specialization || "N/A"}</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Availability</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">Monday to Friday</span>
-                                </div>
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Availability:</span>{" "}
+                                <span>
+                                  {doctor.availabledays || "N/A"}
+                                  {doctor.starttime && doctor.endtime && (
+                                    <div className="text-xs text-gray-500">
+                                      {formatTime(doctor.starttime)} - {formatTime(doctor.endtime)}
+                                    </div>
+                                  )}
+                                </span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Mobile:</span>{" "}
                                 <div className='flex items-center'>
-                                  <Phone className="w-5 h-5 text-gray-500" />
-                                  <span className="ml-1">1234567890</span>
+                                  <span className="ml-1">{doctor.mobile || "N/A"}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Degree:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">MBBS, MS</span>
-                                </div>
+                                <span>{doctor.education || "N/A"}</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Experience (Years):</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">12</span>
-                                </div>
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Experience:</span>{" "}
+                                <span>{doctor.experience ? `${doctor.experience} years` : "N/A"}</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Consultation Fee:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">500</span>
-                                </div>
+                                <span>-</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Email:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1"> john.doe@hospital.com</span>
-                                </div>
+                                <span>{doctor.email || "N/A"}</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Rating:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">4.5</span>
-                                </div>
+                                <span>-</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold">Clinic Location:</span>{" "}
-                                <div className='flex items-center'>
-                                  <span className="ml-1">City Hospital</span>
-                                </div>
+                                <span>-</span>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <div className="flex space-x-2">
-                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button onClick={() => handleEditClick(doctor)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => {
-                                    deleteSelectedPatients(item.id);
-                                  }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button onClick={() => deleteSelectedDoctors(doctor.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -521,22 +519,22 @@ export default function AllDoctorPage() {
         </div>
 
         <div>
-          <Paginator totalItems={patients.length} />
+          <Paginator totalItems={doctors.length} />
         </div>
       </div>
 
+      {/* Edit Modal for Doctors */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
           <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
+            {/* Header */}
             <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
               <div className="flex items-center space-x-3">
-                <img
-                  src="/default-avatar.png"
-                  alt="Patient"
-                  className="w-10 h-10 rounded-full border"
-                />
+                <div className="w-10 h-10 rounded-full bg-gray-200 border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400">
+                  <img className='w-10 h-10 rounded-full' src={editingDoctor.profilePhoto} alt="" />
+                </div>
                 <h2 className="text-lg font-semibold">
-                  Edit {editingPatient?.first_name} {editingPatient?.last_name}
+                  {editingDoctor?.firstname} {editingDoctor?.lastname}
                 </h2>
               </div>
               <button
@@ -547,254 +545,75 @@ export default function AllDoctorPage() {
               </button>
             </div>
 
-            <form onSubmit={handleUpdatePatient} className="p-6 space-y-6 h-[450px] overflow-y-auto scrollbar-hide">
+            {/* Form */}
+            <form
+              onSubmit={handleUpdateDoctor}
+              className="p-6 space-y-6 max-h-[500px] overflow-y-auto scrollbar-hide"
+            >
               <div className="grid grid-cols-2 gap-4">
-                {/* Name */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="first_name"
-                    name='first_name'
-                    value={`${editingPatient?.first_name || ""} ${editingPatient?.last_name || ""}`}
-                    onChange={(e) => {
-                      const [first, ...last] = e.target.value.split(" ");
-                      setEditingPatient({ ...editingPatient, first_name: first, last_name: last.join(" ") });
-                    }}
-                    placeholder=" "
-                    required
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="name"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.first_name || editingPatient?.last_name ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Name*
-                  </label>
-                </div>
+                {[
+                  { name: "firstname", type: "text", label: "First Name*" },
+                  { name: "lastname", type: "text", label: "Last Name*" },
+                  { name: "specialization", type: "text", label: "Specialization*" },
+                  { name: "mobile", type: "text", label: "Mobile*" },
+                  { name: "email", type: "email", label: "Email*" },
+                  { name: "joiningdate", type: "date", label: "Joining Date*" },
+                  { name: "experience", type: "number", label: "Experience (Years)*" },
+                  { name: "consultationFee", type: "number", label: "Consultation Fee*" },
+                  { name: "availability", type: "text", label: "Availability*" },
+                  { name: "rating", type: "number", label: "Rating" },
+                  { name: "clinicLocation", type: "text", label: "Clinic Location*" },
+                ].map((field) => (
+                  <div className="relative mb-6" key={field.name}>
+                    <input
+                      type={field.type}
+                      value={editingDoctor?.[field.name as keyof typeof editingDoctor] || ""}
+                      onChange={(e) =>
+                        setEditingDoctor({
+                          ...editingDoctor,
+                          [field.name]: e.target.value,
+                        })
+                      }
+                      placeholder={field.label}
+                      className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
+                    />
+                    <label
+                      className={`absolute left-4 transition-all duration-200 bg-white px-1 
+      ${editingDoctor?.[field.name as keyof typeof editingDoctor] || false ? "-top-2 text-xs text-blue-600" : "top-4 text-base text-gray-600"} 
+      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}
+                    >
+                      {field.label}
+                    </label>
+                  </div>
 
-                {/* Mobile */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="mobile"
-                    value={editingPatient?.mobile || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, mobile: e.target.value })}
-                    placeholder=" "
-                    required
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="mobile"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.mobile ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Mobile*
-                  </label>
-                </div>
-              </div>
+                ))}
 
-              {/* Gender */}
-              <div className="flex items-center gap-6">
-                <span className="text-sm font-medium">Gender:</span>
-                <label className="flex items-center gap-1 text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    checked={editingPatient?.gender === "Male"}
-                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Male" })}
-                  />
-                  Male
-                </label>
-                <label className="flex items-center gap-1 text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    checked={editingPatient?.gender === "Female"}
-                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Female" })}
-                  />
-                  Female
-                </label>
-              </div>
-
-              {/* Treatment */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="treatment"
-                  value={editingPatient?.treatment || ""}
-                  onChange={(e) => setEditingPatient({ ...editingPatient, treatment: e.target.value })}
-                  placeholder=" "
-                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 h-[80px] focus:ring-[#005CBB] outline-none transition-all`}
-                />
-                <label
-                  htmlFor="treatment"
-                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.treatment ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                >
-                  Treatment
-                </label>
-              </div>
-
-
-              <div className="grid grid-cols-2 gap-4">
-                {/* Age */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="age"
-                    value={editingPatient?.age || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, age: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="age"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.age ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Age*
-                  </label>
-                </div>
-
-                {/* Email */}
-                <div className="relative">
-                  <input
-                    type="email"
-                    id="email"
-                    value={editingPatient?.email || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, email: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="email"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.email ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Email*
-                  </label>
-                </div>
-
-                {/* Admission Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="admission_date"
-                    value={editingPatient?.admission_date || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, admission_date: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="admission_date"
-                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.admission_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Admission Date*
-                  </label>
-                </div>
-
-                {/* Discharge Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="discharge_date"
-                    value={editingPatient?.discharge_date || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, discharge_date: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="discharge_date"
-                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.discharge_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Discharge Date*
-                  </label>
-                </div>
-
-                {/* Doctor Assigned */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="doctor_assigned"
-                    value={editingPatient?.assigned_doctor || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, assigned_doctor: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="doctor_assigned"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.assigned_doctor ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
-                  >
-                    Doctor Assigned*
-                  </label>
-                </div>
-
-                {/* Status */}
-                <div className="relative">
+                {/* Department select */}
+                <div className="relative mb-6">
                   <select
-                    id="status"
-                    value={editingPatient?.status || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, status: e.target.value })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+                    value={editingDoctor?.department || ""}
+                    onChange={(e) =>
+                      setEditingDoctor({ ...editingDoctor, department: e.target.value })
+                    }
+                    className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all bg-white"
                   >
-                    <option value="" disabled hidden></option>
-                    <option value="Admitted">Admitted</option>
-                    <option value="Under Treatment">Under Treatment</option>
-                    <option value="Recovered">Recovered</option>
-                    <option value="Discharged">Discharged</option>
+                    <option value="" disabled>
+                      Select Department
+                    </option>
+                    <option value="Urology">Urology</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Neurology">Neurology</option>
                   </select>
                   <label
-                    htmlFor="status"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.status ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
+                    className={`absolute left-4 transition-all duration-200 bg-white px-1 ${editingDoctor?.department ? "-top-2 text-xs text-blue-600" : "top-4 text-base text-gray-600"
+                      }`}
                   >
-                    Status*
+                    Department*
                   </label>
                 </div>
               </div>
 
-              <div className="relative">
-                <textarea
-                  id="address"
-                  rows={3}
-                  value={editingPatient?.address || ""}
-                  onChange={(e) => setEditingPatient({ ...editingPatient, address: e.target.value })}
-                  placeholder=" "
-                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                ></textarea>
-                <label
-                  htmlFor="address"
-                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.address ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                >
-                  Address
-                </label>
-              </div>
-
-              {/* Submit */}
+              {/* Buttons */}
               <div className="flex gap-2 pt-3">
                 <button
                   type="submit"
@@ -803,17 +622,19 @@ export default function AllDoctorPage() {
                   Save
                 </button>
                 <button
-                  onClick={() => setIsEditModalOpen(false)}
                   type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium  transition"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition"
                 >
-                  cancel
+                  Cancel
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+
 
 
       <style jsx>{`

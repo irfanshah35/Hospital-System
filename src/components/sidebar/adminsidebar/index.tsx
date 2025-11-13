@@ -113,14 +113,6 @@ export default function AdminSideBar({
               path: "/admin/doctors/all-doctors"
             },
             {
-              title: "Add Doctor",
-              path: "/admin/doctors/add-doctor"
-            },
-            {
-              title: "Edit Doctor",
-              path: "/admin/doctors/edit-doctor"
-            },
-            {
               title: "Assign Department",
               path: "/admin/doctors/assign-department",
             },
@@ -128,10 +120,7 @@ export default function AdminSideBar({
               title: "Shift Management",
               path: "/admin/doctors/shift-management",
             },
-            {
-              title: "Doctor Profile",
-              path: "/admin/doctors/doctor-profile"
-            },
+            
           ],
         },
         {

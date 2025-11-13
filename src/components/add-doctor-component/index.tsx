@@ -1,20 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import {
-  Home,
-  User,
-  MapPin,
-  Key,
-  Briefcase,
-  Building2,
-  Clock,
-  Phone,
-  FileText,
-  EyeOff,
-  ChevronDown,
-  Eye,
-  Users,
-} from "lucide-react";
+import { Home, User, MapPin, Key, Briefcase, Building2, Clock, Phone, FileText, EyeOff, ChevronDown, Eye, } from "lucide-react";
 
 interface FormErrors {
   [key: string]: string;
@@ -25,42 +11,42 @@ interface FieldState {
 }
 
 interface FormData {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  firstname: string;
+  middlename: string;
+  lastname: string;
   gender: string;
-  dateOfBirth: string;
-  bloodGroup: string;
+  dateofbirth: string;
+  bloodgroup: string;
   email: string;
   mobile: string;
-  alternativeContact: string;
+  alternativecontact: string;
   address: string;
   city: string;
   state: string;
-  postalCode: string;
+  postalcode: string;
   password: string;
-  reEnterPassword: string;
+  reenterpassword: string;
   designation: string;
   department: string;
   specialization: string;
   experience: string;
-  licenseNumber: string;
-  licenseExpiryDate: string;
+  licensenumber: string;
+  licenseexpirydate: string;
   education: string;
   certifications: string;
-  joiningDate: string;
-  employeeId: string;
-  roomCabinNumber: string;
-  availableDays: string;
-  startTime: string;
-  endTime: string;
-  emergencyContactName: string;
-  emergencyContactNumber: string;
+  joiningdate: string;
+  employeeid: string;
+  roomcabinnumber: string;
+  availabledays: string;
+  starttime: string;
+  endtime: string;
+  emergencycontactname: string;
+  emergencycontactnumber: string;
   relationship: string;
-  profilePhoto: File | null;
-  licenseDocument: File | null;
-  educationCertificates: File | null;
-  additionalDocuments: File | null;
+  profilephoto: File | null;
+  licensedocument: File | null;
+  educationcertificates: File | null;
+  additionaldocuments: File | null;
 }
 
 export default function AddDoctorComponent() {
@@ -72,42 +58,42 @@ export default function AddDoctorComponent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
     gender: "",
-    dateOfBirth: "",
-    bloodGroup: "",
+    dateofbirth: "",
+    bloodgroup: "",
     email: "",
     mobile: "",
-    alternativeContact: "",
+    alternativecontact: "",
     address: "",
     city: "",
     state: "",
-    postalCode: "",
+    postalcode: "",
     password: "",
-    reEnterPassword: "",
+    reenterpassword: "",
     designation: "",
     department: "",
     specialization: "",
     experience: "",
-    licenseNumber: "",
-    licenseExpiryDate: "",
+    licensenumber: "",
+    licenseexpirydate: "",
     education: "",
     certifications: "",
-    joiningDate: "",
-    employeeId: "",
-    roomCabinNumber: "",
-    availableDays: "",
-    startTime: "",
-    endTime: "",
-    emergencyContactName: "",
-    emergencyContactNumber: "",
+    joiningdate: "",
+    employeeid: "",
+    roomcabinnumber: "",
+    availabledays: "",
+    starttime: "",
+    endtime: "",
+    emergencycontactname: "",
+    emergencycontactnumber: "",
     relationship: "",
-    profilePhoto: null,
-    licenseDocument: null,
-    educationCertificates: null,
-    additionalDocuments: null,
+    profilephoto: null,
+    licensedocument: null,
+    educationcertificates: null,
+    additionaldocuments: null,
   });
 
   const handleFieldFocus = (field: string) => {
@@ -117,7 +103,7 @@ export default function AddDoctorComponent() {
   const handleFieldBlur = (field: string) => {
     setFieldStates((prev) => {
       const value = formData[field as keyof FormData];
-      if (value instanceof File) {
+      if ((value as any) instanceof File) {
         return { ...prev, [field]: true }; // Files are always considered "filled"
       }
       return { ...prev, [field]: String(value).length > 0 };
@@ -163,6 +149,11 @@ export default function AddDoctorComponent() {
     }
   };
 
+  // File check karne ka helper function
+  const isFile = (value: any): value is File => {
+    return value instanceof File;
+  };
+
   const FileUpload = ({ label, name, accept }: any) => (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -180,19 +171,19 @@ export default function AddDoctorComponent() {
         <button
           type="button"
           className="px-4 py-2 bg-[#faf9fd] text-[#005cbb] hover:bg-[#E6ECF8] font-semibold rounded-full text-sm cursor-pointer shadow-md transition mb-2"
-
         >
           Choose file
         </button>
         <p className="text-sm text-gray-500">or drag and drop file here</p>
-        {formData[name as keyof FormData] && (
+        {formData[name as keyof FormData] && isFile(formData[name as keyof FormData]) && (
           <p className="text-sm text-green-600 mt-2">
-            {(formData[name as keyof FormData] as File)?.name}
+            {(formData[name as keyof FormData] as File).name}
           </p>
         )}
       </div>
     </div>
   );
+
   const SectionHeader = ({ icon: Icon, title }: any) => (
     <div className="flex items-center mb-4">
       <Icon className="w-5 h-5 text-blue-500 mr-2" />
@@ -204,20 +195,11 @@ export default function AddDoctorComponent() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const submitFormData = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value instanceof File) {
-        if (value) submitFormData.append(key, value);
-      } else {
-        submitFormData.append(key, String(value));
-      }
-    });
-
     const newErrors: FormErrors = {};
     const requiredFields: Record<string, string> = {
-      firstName: "First name is required",
+      firstname: "First name is required",
       gender: "Gender is required",
-      dateOfBirth: "Date of birth is required",
+      dateofbirth: "Date of birth is required",
       email: "Email is required",
       mobile: "Mobile number is required",
       password: "Password must be at least 6 characters",
@@ -225,14 +207,14 @@ export default function AddDoctorComponent() {
       department: "Department is required",
       specialization: "Specialization is required",
       experience: "Experience is required",
-      licenseNumber: "License number is required",
-      licenseExpiryDate: "License expiry date is required",
+      licensenumber: "License number is required",
+      licenseexpirydate: "License expiry date is required",
       education: "Education is required",
-      joiningDate: "Joining date is required",
-      employeeId: "Employee ID is required",
-      availableDays: "Available days is required",
-      startTime: "Start time is required",
-      endTime: "End time is required",
+      joiningdate: "Joining date is required",
+      employeeid: "Employee ID is required",
+      availabledays: "Available days is required",
+      starttime: "Start time is required",
+      endtime: "End time is required",
     };
 
     Object.entries(requiredFields).forEach(([field, message]) => {
@@ -241,6 +223,7 @@ export default function AddDoctorComponent() {
         newErrors[field] = message;
       }
     });
+
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
@@ -248,15 +231,16 @@ export default function AddDoctorComponent() {
     if (formData.mobile) {
       const digitsOnly = formData.mobile.replace(/\D/g, "");
       if (digitsOnly.length < 8 || digitsOnly.length > 20) {
-        newErrors.mobile = "Mobile number must contain 8-20 digits";
+        newErrors.mobile = "Mobile number must contain 8–20 digits";
       }
     }
+
     if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (formData.password !== formData.reEnterPassword) {
-      newErrors.reEnterPassword = "Passwords do not match";
+    if (formData.password !== formData.reenterpassword) {
+      newErrors.reenterpassword = "Passwords do not match";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -267,60 +251,88 @@ export default function AddDoctorComponent() {
       return;
     }
 
-    setTimeout(() => {
-      console.log("🎯 COMPLETE DOCTOR DATA:");
+    try {
+      console.log("📤 Submitting doctor data to API...");
 
-      const logData: any = {};
+      // ✅ Use FormData for both text + file fields
+      const formDataToSend = new FormData();
+
+      // Append all text fields
       Object.entries(formData).forEach(([key, value]) => {
-        if (value instanceof File) {
-          logData[key] = `FILE: ${value.name} (${value.size} bytes)`;
-        } else {
-          logData[key] = value;
+        if (value !== null && value !== undefined && typeof value !== "object") {
+          formDataToSend.append(key, value);
         }
       });
-      console.table(logData);
+
+      // ✅ Append file fields (check before adding)
+      if (isFile(formData.profilephoto)) {
+        formDataToSend.append("profilephoto", formData.profilephoto);
+      }
+      if (isFile(formData.licensedocument)) {
+        formDataToSend.append("licensedocument", formData.licensedocument);
+      }
+      if (isFile(formData.educationcertificates)) {
+        formDataToSend.append("educationcertificates", formData.educationcertificates);
+      }
+      if (isFile(formData.additionaldocuments)) {
+        formDataToSend.append("additionaldocuments", formData.additionaldocuments);
+      }
+
+      // ✅ Send as multipart/form-data
+      const response = await fetch("/api/doctors", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("✅ Doctor registered successfully:", result);
 
       setMessage({ type: "success", text: "✅ Doctor registered successfully!" });
       setIsSubmitting(false);
 
-      // Reset form
+      // ✅ Reset form
       setFormData({
-        firstName: "",
-        middleName: "",
-        lastName: "",
+        firstname: "",
+        middlename: "",
+        lastname: "",
         gender: "",
-        dateOfBirth: "",
-        bloodGroup: "",
+        dateofbirth: "",
+        bloodgroup: "",
         email: "",
         mobile: "",
-        alternativeContact: "",
+        alternativecontact: "",
         address: "",
         city: "",
         state: "",
-        postalCode: "",
+        postalcode: "",
         password: "",
-        reEnterPassword: "",
+        reenterpassword: "",
         designation: "",
         department: "",
         specialization: "",
         experience: "",
-        licenseNumber: "",
-        licenseExpiryDate: "",
+        licensenumber: "",
+        licenseexpirydate: "",
         education: "",
         certifications: "",
-        joiningDate: "",
-        employeeId: "",
-        roomCabinNumber: "",
-        availableDays: "",
-        startTime: "",
-        endTime: "",
-        emergencyContactName: "",
-        emergencyContactNumber: "",
+        joiningdate: "",
+        employeeid: "",
+        roomcabinnumber: "",
+        availabledays: "",
+        starttime: "",
+        endtime: "",
+        emergencycontactname: "",
+        emergencycontactnumber: "",
         relationship: "",
-        profilePhoto: null,
-        licenseDocument: null,
-        educationCertificates: null,
-        additionalDocuments: null,
+        profilephoto: null,
+        licensedocument: null,
+        educationcertificates: null,
+        additionaldocuments: null,
       });
 
       setFieldStates({});
@@ -328,9 +340,17 @@ export default function AddDoctorComponent() {
       setShowConfirmPassword(false);
       setErrors({});
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 500);
-  };
 
+    } catch (error: any) {
+      console.error("❌ Error submitting form:", error);
+      setMessage({
+        type: "error",
+        text: `❌ Failed to register doctor: ${error.message}`,
+      });
+      setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="px-4 sm:px-6 py-5 bg-gray-50 min-h-screen">
@@ -367,24 +387,24 @@ export default function AddDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <FloatingInput
                   label="First Name"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="firstname"
+                  value={formData.firstname}
                   onChange={handleChange}
                   icon={User}
                   required
-                  error={errors.firstName}
+                  error={errors.firstname}
                 />
                 <FloatingInput
                   label="Middle Name"
-                  name="middleName"
-                  value={formData.middleName}
+                  name="middlename"
+                  value={formData.middlename}
                   onChange={handleChange}
                   icon={User}
                 />
                 <FloatingInput
                   label="Last Name"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="lastname"
+                  value={formData.lastname}
                   onChange={handleChange}
                   icon={User}
                 />
@@ -405,20 +425,20 @@ export default function AddDoctorComponent() {
                 </FloatingSelect>
                 <FloatingInput
                   label="Date of Birth"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
+                  name="dateofbirth"
+                  value={formData.dateofbirth}
                   onChange={handleChange}
                   type="date"
                   required
-                  error={errors.dateOfBirth}
+                  error={errors.dateofbirth}
                 />
                 <FloatingSelect
                   label="Blood Group"
-                  name="bloodGroup"
-                  value={formData.bloodGroup}
+                  name="bloodgroup"
+                  value={formData.bloodgroup}
                   onChange={handleChange}
                   required
-                  error={errors.bloodGroup}
+                  error={errors.bloodgroup}
                 >
                   <option value=""></option>
                   <option value="A+">A+</option>
@@ -457,9 +477,9 @@ export default function AddDoctorComponent() {
                 />
                 <FloatingInput
                   label="Alternative Contact"
-                  name="alternativeContact"
+                  name="alternativecontact"
                   type="tel"
-                  value={formData.alternativeContact}
+                  value={formData.alternativecontact}
                   onChange={handleChange}
                 />
               </div>
@@ -487,8 +507,8 @@ export default function AddDoctorComponent() {
                 />
                 <FloatingInput
                   label="Postal Code"
-                  name="postalCode"
-                  value={formData.postalCode}
+                  name="postalcode"
+                  value={formData.postalcode}
                   onChange={handleChange}
                 />
               </div>
@@ -511,12 +531,12 @@ export default function AddDoctorComponent() {
                 />
                 <FloatingInput
                   label="Re-Enter Password"
-                  name="reEnterPassword"
+                  name="reenterpassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  value={formData.reEnterPassword}
+                  value={formData.reenterpassword}
                   onChange={handleChange}
                   required
-                  error={errors.reEnterPassword}
+                  error={errors.reenterpassword}
                   showPassword={showConfirmPassword}
                   setShowPassword={setShowConfirmPassword}
                 />
@@ -570,20 +590,20 @@ export default function AddDoctorComponent() {
                 />
                 <FloatingInput
                   label="License Number"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
+                  name="licensenumber"
+                  value={formData.licensenumber}
                   onChange={handleChange}
                   required
-                  error={errors.licenseNumber}
+                  error={errors.licensenumber}
                 />
                 <FloatingInput
                   label="License Expiry Date"
-                  name="licenseExpiryDate"
+                  name="licenseexpirydate"
                   type="date"
-                  value={formData.licenseExpiryDate}
+                  value={formData.licenseexpirydate}
                   onChange={handleChange}
                   required
-                  error={errors.licenseExpiryDate}
+                  error={errors.licenseexpirydate}
                 />
               </div>
               <div className="mb-6">
@@ -612,25 +632,25 @@ export default function AddDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingInput
                   label="Joining Date"
-                  name="joiningDate"
+                  name="joiningdate"
                   type="date"
-                  value={formData.joiningDate}
+                  value={formData.joiningdate}
                   onChange={handleChange}
                   required
-                  error={errors.joiningDate}
+                  error={errors.joiningdate}
                 />
                 <FloatingInput
                   label="Employee ID"
-                  name="employeeId"
-                  value={formData.employeeId}
+                  name="employeeid"
+                  value={formData.employeeid}
                   onChange={handleChange}
                   required
-                  error={errors.employeeId}
+                  error={errors.employeeid}
                 />
                 <FloatingInput
                   label="Room/Cabin Number"
-                  name="roomCabinNumber"
-                  value={formData.roomCabinNumber}
+                  name="roomcabinnumber"
+                  value={formData.roomcabinnumber}
                   onChange={handleChange}
                 />
               </div>
@@ -642,11 +662,11 @@ export default function AddDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingSelect
                   label="Available Days"
-                  name="availableDays"
-                  value={formData.availableDays}
+                  name="availabledays"
+                  value={formData.availabledays}
                   onChange={handleChange}
                   required
-                  error={errors.availableDays}
+                  error={errors.availabledays}
                 >
                   <option value=""></option>
                   <option value="Monday-Friday">Monday-Friday</option>
@@ -656,21 +676,21 @@ export default function AddDoctorComponent() {
                 </FloatingSelect>
                 <FloatingInput
                   label="Start Time"
-                  name="startTime"
+                  name="starttime"
                   type="time"
-                  value={formData.startTime}
+                  value={formData.starttime}
                   onChange={handleChange}
                   required
-                  error={errors.startTime}
+                  error={errors.starttime}
                 />
                 <FloatingInput
                   label="End Time"
-                  name="endTime"
+                  name="endtime"
                   type="time"
-                  value={formData.endTime}
+                  value={formData.endtime}
                   onChange={handleChange}
                   required
-                  error={errors.endTime}
+                  error={errors.endtime}
                 />
               </div>
             </div>
@@ -681,15 +701,15 @@ export default function AddDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingInput
                   label="Emergency Contact Name"
-                  name="emergencyContactName"
-                  value={formData.emergencyContactName}
+                  name="emergencycontactname"
+                  value={formData.emergencycontactname}
                   onChange={handleChange}
                 />
                 <FloatingInput
                   label="Emergency Contact Number"
-                  name="emergencyContactNumber"
+                  name="emergencycontactnumber"
                   type="tel"
-                  value={formData.emergencyContactNumber}
+                  value={formData.emergencycontactnumber}
                   onChange={handleChange}
                 />
                 <FloatingInput
@@ -705,10 +725,10 @@ export default function AddDoctorComponent() {
             <div>
               <SectionHeader icon={FileText} title="Documents" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FileUpload label="Profile Photo" name="profilePhoto" accept="image/*" />
-                <FileUpload label="License Document" name="licenseDocument" accept=".pdf,.jpg,.jpeg,.png" />
-                <FileUpload label="Education Certificates" name="educationCertificates" accept=".pdf,.jpg,.jpeg,.png" />
-                <FileUpload label="Additional Documents" name="additionalDocuments" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Profile Photo" name="profilephoto" accept="image/*" />
+                <FileUpload label="License Document" name="licensedocument" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Education Certificates" name="educationcertificates" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Additional Documents" name="additionaldocuments" accept=".pdf,.jpg,.jpeg,.png" />
               </div>
             </div>
 
