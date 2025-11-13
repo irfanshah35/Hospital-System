@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Home,
   User,
@@ -15,6 +15,7 @@ import {
   Eye,
   Users,
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 interface FormErrors {
   [key: string]: string;
@@ -25,42 +26,42 @@ interface FieldState {
 }
 
 interface FormData {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  firstname: string;
+  middlename: string;
+  lastname: string;
   gender: string;
-  dateOfBirth: string;
-  bloodGroup: string;
+  dateofbirth: string;
+  bloodgroup: string;
   email: string;
   mobile: string;
-  alternativeContact: string;
+  alternativecontact: string;
   address: string;
   city: string;
   state: string;
-  postalCode: string;
+  postalcode: string;
   password: string;
-  reEnterPassword: string;
+  reenterpassword: string;
   designation: string;
   department: string;
   specialization: string;
   experience: string;
-  licenseNumber: string;
-  licenseExpiryDate: string;
+  licensenumber: string;
+  licenseexpirydate: string;
   education: string;
   certifications: string;
-  joiningDate: string;
-  employeeId: string;
-  roomCabinNumber: string;
-  availableDays: string;
-  startTime: string;
-  endTime: string;
-  emergencyContactName: string;
-  emergencyContactNumber: string;
+  joiningdate: string;
+  employeeid: string;
+  roomcabinnumber: string;
+  availabledays: string;
+  starttime: string;
+  endtime: string;
+  emergencycontactname: string;
+  emergencycontactnumber: string;
   relationship: string;
-  profilePhoto: File | null;
-  licenseDocument: File | null;
-  educationCertificates: File | null;
-  additionalDocuments: File | null;
+  profilephoto: File | null;
+  licensedocument: File | null;
+  educationcertificates: File | null;
+  additionaldocuments: File | null;
 }
 
 export default function EditDoctorComponent() {
@@ -70,45 +71,129 @@ export default function EditDoctorComponent() {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const params = useParams();
+  const router = useRouter();
+  const doctorId = params.id;
 
   const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
     gender: "",
-    dateOfBirth: "",
-    bloodGroup: "",
+    dateofbirth: "",
+    bloodgroup: "",
     email: "",
     mobile: "",
-    alternativeContact: "",
+    alternativecontact: "",
     address: "",
     city: "",
     state: "",
-    postalCode: "",
+    postalcode: "",
     password: "",
-    reEnterPassword: "",
+    reenterpassword: "",
     designation: "",
     department: "",
     specialization: "",
     experience: "",
-    licenseNumber: "",
-    licenseExpiryDate: "",
+    licensenumber: "",
+    licenseexpirydate: "",
     education: "",
     certifications: "",
-    joiningDate: "",
-    employeeId: "",
-    roomCabinNumber: "",
-    availableDays: "",
-    startTime: "",
-    endTime: "",
-    emergencyContactName: "",
-    emergencyContactNumber: "",
+    joiningdate: "",
+    employeeid: "",
+    roomcabinnumber: "",
+    availabledays: "",
+    starttime: "",
+    endtime: "",
+    emergencycontactname: "",
+    emergencycontactnumber: "",
     relationship: "",
-    profilePhoto: null,
-    licenseDocument: null,
-    educationCertificates: null,
-    additionalDocuments: null,
+    profilephoto: null,
+    licensedocument: null,
+    educationcertificates: null,
+    additionaldocuments: null,
   });
+
+  // doctorIdAPI se data fetch karo
+  const fetchDoctorData = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`/api/doctors/${doctorId}`);
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch doctor data');
+      }
+
+      const apiData = await res.json();
+      console.log("API Data:", apiData);
+
+      // doctorIdDirect API data ko set karo - camel case nahi
+      setFormData({
+        firstname: apiData.firstname || "",
+        middlename: apiData.middlename || "",
+        lastname: apiData.lastname || "",
+        gender: apiData.gender || "",
+        dateofbirth: apiData.dateofbirth || "",
+        bloodgroup: apiData.bloodgroup || "",
+        email: apiData.email || "",
+        mobile: apiData.mobile || "",
+        alternativecontact: apiData.alternativecontact || "",
+        address: apiData.address || "",
+        city: apiData.city || "",
+        state: apiData.state || "",
+        postalcode: apiData.postalcode || "",
+        password: apiData.password || "",
+        reenterpassword: apiData.reenterpassword || "",
+        designation: apiData.designation || "",
+        department: apiData.department || "",
+        specialization: apiData.specialization || "",
+        experience: apiData.experience || "",
+        licensenumber: apiData.licensenumber || "",
+        licenseexpirydate: apiData.licenseexpirydate || "",
+        education: apiData.education || "",
+        certifications: apiData.certifications || "",
+        joiningdate: apiData.joiningdate || "",
+        employeeid: apiData.employeeid || "",
+        roomcabinnumber: apiData.roomcabinnumber || "",
+        availabledays: apiData.availabledays || "",
+        starttime: apiData.starttime || "",
+        endtime: apiData.endtime || "",
+        emergencycontactname: apiData.emergencycontactname || "",
+        emergencycontactnumber: apiData.emergencycontactnumber || "",
+        relationship: apiData.relationship || "",
+        profilephoto: null,
+        licensedocument: null,
+        educationcertificates: null,
+        additionaldocuments: null,
+      });
+
+      // doctorIdField states ko update karo
+      const newFieldStates: FieldState = {};
+      Object.keys(apiData).forEach(key => {
+        if (apiData[key] && typeof apiData[key] === 'string' && apiData[key].length > 0) {
+          newFieldStates[key] = true;
+        }
+      });
+      setFieldStates(newFieldStates);
+
+    } catch (error) {
+      console.error("Failed to fetch doctor data:", error);
+      setMessage({
+        type: "error",
+        text: "Failed to load doctor data. Please try again."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (doctorId) {
+      fetchDoctorData();
+    }
+  }, [doctorId]);
 
   const handleFieldFocus = (field: string) => {
     setFieldStates((prev) => ({ ...prev, [field]: true }));
@@ -156,7 +241,7 @@ export default function EditDoctorComponent() {
 
       setFieldStates((prev) => ({
         ...prev,
-        [name]: true, 
+        [name]: true,
       }));
     }
   };
@@ -178,14 +263,13 @@ export default function EditDoctorComponent() {
         <button
           type="button"
           className="px-4 py-2 bg-[#faf9fd] text-[#005cbb] hover:bg-[#E6ECF8] font-semibold rounded-full text-sm cursor-pointer shadow-md transition mb-2"
-          
         >
           Choose file
         </button>
         <p className="text-sm text-gray-500">or drag and drop file here</p>
         {formData[name as keyof FormData] && (
           <p className="text-sm text-green-600 mt-2">
-           {(formData[name as keyof FormData] as File)?.name}
+            {(formData[name as keyof FormData] as File)?.name}
           </p>
         )}
       </div>
@@ -199,24 +283,18 @@ export default function EditDoctorComponent() {
     </div>
   );
 
+  // doctorIdUPDATE handleSubmit function for editing
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const submitFormData = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value instanceof File) {
-        if (value) submitFormData.append(key, value);
-      } else {
-        submitFormData.append(key, String(value));
-      }
-    });
-
     const newErrors: FormErrors = {};
+
+    // doctorIdREQUIRED FIELDS - API field names use karo
     const requiredFields: Record<string, string> = {
-      firstName: "First name is required",
+      firstname: "First name is required",
       gender: "Gender is required",
-      dateOfBirth: "Date of birth is required",
+      dateofbirth: "Date of birth is required",
       email: "Email is required",
       mobile: "Mobile number is required",
       password: "Password must be at least 6 characters",
@@ -224,22 +302,24 @@ export default function EditDoctorComponent() {
       department: "Department is required",
       specialization: "Specialization is required",
       experience: "Experience is required",
-      licenseNumber: "License number is required",
-      licenseExpiryDate: "License expiry date is required",
+      licensenumber: "License number is required",
+      licenseexpirydate: "License expiry date is required",
       education: "Education is required",
-      joiningDate: "Joining date is required",
-      employeeId: "Employee ID is required",
-      availableDays: "Available days is required",
-      startTime: "Start time is required",
-      endTime: "End time is required",
+      joiningdate: "Joining date is required",
+      employeeid: "Employee ID is required",
+      availabledays: "Available days is required",
+      starttime: "Start time is required",
+      endtime: "End time is required",
     };
 
+    // doctorIdValidation - same field names use karo
     Object.entries(requiredFields).forEach(([field, message]) => {
       const value = formData[field as keyof typeof formData];
       if (!value || String(value).trim().length === 0) {
         newErrors[field] = message;
       }
     });
+
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
@@ -250,12 +330,13 @@ export default function EditDoctorComponent() {
         newErrors.mobile = "Mobile number must contain 8-20 digits";
       }
     }
+
     if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (formData.password !== formData.reEnterPassword) {
-      newErrors.reEnterPassword = "Passwords do not match";
+    if (formData.password !== formData.reenterpassword) {
+      newErrors.reenterpassword = "Passwords do not match";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -266,69 +347,74 @@ export default function EditDoctorComponent() {
       return;
     }
 
-    setTimeout(() => {
-      console.log("COMPLETE DOCTOR DATA:");
+    try {
+      // doctorIdJSON data create karo for update (FormData ki jagah)
+      const updateData: any = {};
 
-      const logData: any = {};
       Object.entries(formData).forEach(([key, value]) => {
         if (value instanceof File) {
-          logData[key] = `FILE: ${value.name} (${value.size} bytes)`;
+          // Files ko handle karna hai to FormData use karo
+          // Ya phir file upload separate karo
+          if (value) {
+            updateData[key] = value.name; // Ya phir file URL
+          }
         } else {
-          logData[key] = value;
+          updateData[key] = String(value);
         }
       });
-      console.table(logData);
 
-      setMessage({ type: "success", text: "Doctor registered successfully!" });
-      setIsSubmitting(false);
+      console.log("Updating doctor with data:", updateData);
 
-      setFormData({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        gender: "",
-        dateOfBirth: "",
-        bloodGroup: "",
-        email: "",
-        mobile: "",
-        alternativeContact: "",
-        address: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        password: "",
-        reEnterPassword: "",
-        designation: "",
-        department: "",
-        specialization: "",
-        experience: "",
-        licenseNumber: "",
-        licenseExpiryDate: "",
-        education: "",
-        certifications: "",
-        joiningDate: "",
-        employeeId: "",
-        roomCabinNumber: "",
-        availableDays: "",
-        startTime: "",
-        endTime: "",
-        emergencyContactName: "",
-        emergencyContactNumber: "",
-        relationship: "",
-        profilePhoto: null,
-        licenseDocument: null,
-        educationCertificates: null,
-        additionalDocuments: null,
+      // doctorIdPUT request for update - JSON format mein
+      const response = await fetch(`/api/doctors/${doctorId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateData)
       });
 
-      setFieldStates({});
-      setShowPassword(false);
-      setShowConfirmPassword(false);
-      setErrors({});
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 500);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update doctor');
+      }
+
+      const result = await response.json();
+
+      setMessage({
+        type: "success",
+        text: "Doctor updated successfully!"
+      });
+
+      // doctorIdSuccess ke baad redirect karo
+      setTimeout(() => {
+        router.push('/admin/doctors/all-doctors');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error updating doctor:', error);
+      setMessage({
+        type: "error",
+        text: error instanceof Error ? error.message : "Failed to update doctor. Please try again."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  // doctorIdLoading state show karo
+  if (isLoading) {
+    return (
+      <div className="px-4 sm:px-6 py-5 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading doctor data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-6 py-5 bg-gray-50 min-h-screen">
@@ -340,61 +426,69 @@ export default function EditDoctorComponent() {
         <span className="text-sm">Doctors</span>
         <span>›</span>
         <span className="text-sm">Edit Doctor</span>
+        <span>›</span>
+        <span className="text-sm font-medium">ID: {doctorId}</span>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm">
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-1">Edit Doctor</h2>
+          <h2 className="text-xl font-semibold mb-1">
+            Edit Doctor - {formData.firstname} {formData.lastname}
+          </h2>
           <p className="text-gray-500 text-sm mb-6">
-            Update doctor information
+            Update doctor information (ID: {doctorId})
           </p>
 
           {message.text && (
             <div
-              className={`mb-6 p-3 rounded-md text-sm ${message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+              className={`mb-6 p-3 rounded-md text-sm ${message.type === "success"
+                  ? "bg-green-50 text-green-700"
+                  : "bg-red-50 text-red-700"
                 }`}
             >
               {message.text}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <div>
               <SectionHeader icon={User} title="Personal Information" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <FloatingInput
                   label="First Name"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="firstname"  // doctorIdAPI field name
+                  value={formData.firstname}
                   onChange={handleChange}
                   icon={User}
                   required
-                  error={errors.firstName}
+                  error={errors.firstname}  // doctorIdError field name bhi same
                 />
                 <FloatingInput
                   label="Middle Name"
-                  name="middleName"
-                  value={formData.middleName}
+                  name="middlename"  // doctorIdAPI field name
+                  value={formData.middlename}
                   onChange={handleChange}
                   icon={User}
+                  error={errors.middlename}
                 />
                 <FloatingInput
                   label="Last Name"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="lastname"  // doctorIdAPI field name
+                  value={formData.lastname}
                   onChange={handleChange}
                   icon={User}
+                  error={errors.lastname}
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingSelect
                   label="Gender"
-                  name="gender"
+                  name="gender"  // doctorIdAPI field name
                   value={formData.gender}
                   onChange={handleChange}
                   required
-                  error={errors.gender}
+                  error={errors.gender}  // doctorIdError field name bhi same
                 >
                   <option value=""></option>
                   <option value="Male">Male</option>
@@ -403,20 +497,20 @@ export default function EditDoctorComponent() {
                 </FloatingSelect>
                 <FloatingInput
                   label="Date of Birth"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
+                  name="dateofbirth"  // doctorIdAPI field name
+                  value={formData.dateofbirth}
                   onChange={handleChange}
                   type="date"
                   required
-                  error={errors.dateOfBirth}
+                  error={errors.dateofbirth}  // doctorIdError field name bhi same
                 />
                 <FloatingSelect
                   label="Blood Group"
-                  name="bloodGroup"
-                  value={formData.bloodGroup}
+                  name="bloodgroup"  // doctorIdAPI field name
+                  value={formData.bloodgroup}
                   onChange={handleChange}
                   required
-                  error={errors.bloodGroup}
+                  error={errors.bloodgroup}  // doctorIdError field name bhi same
                 >
                   <option value=""></option>
                   <option value="A+">A+</option>
@@ -437,7 +531,7 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <FloatingInput
                   label="Email"
-                  name="email"
+                  name="email"  // doctorIdAPI field name
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
@@ -446,7 +540,7 @@ export default function EditDoctorComponent() {
                 />
                 <FloatingInput
                   label="Mobile"
-                  name="mobile"
+                  name="mobile"  // doctorIdAPI field name
                   type="tel"
                   value={formData.mobile}
                   onChange={handleChange}
@@ -455,16 +549,17 @@ export default function EditDoctorComponent() {
                 />
                 <FloatingInput
                   label="Alternative Contact"
-                  name="alternativeContact"
+                  name="alternativecontact"  // doctorIdAPI field name
                   type="tel"
-                  value={formData.alternativeContact}
+                  value={formData.alternativecontact}
                   onChange={handleChange}
+                  error={errors.alternativecontact}
                 />
               </div>
               <div className="mb-6">
                 <FloatingTextarea
                   label="Address"
-                  name="address"
+                  name="address"  // doctorIdAPI field name
                   value={formData.address}
                   onChange={handleChange}
                   error={errors.address}
@@ -473,21 +568,24 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingInput
                   label="City"
-                  name="city"
+                  name="city"  // doctorIdAPI field name
                   value={formData.city}
                   onChange={handleChange}
+                  error={errors.city}
                 />
                 <FloatingInput
                   label="State"
-                  name="state"
+                  name="state"  // doctorIdAPI field name
                   value={formData.state}
                   onChange={handleChange}
+                  error={errors.state}
                 />
                 <FloatingInput
                   label="Postal Code"
-                  name="postalCode"
-                  value={formData.postalCode}
+                  name="postalcode"  // doctorIdAPI field name
+                  value={formData.postalcode}
                   onChange={handleChange}
+                  error={errors.postalcode}
                 />
               </div>
             </div>
@@ -498,7 +596,7 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FloatingInput
                   label="Password"
-                  name="password"
+                  name="password"  // doctorIdAPI field name
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
@@ -509,12 +607,12 @@ export default function EditDoctorComponent() {
                 />
                 <FloatingInput
                   label="Re-Enter Password"
-                  name="reEnterPassword"
+                  name="reenterpassword"  // doctorIdAPI field name
                   type={showConfirmPassword ? "text" : "password"}
-                  value={formData.reEnterPassword}
+                  value={formData.reenterpassword}
                   onChange={handleChange}
                   required
-                  error={errors.reEnterPassword}
+                  error={errors.reenterpassword}
                   showPassword={showConfirmPassword}
                   setShowPassword={setShowConfirmPassword}
                 />
@@ -527,7 +625,7 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <FloatingInput
                   label="Designation"
-                  name="designation"
+                  name="designation"  // doctorIdAPI field name
                   value={formData.designation}
                   onChange={handleChange}
                   required
@@ -535,7 +633,7 @@ export default function EditDoctorComponent() {
                 />
                 <FloatingSelect
                   label="Department"
-                  name="department"
+                  name="department"  // doctorIdAPI field name
                   value={formData.department}
                   onChange={handleChange}
                   required
@@ -550,7 +648,7 @@ export default function EditDoctorComponent() {
                 </FloatingSelect>
                 <FloatingInput
                   label="Specialization"
-                  name="specialization"
+                  name="specialization"  // doctorIdAPI field name
                   value={formData.specialization}
                   onChange={handleChange}
                   required
@@ -560,7 +658,7 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <FloatingInput
                   label="Experience (Years)"
-                  name="experience"
+                  name="experience"  // doctorIdAPI field name
                   value={formData.experience}
                   onChange={handleChange}
                   required
@@ -568,26 +666,26 @@ export default function EditDoctorComponent() {
                 />
                 <FloatingInput
                   label="License Number"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
+                  name="licensenumber"  // doctorIdAPI field name
+                  value={formData.licensenumber}
                   onChange={handleChange}
                   required
-                  error={errors.licenseNumber}
+                  error={errors.licensenumber}
                 />
                 <FloatingInput
                   label="License Expiry Date"
-                  name="licenseExpiryDate"
+                  name="licenseexpirydate"  // doctorIdAPI field name
                   type="date"
-                  value={formData.licenseExpiryDate}
+                  value={formData.licenseexpirydate}
                   onChange={handleChange}
                   required
-                  error={errors.licenseExpiryDate}
+                  error={errors.licenseexpirydate}
                 />
               </div>
               <div className="mb-6">
                 <FloatingTextarea
                   label="Education"
-                  name="education"
+                  name="education"  // doctorIdAPI field name
                   value={formData.education}
                   onChange={handleChange}
                   required
@@ -597,9 +695,10 @@ export default function EditDoctorComponent() {
               <div>
                 <FloatingTextarea
                   label="Certifications"
-                  name="certifications"
+                  name="certifications"  // doctorIdAPI field name
                   value={formData.certifications}
                   onChange={handleChange}
+                  error={errors.certifications}
                 />
               </div>
             </div>
@@ -610,26 +709,27 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingInput
                   label="Joining Date"
-                  name="joiningDate"
+                  name="joiningdate"  // doctorIdAPI field name
                   type="date"
-                  value={formData.joiningDate}
+                  value={formData.joiningdate}
                   onChange={handleChange}
                   required
-                  error={errors.joiningDate}
+                  error={errors.joiningdate}
                 />
                 <FloatingInput
                   label="Employee ID"
-                  name="employeeId"
-                  value={formData.employeeId}
+                  name="employeeid"  // doctorIdAPI field name
+                  value={formData.employeeid}
                   onChange={handleChange}
                   required
-                  error={errors.employeeId}
+                  error={errors.employeeid}
                 />
                 <FloatingInput
                   label="Room/Cabin Number"
-                  name="roomCabinNumber"
-                  value={formData.roomCabinNumber}
+                  name="roomcabinnumber"  // doctorIdAPI field name
+                  value={formData.roomcabinnumber}
                   onChange={handleChange}
+                  error={errors.roomcabinnumber}
                 />
               </div>
             </div>
@@ -640,11 +740,11 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingSelect
                   label="Available Days"
-                  name="availableDays"
-                  value={formData.availableDays}
+                  name="availabledays"  // doctorIdAPI field name
+                  value={formData.availabledays}
                   onChange={handleChange}
                   required
-                  error={errors.availableDays}
+                  error={errors.availabledays}
                 >
                   <option value=""></option>
                   <option value="Monday-Friday">Monday-Friday</option>
@@ -654,21 +754,21 @@ export default function EditDoctorComponent() {
                 </FloatingSelect>
                 <FloatingInput
                   label="Start Time"
-                  name="startTime"
+                  name="starttime"  // doctorIdAPI field name
                   type="time"
-                  value={formData.startTime}
+                  value={formData.starttime}
                   onChange={handleChange}
                   required
-                  error={errors.startTime}
+                  error={errors.starttime}
                 />
                 <FloatingInput
                   label="End Time"
-                  name="endTime"
+                  name="endtime"  // doctorIdAPI field name
                   type="time"
-                  value={formData.endTime}
+                  value={formData.endtime}
                   onChange={handleChange}
                   required
-                  error={errors.endTime}
+                  error={errors.endtime}
                 />
               </div>
             </div>
@@ -679,22 +779,25 @@ export default function EditDoctorComponent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FloatingInput
                   label="Emergency Contact Name"
-                  name="emergencyContactName"
-                  value={formData.emergencyContactName}
+                  name="emergencycontactname"  // doctorIdAPI field name
+                  value={formData.emergencycontactname}
                   onChange={handleChange}
+                  error={errors.emergencycontactname}
                 />
                 <FloatingInput
                   label="Emergency Contact Number"
-                  name="emergencyContactNumber"
+                  name="emergencycontactnumber"  // doctorIdAPI field name
                   type="tel"
-                  value={formData.emergencyContactNumber}
+                  value={formData.emergencycontactnumber}
                   onChange={handleChange}
+                  error={errors.emergencycontactnumber}
                 />
                 <FloatingInput
                   label="Relationship"
-                  name="relationship"
+                  name="relationship"  // doctorIdAPI field name
                   value={formData.relationship}
                   onChange={handleChange}
+                  error={errors.relationship}
                 />
               </div>
             </div>
@@ -703,10 +806,10 @@ export default function EditDoctorComponent() {
             <div>
               <SectionHeader icon={FileText} title="Documents" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FileUpload label="Profile Photo" name="profilePhoto" accept="image/*" />
-                <FileUpload label="License Document" name="licenseDocument" accept=".pdf,.jpg,.jpeg,.png" />
-                <FileUpload label="Education Certificates" name="educationCertificates" accept=".pdf,.jpg,.jpeg,.png" />
-                <FileUpload label="Additional Documents" name="additionalDocuments" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Profile Photo" name="profilephoto" accept="image/*" />
+                <FileUpload label="License Document" name="licensedocument" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Education Certificates" name="educationcertificates" accept=".pdf,.jpg,.jpeg,.png" />
+                <FileUpload label="Additional Documents" name="additionaldocuments" accept=".pdf,.jpg,.jpeg,.png" />
               </div>
             </div>
 
@@ -715,7 +818,7 @@ export default function EditDoctorComponent() {
               <button
                 type="button"
                 className="px-8 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                onClick={() => window.confirm("Are you sure?") && window.location.reload()}
+                onClick={() => router.back()}
               >
                 Cancel
               </button>
@@ -724,7 +827,7 @@ export default function EditDoctorComponent() {
                 disabled={isSubmitting}
                 className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Updating..." : "Update Doctor"}
               </button>
             </div>
           </form>
