@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar, User, ChevronDown, Flag } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -17,37 +17,87 @@ interface Patient {
   assignedDoctor: string;
   admissionDate: string;
   bloodGroup: string;
-  // Add more if needed
+}
+
+interface DepartmentData {
+  id?: number;
+  doctorName: string;
+  department: string;
+  specialty: string;
+  assignedDate: string;
+  shiftSchedule: string;
+  experienceLevel: string;
+  currentAssignmentStatus: string;
 }
 
 export default function AssignedDepartment() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [patients, setPatients] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<DepartmentData[]>([]);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingPatient, setEditingPatient] = useState<any | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<DepartmentData | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Sample data - aap API se replace kar sakte hain
+  const sampleDepartments: DepartmentData[] = [
+    {
+      id: 1,
+      doctorName: "Dr. Chris Wilson",
+      department: "ENT",
+      specialty: "Breast Cancer",
+      assignedDate: "2023-07-25",
+      shiftSchedule: "Mon-Wed, 9 AM - 3 PM",
+      experienceLevel: "Consultant",
+      currentAssignmentStatus: "Active"
+    },
+    {
+      id: 2,
+      doctorName: "Dr. Sarah Johnson",
+      department: "Cardiology",
+      specialty: "Heart Surgery",
+      assignedDate: "2023-08-15",
+      shiftSchedule: "Tue-Thu, 10 AM - 4 PM",
+      experienceLevel: "Senior",
+      currentAssignmentStatus: "Active"
+    },
+    {
+      id: 3,
+      doctorName: "Dr. Michael Brown",
+      department: "Neurology",
+      specialty: "Brain Surgery",
+      assignedDate: "2023-09-10",
+      shiftSchedule: "Mon-Fri, 8 AM - 2 PM",
+      experienceLevel: "Expert",
+      currentAssignmentStatus: "On Leave"
+    }
+  ];
 
   // Fetch data from API
-  const fetchPatients = async () => {
+  const fetchDepartments = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/patients");
-      const data = await res.json();
-      setPatients(data);
+      // Yahan aap actual API call kar sakte hain
+      // const res = await fetch("/api/departments");
+      // const data = await res.json();
+      // setDepartments(data);
 
+      // Temporary sample data
+      setTimeout(() => {
+        setDepartments(sampleDepartments);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
-      console.error("Failed to fetch patients:", error);
-    } finally {
+      console.error("Failed to fetch departments:", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPatients();
+    fetchDepartments();
   }, []);
 
   // Click outside dropdown
@@ -64,40 +114,38 @@ export default function AssignedDepartment() {
 
   const handleRefresh = () => {
     setAnimate(true);
-    fetchPatients().then(() => {
+    fetchDepartments().then(() => {
       setTimeout(() => setAnimate(false), 300);
     });
   };
 
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      patients.map((item) => ({
-        Name: `${item.first_name} ${item.last_name}`,
-        Doctor: item.assigned_doctor || "-",
-        Gender: item.gender,
-        Date: item.created_at || "-",
-        Time: "-",
-        Mobile: item.mobile,
-        Email: item.email,
-        "Appointment Status": "Confirmed",
-        "Visit Type": "General",
+      departments.map((item) => ({
+        "Doctor Name": item.doctorName,
+        "Department": item.department,
+        "Specialty": item.specialty,
+        "Shift Schedule": item.shiftSchedule,
+        "Experience Level": item.experienceLevel,
+        "Assignment Status": item.currentAssignmentStatus,
+        "Assigned Date": item.assignedDate,
       }))
     );
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Departments");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "patients.xlsx");
+    saveAs(blob, "departments.xlsx");
   };
 
   const removeData = () => {
     if (selectedIds.length === 0) {
-      alert("Please select at least one patient to delete.");
+      alert("Please select at least one department to delete.");
       return;
     }
-    if (window.confirm(`Delete ${selectedIds.length} patient(s)?`)) {
-      setPatients(prev => prev.filter(p => !selectedIds.includes(p.id)));
+    if (window.confirm(`Delete ${selectedIds.length} department(s)?`)) {
+      setDepartments(prev => prev.filter(dept => !selectedIds.includes(dept.id!)));
       setSelectedIds([]);
     }
   };
@@ -109,96 +157,89 @@ export default function AssignedDepartment() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedIds(checked ? patients.map(p => p.id) : []);
+    setSelectedIds(checked ? departments.map(dept => dept.id!) : []);
   };
 
   useEffect(() => {
-    console.log(patients);
+    console.log(departments);
     const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
     if (selectAllCheckbox) {
       selectAllCheckbox.indeterminate =
-        selectedIds.length > 0 && selectedIds.length < patients.length;
+        selectedIds.length > 0 && selectedIds.length < departments.length;
     }
-  }, [selectedIds, patients]);
+  }, [selectedIds, departments]);
 
   const checkboxItems = [
     { label: "Checkbox", checked: true },
     { label: "Name", checked: true },
-    { label: "Doctor", checked: true },
-    { label: "Gender", checked: true },
-    { label: "Date", checked: true },
-    { label: "Time", checked: true },
-    { label: "Mobile", checked: true },
-    { label: "Injury", checked: false },
-    { label: "Email", checked: true },
-    { label: "Appointment Status", checked: true },
-    { label: "Visit Type", checked: true },
-    { label: "Payment Status", checked: false },
-    { label: "Insurance Provider", checked: false },
-    { label: "Notes", checked: false },
+    { label: "Department", checked: true },
+    { label: "Specialization", checked: true },
+    { label: "Shift Schedule", checked: true },
+    { label: "Experience Level", checked: true },
+    { label: "Assignment Status", checked: true },
+    { label: "Assigned Date", checked: true },
     { label: "Actions", checked: true },
   ];
 
-  const deleteSelectedPatients = async (id: any) => {
+  const deleteSelectedDepartment = async (id: number) => {
     try {
-      const response = await fetch(`/api/patients/${id}`, {
-        method: "DELETE",
-      });
-      const result = await response.json();
-      console.log(" Patient deleted:", result);
+      // Yahan aap actual API call kar sakte hain
+      // const response = await fetch(`/api/departments/${id}`, {
+      //   method: "DELETE",
+      // });
+
+      // Temporary: Frontend se delete
+      setDepartments(prev => prev.filter(dept => dept.id !== id));
+      console.log("Department deleted:", id);
     } catch (error) {
-      console.error(" Error deleting patient:", error);
+      console.error("Error deleting department:", error);
     }
   };
 
-
-  const handleEditClick = (patient: any) => {
-    setEditingPatient(patient);
-    setIsEditModalOpen(true);
+  const handleAddClick = () => {
+    setEditingDepartment({
+      doctorName: '',
+      department: '',
+      specialty: '',
+      assignedDate: new Date().toISOString().split('T')[0],
+      shiftSchedule: '',
+      experienceLevel: '',
+      currentAssignmentStatus: 'Active'
+    });
+    setIsEditMode(false);
+    setIsModalOpen(true);
   };
 
-  const handleUpdatePatient = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // 🧩 Map frontend snake_case -> backend camelCase
-      const payload = {
-        firstName: editingPatient.first_name,
-        lastName: editingPatient.last_name,
-        gender: editingPatient.gender,
-        age: editingPatient.age,
-        mobile: editingPatient.mobile,
-        email: editingPatient.email,
-        address: editingPatient.address,
-        admissionDate: editingPatient.admission_date,
-        assignedDoctor: editingPatient.assigned_doctor,
-        // optional fields (only if exist)
-        dischargeDate: editingPatient.discharge_date || null,
-        status: editingPatient.status,
-        treatment: editingPatient.treatment,
+  const handleEditClick = (department: DepartmentData) => {
+    setEditingDepartment(department);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (formData: DepartmentData) => {
+    if (isEditMode && editingDepartment?.id) {
+      // Edit existing department
+      setDepartments(prev =>
+        prev.map(dept =>
+          dept.id === editingDepartment.id ? { ...formData, id: editingDepartment.id } : dept
+        )
+      );
+    } else {
+      // Add new department
+      const newDepartment = {
+        ...formData,
+        id: Math.max(0, ...departments.map(d => d.id!)) + 1
       };
-      console.log("📌 Update Payload:", payload);
-
-      const response = await fetch(`/api/patients/${editingPatient.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        alert("Patient updated successfully!");
-        setIsEditModalOpen(false);
-        fetchPatients(); // Refresh list after update
-      } else {
-        const err = await response.json();
-        alert(` Update failed: ${err.error || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Error updating patient:", error);
-      alert("An unexpected error occurred.");
+      setDepartments(prev => [...prev, newDepartment]);
     }
+    setIsModalOpen(false);
+    setEditingDepartment(null);
   };
 
-
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingDepartment(null);
+  };
 
   return (
     <>
@@ -280,11 +321,13 @@ export default function AssignedDepartment() {
                     )}
                   </div>
 
-                  <Link href="/add-patient">
-                    <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                      <CirclePlus className='w-[22px] h-[22px]' />
-                    </button>
-                  </Link>
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add New Department"
+                  >
+                    <CirclePlus className='w-[22px] h-[22px]' />
+                  </button>
 
                   <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                     <RotateCw className='w-[20px] h-[20px]' />
@@ -300,9 +343,9 @@ export default function AssignedDepartment() {
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
                   {loading ? (
-                    <div className="p-8 text-center text-gray-500">Loading patients...</div>
-                  ) : patients.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No patients found</div>
+                    <div className="p-8 text-center text-gray-500">Loading departments...</div>
+                  ) : departments.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">No departments found</div>
                   ) : (
                     <>
                       <table className="min-w-full divide-y divide-gray-200 hidden md:table">
@@ -328,49 +371,48 @@ export default function AssignedDepartment() {
                         </thead>
 
                         <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                          {patients.map((item) => (
+                          {departments.map((item) => (
                             <tr key={item.id} className="transition-colors duration-150">
                               <td className="px-4 py-3 pl-[37px]">
                                 <input
                                   type="checkbox"
-                                  checked={selectedIds.includes(item.id)}
-                                  onChange={() => handleCheckboxChange(item.id)}
+                                  checked={selectedIds.includes(item.id!)}
+                                  onChange={() => handleCheckboxChange(item.id!)}
                                   className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                 />
                               </td>
-
 
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
                                   <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
                                     <div className="text-sm font-medium">
-                                      Dr. Chris Wilson
+                                      {item.doctorName}
                                     </div>
                                   </div>
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                              <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
 
                               <td className="px-4 whitespace-nowrap">
                                 <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                  Breast Cancer
+                                  {item.specialty}
                                 </span>
                               </td>
                               <td className="px-4 text-sm">
                                 <div className="flex items-center">
-                                  Mon-Wed, 9 AM - 3 PM
+                                  {item.shiftSchedule}
                                 </div>
                               </td>
-                              <td className="px-4 text-sm">Consultant</td>
+                              <td className="px-4 text-sm">{item.experienceLevel}</td>
                               <td className="px-4 text-sm">
-                                <div className={`flex items-center `}>
-                                  Active
+                                <div className={`flex items-center`}>
+                                  {item.currentAssignmentStatus}
                                 </div>
                               </td>
 
-                              <td className="px-4 text-sm">2023-07-25</td>
+                              <td className="px-4 text-sm">{item.assignedDate}</td>
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
@@ -378,7 +420,7 @@ export default function AssignedDepartment() {
                                     <Edit className="w-5 h-5" />
                                   </button>
                                   <button onClick={() => {
-                                    deleteSelectedPatients(item.id);
+                                    deleteSelectedDepartment(item.id!);
                                   }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Trash2 className="w-5 h-5" />
                                   </button>
@@ -393,30 +435,26 @@ export default function AssignedDepartment() {
                         className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
                           }`}
                       >
-                        {patients.map((item) => (
+                        {departments.map((item) => (
                           <div key={item.id} className="border-b border-gray-200 py-4">
                             {/* Checkbox Row */}
                             <div className="flex items-center justify-between mb-3">
                               <input
-                                checked={selectedIds.includes(item.id)}
-                                onChange={() => handleCheckboxChange(item.id)}
+                                checked={selectedIds.includes(item.id!)}
+                                onChange={() => handleCheckboxChange(item.id!)}
                                 type="checkbox"
                                 className="w-4 h-4 text-blue-600 rounded"
                               />
                             </div>
 
-                            {/* Doctor Info */}
+                            {/* Department Info */}
                             <div className="space-y-2 text-sm text-gray-800">
                               {/* Name */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                 <span className="font-semibold w-32">Name:</span>
                                 <div className="flex items-center gap-2">
-                                  <img
-                                    src={item.image || "https://via.placeholder.com/40"}
-                                    alt="doctor"
-                                    className="w-8 h-8 rounded-full object-cover border-2 border-dashed border-gray-400"
-                                  />
-                                  <span>{item.name || "—"}</span>
+                                  <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed border-gray-400"></div>
+                                  <span>{item.doctorName || "—"}</span>
                                 </div>
                               </div>
 
@@ -429,13 +467,13 @@ export default function AssignedDepartment() {
                               {/* Specialization */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                 <span className="font-semibold w-32">Specialization:</span>
-                                <span>{item.specialization || "—"}</span>
+                                <span>{item.specialty || "—"}</span>
                               </div>
 
                               {/* Experience Level */}
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                 <span className="font-semibold w-32">Experience Level:</span>
-                                <span>{item.experience_level || "—"}</span>
+                                <span>{item.experienceLevel || "—"}</span>
                               </div>
 
                               {/* Assignment Status */}
@@ -443,7 +481,7 @@ export default function AssignedDepartment() {
                                 <span className="font-semibold w-32">Assignment Status:</span>
                                 <div className="flex items-center gap-2">
                                   <Phone className="w-4 h-4 text-green-600" />
-                                  <span>{item.assignment_status || "Active"}</span>
+                                  <span>{item.currentAssignmentStatus || "Active"}</span>
                                 </div>
                               </div>
 
@@ -452,7 +490,7 @@ export default function AssignedDepartment() {
                                 <span className="font-semibold w-32">Assigned Date:</span>
                                 <div className="flex items-center gap-2">
                                   <Calendar className="w-4 h-4 text-gray-500" />
-                                  <span>{item.assigned_date || "—"}</span>
+                                  <span>{item.assignedDate || "—"}</span>
                                 </div>
                               </div>
 
@@ -466,7 +504,7 @@ export default function AssignedDepartment() {
                                     <Edit className="w-5 h-5" />
                                   </button>
                                   <button
-                                    onClick={() => deleteSelectedPatients(item.id)}
+                                    onClick={() => deleteSelectedDepartment(item.id!)}
                                     className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                   >
                                     <Trash2 className="w-5 h-5" />
@@ -487,300 +525,20 @@ export default function AssignedDepartment() {
         </div>
 
         <div>
-          <Paginator totalItems={patients.length} />
+          <Paginator totalItems={departments.length} />
         </div>
       </div>
 
-      {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <div className="flex items-center space-x-3">
-                <img
-                  src="/default-avatar.png"
-                  alt="Patient"
-                  className="w-10 h-10 rounded-full border"
-                />
-                <h2 className="text-lg font-semibold">
-                  Edit {editingPatient?.first_name} {editingPatient?.last_name}
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdatePatient} className="p-6 space-y-6 h-[450px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Name */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="first_name"
-                    name='first_name'
-                    value={`${editingPatient?.first_name || ""} ${editingPatient?.last_name || ""}`}
-                    onChange={(e) => {
-                      const [first, ...last] = e.target.value.split(" ");
-                      setEditingPatient({ ...editingPatient, first_name: first, last_name: last.join(" ") });
-                    }}
-                    placeholder=" "
-                    required
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="name"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.first_name || editingPatient?.last_name ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Name*
-                  </label>
-                </div>
-
-                {/* Mobile */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="mobile"
-                    value={editingPatient?.mobile || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, mobile: e.target.value })}
-                    placeholder=" "
-                    required
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="mobile"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.mobile ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Mobile*
-                  </label>
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div className="flex items-center gap-6">
-                <span className="text-sm font-medium">Gender:</span>
-                <label className="flex items-center gap-1 text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    checked={editingPatient?.gender === "Male"}
-                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Male" })}
-                  />
-                  Male
-                </label>
-                <label className="flex items-center gap-1 text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    checked={editingPatient?.gender === "Female"}
-                    onChange={() => setEditingPatient({ ...editingPatient, gender: "Female" })}
-                  />
-                  Female
-                </label>
-              </div>
-
-              {/* Treatment */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="treatment"
-                  value={editingPatient?.treatment || ""}
-                  onChange={(e) => setEditingPatient({ ...editingPatient, treatment: e.target.value })}
-                  placeholder=" "
-                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 h-[80px] focus:ring-[#005CBB] outline-none transition-all`}
-                />
-                <label
-                  htmlFor="treatment"
-                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.treatment ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                >
-                  Treatment
-                </label>
-              </div>
-
-
-              <div className="grid grid-cols-2 gap-4">
-                {/* Age */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="age"
-                    value={editingPatient?.age || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, age: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="age"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.age ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Age*
-                  </label>
-                </div>
-
-                {/* Email */}
-                <div className="relative">
-                  <input
-                    type="email"
-                    id="email"
-                    value={editingPatient?.email || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, email: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="email"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.email ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Email*
-                  </label>
-                </div>
-
-                {/* Admission Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="admission_date"
-                    value={editingPatient?.admission_date || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, admission_date: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="admission_date"
-                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.admission_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Admission Date*
-                  </label>
-                </div>
-
-                {/* Discharge Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="discharge_date"
-                    value={editingPatient?.discharge_date || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, discharge_date: e.target.value })}
-                    placeholder=" "
-                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                  />
-                  <label
-                    htmlFor="discharge_date"
-                    className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.discharge_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Discharge Date*
-                  </label>
-                </div>
-
-                {/* Doctor Assigned */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="doctor_assigned"
-                    value={editingPatient?.assigned_doctor || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, assigned_doctor: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="doctor_assigned"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.assigned_doctor ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
-                  >
-                    Doctor Assigned*
-                  </label>
-                </div>
-
-                {/* Status */}
-                <div className="relative">
-                  <select
-                    id="status"
-                    value={editingPatient?.status || ""}
-                    onChange={(e) => setEditingPatient({ ...editingPatient, status: e.target.value })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="" disabled hidden></option>
-                    <option value="Admitted">Admitted</option>
-                    <option value="Under Treatment">Under Treatment</option>
-                    <option value="Recovered">Recovered</option>
-                    <option value="Discharged">Discharged</option>
-                  </select>
-                  <label
-                    htmlFor="status"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.status ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
-                  >
-                    Status*
-                  </label>
-                </div>
-              </div>
-
-              <div className="relative">
-                <textarea
-                  id="address"
-                  rows={3}
-                  value={editingPatient?.address || ""}
-                  onChange={(e) => setEditingPatient({ ...editingPatient, address: e.target.value })}
-                  placeholder=" "
-                  className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                ></textarea>
-                <label
-                  htmlFor="address"
-                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.address ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                >
-                  Address
-                </label>
-              </div>
-
-              {/* Submit */}
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium  transition"
-                >
-                  cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* Department Modal */}
+      {isModalOpen && (
+        <NewDepartmentModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          initialData={editingDepartment}
+          isEditMode={isEditMode}
+        />
       )}
-
 
       <style jsx>{`
         @keyframes slideDown {
@@ -792,6 +550,411 @@ export default function AssignedDepartment() {
     </>
   );
 }
+
+// Modal Component
+interface NewDepartmentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: DepartmentData) => void;
+  initialData?: DepartmentData | null;
+  isEditMode?: boolean;
+}
+
+interface FormData {
+  doctorName: string;
+  department: string;
+  specialty: string;
+  assignedDate: string;
+  shiftSchedule: string;
+  experienceLevel: string;
+  currentAssignmentStatus: string;
+}
+
+type FormFieldName = keyof FormData;
+
+const NewDepartmentModal: React.FC<NewDepartmentModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditMode = false
+}) => {
+  const [formData, setFormData] = useState<FormData>({
+    doctorName: '',
+    department: '',
+    specialty: '',
+    assignedDate: new Date().toISOString().split('T')[0],
+    shiftSchedule: '',
+    experienceLevel: '',
+    currentAssignmentStatus: 'Active'
+  });
+
+  const [focusedFields, setFocusedFields] = useState<Record<FormFieldName, boolean>>({
+    doctorName: false,
+    department: false,
+    specialty: false,
+    assignedDate: false,
+    shiftSchedule: false,
+    experienceLevel: false,
+    currentAssignmentStatus: false
+  });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const isFormValid =
+  formData.doctorName.trim() !== '' &&
+  formData.department.trim() !== '' &&
+  formData.assignedDate.trim() !== '';
+
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+      const newFocusedFields = { ...focusedFields };
+      (Object.keys(initialData) as FormFieldName[]).forEach(key => {
+        if (initialData[key]) {
+          newFocusedFields[key] = true;
+        }
+      });
+      setFocusedFields(newFocusedFields);
+    } else {
+      // Reset form when adding new
+      setFormData({
+        doctorName: '',
+        department: '',
+        specialty: '',
+        assignedDate: new Date().toISOString().split('T')[0],
+        shiftSchedule: '',
+        experienceLevel: '',
+        currentAssignmentStatus: 'Active'
+      });
+      setFocusedFields({
+        doctorName: false,
+        department: false,
+        specialty: false,
+        assignedDate: false,
+        shiftSchedule: false,
+        experienceLevel: false,
+        currentAssignmentStatus: false
+      });
+    }
+  }, [initialData, isOpen]);
+
+  const handleBlur = (fieldName: FormFieldName) => {
+    setFocusedFields(prev => ({
+      ...prev,
+      [fieldName]: formData[fieldName] !== ''
+    }));
+  };
+
+  const handleFocus = (fieldName: FormFieldName) => {
+    setFocusedFields(prev => ({
+      ...prev,
+      [fieldName]: true
+    }));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name as FormFieldName]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose(); // 👉 outside click → close modal
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex items-center">
+            {isEditMode && (
+              <div className="relative w-10 h-10 mr-3">
+                <img
+                  src="/assets/images/user/new.jpg"
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            )}
+            <h2 className="text-xl font-semibold">
+              {isEditMode ? 'Edit Department' : 'New Department'}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="py-5 px-6 max-h-[394px] overflow-y-auto scrollbar-hide">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Doctor Name */}
+              <div className="relative">
+                <input
+                  type="text"
+                  id="doctorName"
+                  name="doctorName"
+                  required
+                  value={formData.doctorName}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("doctorName")}
+                  onBlur={() => handleBlur("doctorName")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all placeholder-transparent"
+                />
+                <label
+                  htmlFor="doctorName"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.doctorName || formData.doctorName
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Doctor Name<span className="text-red-500">*</span>
+                </label>
+                <div className="absolute right-3 top-4 text-gray-400">
+                  <User />
+                </div>
+              </div>
+
+              {/* Department */}
+              <div className="relative">
+                <select
+                  id="department"
+                  name="department"
+                  required
+                  value={formData.department}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("department")}
+                  onBlur={() => handleBlur("department")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all appearance-none bg-white"
+                >
+                  <option value=""></option>
+                  <option value="cardiology">Cardiology</option>
+                  <option value="neurology">Neurology</option>
+                  <option value="orthopedics">Orthopedics</option>
+                  <option value="pediatrics">Pediatrics</option>
+                  <option value="ent">ENT</option>
+                  <option value="surgery">Surgery</option>
+                  <option value="radiology">Radiology</option>
+                </select>
+                <label
+                  htmlFor="department"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.department || formData.department
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Department<span className="text-red-500">*</span>
+                </label>
+                <div className="absolute right-3 top-4 text-gray-400 pointer-events-none">
+                  <ChevronDown />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Specialty */}
+              <div className="relative">
+                <input
+                  type="text"
+                  id="specialty"
+                  name="specialty"
+                  value={formData.specialty}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("specialty")}
+                  onBlur={() => handleBlur("specialty")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all placeholder-transparent"
+                />
+                <label
+                  htmlFor="specialty"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.specialty || formData.specialty
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Specialty
+                </label>
+                <div className="absolute right-3 top-4 text-gray-400">
+                 <Flag />
+                </div>
+              </div>
+
+              {/* Assigned Date */}
+              <div className="relative">
+                <input
+                  type="date"
+                  id="assignedDate"
+                  name="assignedDate"
+                  required
+                  value={formData.assignedDate}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("assignedDate")}
+                  onBlur={() => handleBlur("assignedDate")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all"
+                />
+                <label
+                  htmlFor="assignedDate"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.assignedDate || formData.assignedDate
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Assigned Date<span className="text-red-500">*</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Shift Schedule */}
+              <div className="relative">
+                <input
+                  type="text"
+                  id="shiftSchedule"
+                  name="shiftSchedule"
+                  value={formData.shiftSchedule}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("shiftSchedule")}
+                  onBlur={() => handleBlur("shiftSchedule")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all placeholder-transparent"
+                />
+                <label
+                  htmlFor="shiftSchedule"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.shiftSchedule || formData.shiftSchedule
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Shift Schedule
+                </label>
+              </div>
+
+              {/* Experience Level */}
+              <div className="relative">
+                <select
+                  id="experienceLevel"
+                  name="experienceLevel"
+                  value={formData.experienceLevel}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("experienceLevel")}
+                  onBlur={() => handleBlur("experienceLevel")}
+                  className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                            focus:border-blue-500 transition-all appearance-none bg-white"
+                >
+                  <option value=""></option>
+                  <option value="junior">Junior</option>
+                  <option value="mid-level">Mid-Level</option>
+                  <option value="senior">Senior</option>
+                  <option value="consultant">Consultant</option>
+                  <option value="expert">Expert</option>
+                </select>
+                <label
+                  htmlFor="experienceLevel"
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1
+                              ${focusedFields.experienceLevel || formData.experienceLevel
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"}`}
+                >
+                  Experience Level
+                </label>
+                <div className="absolute right-3 top-4 text-gray-400 pointer-events-none">
+                   <ChevronDown />
+                </div>
+              </div>
+            </div>
+
+            {/* Current Assignment Status */}
+            <div className="relative">
+              <select
+                id="currentAssignmentStatus"
+                name="currentAssignmentStatus"
+                value={formData.currentAssignmentStatus}
+                onChange={handleInputChange}
+                onFocus={() => handleFocus("currentAssignmentStatus")}
+                onBlur={() => handleBlur("currentAssignmentStatus")}
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none 
+                          focus:border-blue-500 transition-all appearance-none bg-white"
+              >
+                <option value="active">Active</option>
+                <option value="on-leave">On Leave</option>
+                <option value="vacation">Vacation</option>
+                <option value="training">Training</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <label
+                htmlFor="currentAssignmentStatus"
+                className={`absolute left-4 transition-all duration-200 bg-white px-1
+                            ${focusedFields.currentAssignmentStatus || formData.currentAssignmentStatus
+                    ? "-top-2 text-xs text-blue-600"
+                    : "top-4 text-base text-gray-600"}`}
+              >
+                Current Assignment Status
+              </label>
+              <div className="absolute right-3 top-4 text-gray-400 pointer-events-none">
+                 <ChevronDown />
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex space-x-3 pt-4">
+              <button
+                type="submit"
+                disabled={!isEditMode && !isFormValid}
+                className={`px-4 py-2 rounded-full transition-colors ${isEditMode
+                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                    : isFormValid
+                      ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                      : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                  }`}>
+                {isEditMode ? 'Update' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
