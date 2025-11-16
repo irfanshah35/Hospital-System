@@ -1,53 +1,95 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar, User, Building, AlertCircle, FileText } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Link from 'next/link';
 
-interface Patient {
-    id: number;
-    firstName: string;
-    lastName: string;
-    gender: "Male" | "Female";
-    dateOfBirth: string;
-    mobile: string;
-    email: string;
-    assignedDoctor: string;
-    admissionDate: string;
-    bloodGroup: string;
-    // Add more if needed
+interface ShiftData {
+    id?: number;
+    doctorName: string;
+    department: string;
+    specialty: string;
+    shiftStartDate: string;
+    shiftEndDate: string;
+    workDays: string;
+    shiftHours: string;
+    shiftType: string;
+    availabilityStatus: string;
+    overtimeHours: string;
+    totalHoursPerWeek: string;
+    shiftNotes: string;
 }
 
-export default function ShiftManagmentPage() {
+export default function ShiftManagementPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [patients, setPatients] = useState<any[]>([]);
+    const [shifts, setShifts] = useState<ShiftData[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingPatient, setEditingPatient] = useState<any | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingShift, setEditingShift] = useState<ShiftData | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    // Sample data
+    const sampleShifts: ShiftData[] = [
+        {
+            id: 1,
+            doctorName: "Dr. Chris Wilson",
+            department: "ENT",
+            specialty: "Breast Cancer",
+            shiftStartDate: "2024-02-01",
+            shiftEndDate: "2024-02-28",
+            workDays: "Mon-Fri",
+            shiftHours: "9:00 AM - 5:00 PM",
+            shiftType: "Day Shift",
+            availabilityStatus: "Available",
+            overtimeHours: "2",
+            totalHoursPerWeek: "40",
+            shiftNotes: "Regular shift schedule"
+        },
+        {
+            id: 2,
+            doctorName: "Dr. Sarah Johnson",
+            department: "Cardiology",
+            specialty: "Heart Surgery",
+            shiftStartDate: "2024-02-01",
+            shiftEndDate: "2024-02-29",
+            workDays: "Mon-Sat",
+            shiftHours: "8:00 AM - 4:00 PM",
+            shiftType: "Day Shift",
+            availabilityStatus: "Available",
+            overtimeHours: "5",
+            totalHoursPerWeek: "48",
+            shiftNotes: "Includes weekend duties"
+        }
+    ];
 
     // Fetch data from API
-    const fetchPatients = async () => {
+    const fetchShifts = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/patients");
-            const data = await res.json();
-            setPatients(data);
+            // Yahan aap actual API call kar sakte hain
+            // const res = await fetch("/api/shifts");
+            // const data = await res.json();
+            // setShifts(data);
 
+            // Temporary sample data
+            setTimeout(() => {
+                setShifts(sampleShifts);
+                setLoading(false);
+            }, 1000);
         } catch (error) {
-            console.error("Failed to fetch patients:", error);
-        } finally {
+            console.error("Failed to fetch shifts:", error);
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPatients();
+        fetchShifts();
     }, []);
 
     // Click outside dropdown
@@ -64,40 +106,42 @@ export default function ShiftManagmentPage() {
 
     const handleRefresh = () => {
         setAnimate(true);
-        fetchPatients().then(() => {
+        fetchShifts().then(() => {
             setTimeout(() => setAnimate(false), 300);
         });
     };
 
     const handleDownloadXLSX = () => {
         const worksheet = XLSX.utils.json_to_sheet(
-            patients.map((item) => ({
-                Name: `${item.first_name} ${item.last_name}`,
-                Doctor: item.assigned_doctor || "-",
-                Gender: item.gender,
-                Date: item.created_at || "-",
-                Time: "-",
-                Mobile: item.mobile,
-                Email: item.email,
-                "Appointment Status": "Confirmed",
-                "Visit Type": "General",
+            shifts.map((item) => ({
+                "Doctor Name": item.doctorName,
+                "Department": item.department,
+                "Specialty": item.specialty,
+                "Shift Start Date": item.shiftStartDate,
+                "Shift End Date": item.shiftEndDate,
+                "Work Days": item.workDays,
+                "Shift Hours": item.shiftHours,
+                "Shift Type": item.shiftType,
+                "Availability Status": item.availabilityStatus,
+                "Overtime Hours": item.overtimeHours,
+                "Total Hours Per Week": item.totalHoursPerWeek,
             }))
         );
 
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Shifts");
         const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
         const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-        saveAs(blob, "patients.xlsx");
+        saveAs(blob, "shifts.xlsx");
     };
 
     const removeData = () => {
         if (selectedIds.length === 0) {
-            alert("Please select at least one patient to delete.");
+            alert("Please select at least one shift to delete.");
             return;
         }
-        if (window.confirm(`Delete ${selectedIds.length} patient(s)?`)) {
-            setPatients(prev => prev.filter(p => !selectedIds.includes(p.id)));
+        if (window.confirm(`Delete ${selectedIds.length} shift(s)?`)) {
+            setShifts(prev => prev.filter(shift => !selectedIds.includes(shift.id!)));
             setSelectedIds([]);
         }
     };
@@ -109,96 +153,96 @@ export default function ShiftManagmentPage() {
     };
 
     const handleSelectAll = (checked: boolean) => {
-        setSelectedIds(checked ? patients.map(p => p.id) : []);
+        setSelectedIds(checked ? shifts.map(shift => shift.id!) : []);
     };
 
     useEffect(() => {
-        console.log(patients);
+        console.log(shifts);
         const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
         if (selectAllCheckbox) {
             selectAllCheckbox.indeterminate =
-                selectedIds.length > 0 && selectedIds.length < patients.length;
+                selectedIds.length > 0 && selectedIds.length < shifts.length;
         }
-    }, [selectedIds, patients]);
+    }, [selectedIds, shifts]);
 
     const checkboxItems = [
         { label: "Checkbox", checked: true },
         { label: "Name", checked: true },
-        { label: "Doctor", checked: true },
-        { label: "Gender", checked: true },
-        { label: "Date", checked: true },
-        { label: "Time", checked: true },
-        { label: "Mobile", checked: true },
-        { label: "Injury", checked: false },
-        { label: "Email", checked: true },
-        { label: "Appointment Status", checked: true },
-        { label: "Visit Type", checked: true },
-        { label: "Payment Status", checked: false },
-        { label: "Insurance Provider", checked: false },
-        { label: "Notes", checked: false },
+        { label: "Department", checked: true },
+        { label: "Specialization", checked: true },
+        { label: "Shift Start Date", checked: true },
+        { label: "Shift End Date", checked: true },
+        { label: "Work Days", checked: true },
+        { label: "Shift Hours", checked: true },
+        { label: "Shift Type", checked: true },
+        { label: "Availability Status", checked: true },
         { label: "Actions", checked: true },
     ];
 
-    const deleteSelectedPatients = async (id: any) => {
+    const deleteSelectedShift = async (id: number) => {
         try {
-            const response = await fetch(`/api/patients/${id}`, {
-                method: "DELETE",
-            });
-            const result = await response.json();
-            console.log(" Patient deleted:", result);
+            // Yahan aap actual API call kar sakte hain
+            // const response = await fetch(`/api/shifts/${id}`, {
+            //   method: "DELETE",
+            // });
+
+            // Temporary: Frontend se delete
+            setShifts(prev => prev.filter(shift => shift.id !== id));
+            console.log("Shift deleted:", id);
         } catch (error) {
-            console.error(" Error deleting patient:", error);
+            console.error("Error deleting shift:", error);
         }
     };
 
-
-    const handleEditClick = (patient: any) => {
-        setEditingPatient(patient);
-        setIsEditModalOpen(true);
+    const handleAddClick = () => {
+        setEditingShift({
+            doctorName: '',
+            department: '',
+            specialty: '',
+            shiftStartDate: new Date().toISOString().split('T')[0],
+            shiftEndDate: new Date().toISOString().split('T')[0],
+            workDays: '',
+            shiftHours: '',
+            shiftType: '',
+            availabilityStatus: 'Available',
+            overtimeHours: '',
+            totalHoursPerWeek: '',
+            shiftNotes: ''
+        });
+        setIsEditMode(false);
+        setIsModalOpen(true);
     };
 
-    const handleUpdatePatient = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            // 🧩 Map frontend snake_case -> backend camelCase
-            const payload = {
-                firstName: editingPatient.first_name,
-                lastName: editingPatient.last_name,
-                gender: editingPatient.gender,
-                age: editingPatient.age,
-                mobile: editingPatient.mobile,
-                email: editingPatient.email,
-                address: editingPatient.address,
-                admissionDate: editingPatient.admission_date,
-                assignedDoctor: editingPatient.assigned_doctor,
-                // optional fields (only if exist)
-                dischargeDate: editingPatient.discharge_date || null,
-                status: editingPatient.status,
-                treatment: editingPatient.treatment,
+    const handleEditClick = (shift: ShiftData) => {
+        setEditingShift(shift);
+        setIsEditMode(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = (formData: ShiftData) => {
+        if (isEditMode && editingShift?.id) {
+            // Edit existing shift
+            setShifts(prev =>
+                prev.map(shift =>
+                    shift.id === editingShift.id ? { ...formData, id: editingShift.id } : shift
+                )
+            );
+        } else {
+            // Add new shift
+            const newShift = {
+                ...formData,
+                id: Math.max(0, ...shifts.map(s => s.id!)) + 1
             };
-            console.log("📌 Update Payload:", payload);
-
-            const response = await fetch(`/api/patients/${editingPatient.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                alert("Patient updated successfully!");
-                setIsEditModalOpen(false);
-                fetchPatients(); // Refresh list after update
-            } else {
-                const err = await response.json();
-                alert(` Update failed: ${err.error || "Unknown error"}`);
-            }
-        } catch (error) {
-            console.error("Error updating patient:", error);
-            alert("An unexpected error occurred.");
+            setShifts(prev => [...prev, newShift]);
         }
+        setIsModalOpen(false);
+        setEditingShift(null);
     };
 
-
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingShift(null);
+    };
 
     return (
         <>
@@ -280,11 +324,13 @@ export default function ShiftManagmentPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-patient">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add New Shift"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -297,514 +343,231 @@ export default function ShiftManagmentPage() {
                             </div>
 
                             {/* Table */}
-                            <div className='overflow-auto scrollbar-hide hidden md:table'>
+                            <div className='overflow-auto scrollbar-hide'>
                                 <div className="overflow-x-auto scrollbar-hide">
                                     {loading ? (
-                                        <div className="p-8 text-center text-gray-500">Loading patients...</div>
-                                    ) : patients.length === 0 ? (
-                                        <div className="p-8 text-center text-gray-500">No patients found</div>
+                                        <div className="p-8 text-center text-gray-500">Loading shifts...</div>
+                                    ) : shifts.length === 0 ? (
+                                        <div className="p-8 text-center text-gray-500">No shifts found</div>
                                     ) : (
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-white">
-                                                <tr>
-                                                    <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="selectAll"
-                                                            onChange={(e) => handleSelectAll(e.target.checked)}
-                                                            className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
-                                                        />
-                                                    </th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Start Date</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift End Date</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Work Days</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Hours</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Type</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Availability Status</th>
-                                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                                                {patients.map((item) => (
-                                                    <tr key={item.id} className="transition-colors duration-150">
-                                                        <td className="px-4 py-3 pl-[37px]">
+                                        <>
+                                            <table className="min-w-full divide-y divide-gray-200 hidden md:table">
+                                                <thead className="bg-white">
+                                                    <tr>
+                                                        <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={selectedIds.includes(item.id)}
-                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                id="selectAll"
+                                                                onChange={(e) => handleSelectAll(e.target.checked)}
                                                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                                             />
-                                                        </td>
+                                                        </th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Department</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Specialization</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Start Date</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift End Date</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Work Days</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Hours</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shift Type</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Availability Status</th>
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                                                    </tr>
+                                                </thead>
 
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                    {shifts.map((item) => (
+                                                        <tr key={item.id} className="transition-colors duration-150">
+                                                            <td className="px-4 py-3 pl-[37px]">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedIds.includes(item.id!)}
+                                                                    onChange={() => handleCheckboxChange(item.id!)}
+                                                                    className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
+                                                                />
+                                                            </td>
 
-                                                        <td className="px-4 py-3 whitespace-nowrap">
-                                                            <div className="flex items-center">
-                                                                <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
-                                                                <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
-                                                                    <div className="text-sm font-medium">
-                                                                        Dr. Chris Wilson
+                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                                <div className="flex items-center">
+                                                                    <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                                                    <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
+                                                                        <div className="text-sm font-medium">
+                                                                            {item.doctorName}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm whitespace-nowrap">ENT</td>
+                                                            <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
 
-                                                        <td className="px-4 whitespace-nowrap">
-                                                            <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
-                                                                Breast Cancer
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className="flex items-center">
-                                                                2024-02-01
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 text-sm">2024-02-28</td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className={`flex items-center `}>
-                                                                Mon-Fri
-                                                            </div>
-                                                        </td>
+                                                            <td className="px-4 whitespace-nowrap">
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
+                                                                    {item.specialty}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className="flex items-center">
+                                                                    {item.shiftStartDate}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 text-sm">{item.shiftEndDate}</td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className={`flex items-center `}>
+                                                                    {item.workDays}
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm">9:00 AM - 5:00 PM</td>
-                                                        <td className="px-4 text-sm">Day Shift</td>
-                                                        <td className="px-4 text-sm">
-                                                            <div className={`flex items-center `}>
-                                                                Available
-                                                            </div>
-                                                        </td>
+                                                            <td className="px-4 text-sm">{item.shiftHours}</td>
+                                                            <td className="px-4 text-sm">{item.shiftType}</td>
+                                                            <td className="px-4 text-sm">
+                                                                <div className={`flex items-center `}>
+                                                                    {item.availabilityStatus}
+                                                                </div>
+                                                            </td>
 
-                                                        <td className="px-4 text-sm font-medium">
-                                                            <div className="flex space-x-2">
-                                                                <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Edit className="w-5 h-5" />
-                                                                </button>
-                                                                <button onClick={() => {
-                                                                    deleteSelectedPatients(item.id);
-                                                                }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
-                                                                    <Trash2 className="w-5 h-5" />
-                                                                </button>
+                                                            <td className="px-4 text-sm font-medium">
+                                                                <div className="flex space-x-2">
+                                                                    <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button onClick={() => {
+                                                                        deleteSelectedShift(item.id!);
+                                                                    }} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+
+                                            <div
+                                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
+                                                    }`}
+                                            >
+                                                {shifts.map((item) => (
+                                                    <div key={item.id} className="border-b border-gray-200 py-4">
+                                                        {/* Checkbox Row */}
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <input
+                                                                checked={selectedIds.includes(item.id!)}
+                                                                onChange={() => handleCheckboxChange(item.id!)}
+                                                                type="checkbox"
+                                                                className="w-4 h-4 text-blue-600 rounded"
+                                                            />
+                                                        </div>
+
+                                                        {/* Shift Info */}
+                                                        <div className="space-y-2 text-sm text-gray-800">
+                                                            {/* Name */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Name:</span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed border-gray-400"></div>
+                                                                    <span>{item.doctorName || "—"}</span>
+                                                                </div>
                                                             </div>
-                                                        </td>
-                                                    </tr>
+
+                                                            {/* Department */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Department:</span>
+                                                                <span>{item.department || "—"}</span>
+                                                            </div>
+
+                                                            {/* Specialization */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Specialization:</span>
+                                                                <span>{item.specialty || "—"}</span>
+                                                            </div>
+
+                                                            {/* Shift Start Date */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Shift Start Date:</span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Calendar className="w-4 h-4 text-gray-600" />
+                                                                    <span>{item.shiftStartDate || "—"}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Shift End Date */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Shift End Date:</span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Calendar className="w-4 h-4 text-gray-600" />
+                                                                    <span>{item.shiftEndDate || "—"}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Work Days */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Work Days:</span>
+                                                                <span>{item.workDays || "—"}</span>
+                                                            </div>
+
+                                                            {/* Shift Hours */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Shift Hours:</span>
+                                                                <span>{item.shiftHours || "—"}</span>
+                                                            </div>
+
+                                                            {/* Shift Type */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Shift Type:</span>
+                                                                <span>{item.shiftType || "—"}</span>
+                                                            </div>
+
+                                                            {/* Availability Status */}
+                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                                                                <span className="font-semibold w-36">Availability Status:</span>
+                                                                <span>{item.availabilityStatus || "Available"}</span>
+                                                            </div>
+
+                                                            {/* Actions */}
+                                                            <div className="flex items-center gap-3 pt-2">
+                                                                <div className="flex space-x-2">
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
+                                                                        className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Edit className="w-5 h-5" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => deleteSelectedShift(item.id!)}
+                                                                        className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                    >
+                                                                        <Trash2 className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 ))}
-                                            </tbody>
-                                        </table>
+                                            </div>
+
+                                        </>
                                     )}
                                 </div>
                             </div>
-
-                            <div
-                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
-                                    }`}
-                            >
-                                {patients.map((item) => (
-                                    <div key={item.id} className="border-b border-gray-200 py-4">
-                                        {/* Checkbox Row */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <input
-                                                checked={selectedIds.includes(item.id)}
-                                                onChange={() => handleCheckboxChange(item.id)}
-                                                type="checkbox"
-                                                className="w-4 h-4 text-blue-600 rounded"
-                                            />
-                                        </div>
-
-                                        {/* Shift Info */}
-                                        <div className="space-y-2 text-sm text-gray-800">
-                                            {/* Name */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Name:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <img
-                                                        src="https://via.placeholder.com/40"
-                                                        alt="staff"
-                                                        className="w-8 h-8 rounded-full object-cover border-2 border-dashed border-gray-400"
-                                                    />
-                                                    <span>{item.name || "David"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Department */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Department:</span>
-                                                <span>{item.department || "Urology"}</span>
-                                            </div>
-
-                                            {/* Specialization */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Specialization:</span>
-                                                <span>{item.specialization || "Prostate"}</span>
-                                            </div>
-
-                                            {/* Shift Start Date */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Start Date:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                    <span>{item.shift_start || "02/01/2024"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Shift End Date */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift End Date:</span>
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                    <span>{item.shift_end || "02/01/2024"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Work Days */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Work Days:</span>
-                                                <span>{item.work_days || "Mon–Fri"}</span>
-                                            </div>
-
-                                            {/* Shift Hours */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Hours:</span>
-                                                <span>{item.shift_hours || "9:00 AM – 5:00 PM"}</span>
-                                            </div>
-
-                                            {/* Shift Type */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Shift Type:</span>
-                                                <span>{item.shift_type || "Day Shift"}</span>
-                                            </div>
-
-                                            {/* Availability Status */}
-                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                                                <span className="font-semibold w-36">Availability Status:</span>
-                                                <span>{item.status || "Available"}</span>
-                                            </div>
-
-                                            {/* Actions */}
-                                            <div className="flex items-center gap-3 pt-2">
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleEditClick(item)}
-                                                        className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                                    >
-                                                        <Edit className="w-5 h-5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteSelectedPatients(item.id)}
-                                                        className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
-                                                    >
-                                                        <Trash2 className="w-5 h-5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <Paginator totalItems={patients.length} />
+                    <Paginator totalItems={shifts.length} />
                 </div>
             </div>
 
-            {isEditModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <div className="flex items-center space-x-3">
-                                <img
-                                    src="/default-avatar.png"
-                                    alt="Patient"
-                                    className="w-10 h-10 rounded-full border"
-                                />
-                                <h2 className="text-lg font-semibold">
-                                    Edit {editingPatient?.first_name} {editingPatient?.last_name}
-                                </h2>
-                            </div>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdatePatient} className="p-6 space-y-6 h-[450px] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        id="first_name"
-                                        name='first_name'
-                                        value={`${editingPatient?.first_name || ""} ${editingPatient?.last_name || ""}`}
-                                        onChange={(e) => {
-                                            const [first, ...last] = e.target.value.split(" ");
-                                            setEditingPatient({ ...editingPatient, first_name: first, last_name: last.join(" ") });
-                                        }}
-                                        placeholder=" "
-                                        required
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="name"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.first_name || editingPatient?.last_name ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Name*
-                                    </label>
-                                </div>
-
-                                {/* Mobile */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        id="mobile"
-                                        value={editingPatient?.mobile || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, mobile: e.target.value })}
-                                        placeholder=" "
-                                        required
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="mobile"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.mobile ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Mobile*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Gender */}
-                            <div className="flex items-center gap-6">
-                                <span className="text-sm font-medium">Gender:</span>
-                                <label className="flex items-center gap-1 text-sm">
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        checked={editingPatient?.gender === "Male"}
-                                        onChange={() => setEditingPatient({ ...editingPatient, gender: "Male" })}
-                                    />
-                                    Male
-                                </label>
-                                <label className="flex items-center gap-1 text-sm">
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        checked={editingPatient?.gender === "Female"}
-                                        onChange={() => setEditingPatient({ ...editingPatient, gender: "Female" })}
-                                    />
-                                    Female
-                                </label>
-                            </div>
-
-                            {/* Treatment */}
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    id="treatment"
-                                    value={editingPatient?.treatment || ""}
-                                    onChange={(e) => setEditingPatient({ ...editingPatient, treatment: e.target.value })}
-                                    placeholder=" "
-                                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 h-[80px] focus:ring-[#005CBB] outline-none transition-all`}
-                                />
-                                <label
-                                    htmlFor="treatment"
-                                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.treatment ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                >
-                                    Treatment
-                                </label>
-                            </div>
-
-
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Age */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        id="age"
-                                        value={editingPatient?.age || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, age: e.target.value })}
-                                        placeholder=" "
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="age"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.age ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Age*
-                                    </label>
-                                </div>
-
-                                {/* Email */}
-                                <div className="relative">
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        value={editingPatient?.email || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, email: e.target.value })}
-                                        placeholder=" "
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="email"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.email ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Email*
-                                    </label>
-                                </div>
-
-                                {/* Admission Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        id="admission_date"
-                                        value={editingPatient?.admission_date || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, admission_date: e.target.value })}
-                                        placeholder=" "
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="admission_date"
-                                        className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.admission_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Admission Date*
-                                    </label>
-                                </div>
-
-                                {/* Discharge Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        id="discharge_date"
-                                        value={editingPatient?.discharge_date || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, discharge_date: e.target.value })}
-                                        placeholder=" "
-                                        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                    />
-                                    <label
-                                        htmlFor="discharge_date"
-                                        className={`absolute left-3 p-[4px] bg-white transition-all duration-200
-      ${editingPatient?.discharge_date ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                    >
-                                        Discharge Date*
-                                    </label>
-                                </div>
-
-                                {/* Doctor Assigned */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        id="doctor_assigned"
-                                        value={editingPatient?.assigned_doctor || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, assigned_doctor: e.target.value })}
-                                        placeholder=" "
-                                        required
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label
-                                        htmlFor="doctor_assigned"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.assigned_doctor ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
-                                    >
-                                        Doctor Assigned*
-                                    </label>
-                                </div>
-
-                                {/* Status */}
-                                <div className="relative">
-                                    <select
-                                        id="status"
-                                        value={editingPatient?.status || ""}
-                                        onChange={(e) => setEditingPatient({ ...editingPatient, status: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                                    >
-                                        <option value="" disabled hidden></option>
-                                        <option value="Admitted">Admitted</option>
-                                        <option value="Under Treatment">Under Treatment</option>
-                                        <option value="Recovered">Recovered</option>
-                                        <option value="Discharged">Discharged</option>
-                                    </select>
-                                    <label
-                                        htmlFor="status"
-                                        className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-          ${editingPatient?.status ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]"`}
-                                    >
-                                        Status*
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="relative">
-                                <textarea
-                                    id="address"
-                                    rows={3}
-                                    value={editingPatient?.address || ""}
-                                    onChange={(e) => setEditingPatient({ ...editingPatient, address: e.target.value })}
-                                    placeholder=" "
-                                    className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none
-      text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
-                                ></textarea>
-                                <label
-                                    htmlFor="address"
-                                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200
-      ${editingPatient?.address ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"}
-      peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                                >
-                                    Address
-                                </label>
-                            </div>
-
-                            {/* Submit */}
-                            <div className="flex gap-2 pt-3">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Save
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium  transition"
-                                >
-                                    cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {/* Shift Modal */}
+            {isModalOpen && (
+                <ShiftModal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    initialData={editingShift}
+                    isEditMode={isEditMode}
+                />
             )}
-
 
             <style jsx>{`
         @keyframes slideDown {
@@ -816,6 +579,389 @@ export default function ShiftManagmentPage() {
         </>
     );
 }
+
+// Modal Component
+interface ShiftModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: ShiftData) => void;
+    initialData?: ShiftData | null;
+    isEditMode?: boolean;
+}
+
+// Create a type for form fields only (excluding id)
+type FormFieldName = Exclude<keyof ShiftData, 'id'>;
+
+
+// Floating Input Components (same as aapke paas hain)
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, showPassword, setShowPassword, error }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, icon: Icon, required = false, children, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full appearance-none rounded-md border bg-white px-10 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value=""></option>
+                {children}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            <svg className="absolute top-4 right-10 w-4 h-4 md:w-5 md:h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingTextarea({ label, name, value, onChange, icon: Icon, required = false, rows = 3, error }: any) {
+    return (
+        <div className="relative">
+            <textarea
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                rows={rows}
+                className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+// Modal Component with Floating Inputs
+const ShiftModal: React.FC<ShiftModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    isEditMode = false
+}) => {
+    const [formData, setFormData] = useState<ShiftData>({
+        doctorName: '',
+        department: '',
+        specialty: '',
+        shiftStartDate: new Date().toISOString().split('T')[0],
+        shiftEndDate: new Date().toISOString().split('T')[0],
+        workDays: '',
+        shiftHours: '',
+        shiftType: '',
+        availabilityStatus: 'Available',
+        overtimeHours: '',
+        totalHoursPerWeek: '',
+        shiftNotes: ''
+    });
+
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    const isFormValid =
+        formData.doctorName.trim() !== '' &&
+        formData.department.trim() !== '' &&
+        formData.shiftStartDate.trim() !== '' &&
+        formData.shiftEndDate.trim() !== '' &&
+        formData.workDays.trim() !== '' &&
+        formData.shiftHours.trim() !== '' &&
+        formData.shiftType.trim() !== '' &&
+        formData.availabilityStatus.trim() !== '';
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset form when adding new
+            setFormData({
+                doctorName: '',
+                department: '',
+                specialty: '',
+                shiftStartDate: new Date().toISOString().split('T')[0],
+                shiftEndDate: new Date().toISOString().split('T')[0],
+                workDays: '',
+                shiftHours: '',
+                shiftType: '',
+                availabilityStatus: 'Available',
+                overtimeHours: '',
+                totalHoursPerWeek: '',
+                shiftNotes: ''
+            });
+        }
+    }, [initialData, isOpen]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                    <div className="flex items-center">
+                        {isEditMode && (
+                            <div className="relative w-10 h-10 mr-3">
+                                <img
+                                    src="/assets/images/user/new.jpg"
+                                    alt="avatar"
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+                            </div>
+                        )}
+                        <h2 className="text-xl font-semibold">
+                            {isEditMode ? 'Edit Shift' : 'New Shift'}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="py-5 px-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Doctor Name */}
+                            <FloatingInput
+                                label="Doctor Name"
+                                name="doctorName"
+                                value={formData.doctorName}
+                                onChange={handleInputChange}
+                                icon={User}
+                                required
+                            />
+
+                            {/* Department */}
+                            <FloatingSelect
+                                label="Department"
+                                name="department"
+                                value={formData.department}
+                                onChange={handleInputChange}
+                                icon={Building}
+                                required
+                            >
+                                <option value="cardiology">Cardiology</option>
+                                <option value="neurology">Neurology</option>
+                                <option value="orthopedics">Orthopedics</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="ent">ENT</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="radiology">Radiology</option>
+                            </FloatingSelect>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Specialty */}
+                            <FloatingInput
+                                label="Specialty"
+                                name="specialty"
+                                value={formData.specialty}
+                                onChange={handleInputChange}
+                                icon={AlertCircle}
+                            />
+
+                            {/* Shift Start Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Shift Start Date"
+                                name="shiftStartDate"
+                                value={formData.shiftStartDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Shift End Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Shift End Date"
+                                name="shiftEndDate"
+                                value={formData.shiftEndDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Work Days */}
+                            <FloatingInput
+                                label="Work Days"
+                                name="workDays"
+                                value={formData.workDays}
+                                onChange={handleInputChange}
+                                icon={Calendar}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Shift Hours */}
+                            <FloatingInput
+                                label="Shift Hours"
+                                name="shiftHours"
+                                value={formData.shiftHours}
+                                onChange={handleInputChange}
+                                icon={Clock}
+                                required
+                            />
+
+                            {/* Shift Type */}
+                            <FloatingSelect
+                                label="Shift Type"
+                                name="shiftType"
+                                value={formData.shiftType}
+                                onChange={handleInputChange}
+                                icon={Clock}
+                                required
+                            >
+                                <option value="Day Shift">Day Shift</option>
+                                <option value="Night Shift">Night Shift</option>
+                                <option value="Evening Shift">Evening Shift</option>
+                                <option value="Rotating Shift">Rotating Shift</option>
+                                <option value="Weekend Shift">Weekend Shift</option>
+                            </FloatingSelect>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Availability Status */}
+                            <FloatingSelect
+                                label="Availability Status"
+                                name="availabilityStatus"
+                                value={formData.availabilityStatus}
+                                onChange={handleInputChange}
+                                icon={AlertCircle}
+                                required
+                            >
+                                <option value="Available">Available</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Vacation">Vacation</option>
+                                <option value="Training">Training</option>
+                            </FloatingSelect>
+
+                            {/* Overtime Hours */}
+                            <FloatingInput
+                                type="number"
+                                label="Overtime Hours"
+                                name="overtimeHours"
+                                value={formData.overtimeHours}
+                                onChange={handleInputChange}
+                                icon={Clock}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Total Hours Per Week */}
+                            <FloatingInput
+                                type="number"
+                                label="Total Hours Per Week"
+                                name="totalHoursPerWeek"
+                                value={formData.totalHoursPerWeek}
+                                onChange={handleInputChange}
+                                icon={Clock}
+                            />
+                        </div>
+
+                        {/* Shift Notes */}
+                        <FloatingTextarea
+                            label="Shift Notes"
+                            name="shiftNotes"
+                            value={formData.shiftNotes}
+                            onChange={handleInputChange}
+                            icon={FileText}
+                            rows={3}
+                        />
+
+                        {/* Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="submit"
+                                disabled={!isEditMode && !isFormValid}
+                                className={`px-4 py-2 rounded-full transition-colors ${isEditMode
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                    : isFormValid
+                                        ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                        : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                    }`}
+                            >
+                                {isEditMode ? 'Update' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
