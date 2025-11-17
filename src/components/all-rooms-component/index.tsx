@@ -48,13 +48,12 @@ export default function AddAllotmentComponent() {
       name,
       value,
       onFocus: () => handleFieldFocus(name),
-      onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => 
+      onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
         handleFieldBlur(name, e.target.value),
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => 
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
         handleInputChange(name, e.target.value),
-      className: `w-full px-3 py-3 border rounded-md focus:outline-none peer ${
-        errors[name] ? "border-red-500" : "border-gray-400 focus:border-blue-500"
-      }`
+      className: `w-full px-3 py-3 border rounded-md focus:outline-none peer ${errors[name] ? "border-red-500" : "border-gray-400 focus:border-blue-500"
+        }`
     };
 
     return (
@@ -89,9 +88,8 @@ export default function AddAllotmentComponent() {
           <textarea
             {...commonProps}
             rows={4}
-            className={`w-full px-3 py-3 border rounded-md focus:outline-none resize-none peer ${
-              errors[name] ? "border-red-500" : "border-gray-400 focus:border-blue-500"
-            }`}
+            className={`w-full px-3 py-3 border rounded-md focus:outline-none resize-none peer ${errors[name] ? "border-red-500" : "border-gray-400 focus:border-blue-500"
+              }`}
           />
         ) : (
           <input
@@ -100,11 +98,10 @@ export default function AddAllotmentComponent() {
           />
         )}
         <label
-          className={`absolute left-3 transition-all duration-200 pointer-events-none ${
-            isFocused
+          className={`absolute left-3 transition-all duration-200 pointer-events-none ${isFocused
               ? "text-xs -top-2 bg-white px-1 text-blue-500"
               : "text-gray-600 top-3"
-          }`}
+            }`}
         >
           {label}
           {required && <span className="text-red-500">*</span>}

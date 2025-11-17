@@ -12,8 +12,8 @@ const AttendanceSheetComponent = () => {
       name: 'Jacob Ryan',
       avatar: 'https://i.pravatar.cc/150?img=12',
       attendance: [
-        'present', 'present', 'weekend', 'holiday', 'present', 'present', 'weekend', 
-        'present', 'leave', 'present', 'present', 'weekend', 'weekend', 'present', 
+        'present', 'present', 'weekend', 'holiday', 'present', 'present', 'weekend',
+        'present', 'leave', 'present', 'present', 'weekend', 'weekend', 'present',
         'present', 'present', 'leave', 'weekend', 'weekend', 'present', 'present', 'present',
         'weekend', 'holiday', 'present', 'present', 'weekend', 'present', 'leave', 'present'
       ]
@@ -23,8 +23,8 @@ const AttendanceSheetComponent = () => {
       name: 'Angelica Ramos',
       avatar: 'https://i.pravatar.cc/150?img=5',
       attendance: [
-        'present', 'present', 'weekend', 'present', 'leave', 'present', 'weekend', 
-        'present', 'present', 'holiday', 'present', 'weekend', 'weekend', 'present', 
+        'present', 'present', 'weekend', 'present', 'leave', 'present', 'weekend',
+        'present', 'present', 'holiday', 'present', 'weekend', 'weekend', 'present',
         'present', 'present', 'present', 'weekend', 'weekend', 'present', 'leave', 'present',
         'weekend', 'present', 'present', 'leave', 'weekend', 'present', 'present', 'holiday'
       ]
@@ -34,8 +34,8 @@ const AttendanceSheetComponent = () => {
       name: 'Jens Brincker',
       avatar: 'https://i.pravatar.cc/150?img=13',
       attendance: [
-        'present', 'leave', 'weekend', 'present', 'present', 'present', 'weekend', 
-        'holiday', 'present', 'present', 'leave', 'weekend', 'weekend', 'present', 
+        'present', 'leave', 'weekend', 'present', 'present', 'present', 'weekend',
+        'holiday', 'present', 'present', 'leave', 'weekend', 'weekend', 'present',
         'present', 'present', 'present', 'weekend', 'weekend', 'holiday', 'present', 'present',
         'weekend', 'present', 'present', 'present', 'weekend', 'leave', 'present', 'present'
       ]
@@ -45,8 +45,8 @@ const AttendanceSheetComponent = () => {
       name: 'Mark Hay',
       avatar: 'https://i.pravatar.cc/150?img=8',
       attendance: [
-        'holiday', 'present', 'weekend', 'present', 'present', 'leave', 'weekend', 
-        'present', 'present', 'present', 'present', 'weekend', 'weekend', 'holiday', 
+        'holiday', 'present', 'weekend', 'present', 'present', 'leave', 'weekend',
+        'present', 'present', 'present', 'present', 'weekend', 'weekend', 'holiday',
         'present', 'leave', 'present', 'weekend', 'weekend', 'present', 'present', 'present',
         'weekend', 'present', 'leave', 'present', 'weekend', 'present', 'present', 'present'
       ]
@@ -61,7 +61,7 @@ const AttendanceSheetComponent = () => {
     return days;
   };
 
-  const getStatusIcon = (status:any) => {
+  const getStatusIcon = (status: any) => {
     switch (status) {
       case 'present':
         return (
@@ -124,7 +124,7 @@ const AttendanceSheetComponent = () => {
         {/* Header Section */}
         <div className="p-4 sm:p-6 border-b border-gray-200">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">Attendance Sheet</h2>
-          
+
           {/* Filters */}
           <div className="flex items-end gap-3 sm:gap-4 flex-wrap">
             {/* Year Dropdown */}
@@ -178,7 +178,7 @@ const AttendanceSheetComponent = () => {
             <p className="text-xs sm:text-sm text-gray-600">
               Filtered by: <span className="font-medium">Year: 2024 | Month: November</span>
             </p>
-            
+
             {/* Legend */}
             <div className="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm flex-wrap">
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -264,7 +264,7 @@ const AttendanceSheetComponent = () => {
                 />
                 <span className="font-semibold text-gray-900">{employee.name}</span>
               </div>
-              
+
               <div className="grid grid-cols-7 gap-2">
                 {employee.attendance.map((status, index) => (
                   <div key={index} className="flex flex-col items-center gap-1">

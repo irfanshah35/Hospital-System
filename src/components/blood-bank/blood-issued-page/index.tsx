@@ -308,13 +308,13 @@ export default function BloodIssuedPage() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setBloodIssued(prev => 
-                prev.map(item => 
+
+            setBloodIssued(prev =>
+                prev.map(item =>
                     item.id === editingItem?.id ? editingItem : item
                 )
             );
-            
+
             alert("Blood issued record updated successfully!");
             setIsEditModalOpen(false);
         } catch (error) {
@@ -495,9 +495,8 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
+                                                                    }`}>
                                                                     {item.patientGender}
                                                                 </span>
                                                             </td>
@@ -521,11 +520,10 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.quantityIssued > 2 ? 'bg-red-100 text-red-800' : 
-                                                                    item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-green-100 text-green-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.quantityIssued > 2 ? 'bg-red-100 text-red-800' :
+                                                                        item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
+                                                                            'bg-green-100 text-green-800'
+                                                                    }`}>
                                                                     {item.quantityIssued} units
                                                                 </span>
                                                             </td>
@@ -550,12 +548,11 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {item.patientBloodGroup}
                                                                 </span>
                                                             </td>
@@ -568,14 +565,14 @@ export default function BloodIssuedPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(item.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteSelectedItem(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -633,9 +630,8 @@ export default function BloodIssuedPage() {
                                                             {/* Patient Gender */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Gender:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
+                                                                    }`}>
                                                                     {item.patientGender}
                                                                 </span>
                                                             </div>
@@ -649,12 +645,11 @@ export default function BloodIssuedPage() {
                                                             {/* Blood Type */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Blood Type:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.bloodType.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {item.bloodType}
                                                                 </span>
                                                             </div>
@@ -668,11 +663,10 @@ export default function BloodIssuedPage() {
                                                             {/* Quantity Issued */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Quantity Issued:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.quantityIssued > 2 ? 'bg-red-100 text-red-800' : 
-                                                                    item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-green-100 text-green-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.quantityIssued > 2 ? 'bg-red-100 text-red-800' :
+                                                                        item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
+                                                                            'bg-green-100 text-green-800'
+                                                                    }`}>
                                                                     {item.quantityIssued} units
                                                                 </span>
                                                             </div>
@@ -701,12 +695,11 @@ export default function BloodIssuedPage() {
                                                             {/* Patient Blood Group */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Patient Blood Group:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {item.patientBloodGroup}
                                                                 </span>
                                                             </div>
@@ -774,7 +767,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="text"
                                         value={editingItem.issueId}
-                                        onChange={(e) => setEditingItem({...editingItem, issueId: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, issueId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -787,7 +780,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="text"
                                         value={editingItem.patientId}
-                                        onChange={(e) => setEditingItem({...editingItem, patientId: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, patientId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -800,7 +793,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="text"
                                         value={editingItem.patientName}
-                                        onChange={(e) => setEditingItem({...editingItem, patientName: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, patientName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -813,7 +806,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="number"
                                         value={editingItem.patientAge}
-                                        onChange={(e) => setEditingItem({...editingItem, patientAge: parseInt(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, patientAge: parseInt(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -825,7 +818,7 @@ export default function BloodIssuedPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.patientGender}
-                                        onChange={(e) => setEditingItem({...editingItem, patientGender: e.target.value as "Male" | "Female"})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, patientGender: e.target.value as "Male" | "Female" })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Male">Male</option>
@@ -841,7 +834,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="text"
                                         value={editingItem.bloodProductId}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodProductId: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, bloodProductId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -855,7 +848,7 @@ export default function BloodIssuedPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.bloodType}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodType: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, bloodType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="O+">O+</option>
@@ -876,7 +869,7 @@ export default function BloodIssuedPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.componentType}
-                                        onChange={(e) => setEditingItem({...editingItem, componentType: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, componentType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Whole Blood">Whole Blood</option>
@@ -895,7 +888,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="number"
                                         value={editingItem.quantityIssued}
-                                        onChange={(e) => setEditingItem({...editingItem, quantityIssued: parseInt(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, quantityIssued: parseInt(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -908,7 +901,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="date"
                                         value={editingItem.issueDate}
-                                        onChange={(e) => setEditingItem({...editingItem, issueDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, issueDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -921,7 +914,7 @@ export default function BloodIssuedPage() {
                                     <input
                                         type="text"
                                         value={editingItem.issuedBy}
-                                        onChange={(e) => setEditingItem({...editingItem, issuedBy: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, issuedBy: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -933,7 +926,7 @@ export default function BloodIssuedPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.patientBloodGroup}
-                                        onChange={(e) => setEditingItem({...editingItem, patientBloodGroup: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, patientBloodGroup: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="O+">O+</option>
@@ -956,7 +949,7 @@ export default function BloodIssuedPage() {
                                 <input
                                     type="text"
                                     value={editingItem.issueReason}
-                                    onChange={(e) => setEditingItem({...editingItem, issueReason: e.target.value})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, issueReason: e.target.value })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 />
                                 <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -969,7 +962,7 @@ export default function BloodIssuedPage() {
                                 <input
                                     type="text"
                                     value={editingItem.doctorName}
-                                    onChange={(e) => setEditingItem({...editingItem, doctorName: e.target.value})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, doctorName: e.target.value })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 />
                                 <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
