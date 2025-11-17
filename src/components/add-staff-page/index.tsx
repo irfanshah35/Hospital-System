@@ -19,7 +19,7 @@ export default function AddStaffPage() {
             setStep(prev => Math.min(prev + 1, totalSteps));
         }
     };
-    
+
     const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
     const handleStepClick = (index: number) => {
         if (validateStep(step)) {
@@ -82,7 +82,7 @@ export default function AddStaffPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type, checked, files } = e.target as any;
-        
+
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: "" }));
         }
@@ -98,7 +98,7 @@ export default function AddStaffPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateStep(5)) {
             setSubmitMessage({ type: 'error', text: 'Please fix all validation errors before submitting.' });
             return;
@@ -167,9 +167,9 @@ export default function AddStaffPage() {
                 throw new Error(result.error || result.message || 'Failed to add staff member');
             }
         } catch (error) {
-            setSubmitMessage({ 
-                type: 'error', 
-                text: error instanceof Error ? error.message : '❌ Failed to add staff member. Please try again.' 
+            setSubmitMessage({
+                type: 'error',
+                text: error instanceof Error ? error.message : '❌ Failed to add staff member. Please try again.'
             });
         } finally {
             setIsSubmitting(false);
@@ -197,11 +197,10 @@ export default function AddStaffPage() {
                 <p className="text-xs md:text-sm text-gray-500 mb-4">Complete all required fields for staff onboarding</p>
 
                 {submitMessage.text && (
-                    <div className={`mb-4 p-3 rounded-md text-xs md:text-sm ${
-                        submitMessage.type === 'success' 
-                            ? "bg-green-50 text-green-700 border border-green-200" 
+                    <div className={`mb-4 p-3 rounded-md text-xs md:text-sm ${submitMessage.type === 'success'
+                            ? "bg-green-50 text-green-700 border border-green-200"
                             : "bg-red-50 text-red-700 border border-red-200"
-                    }`}>
+                        }`}>
                         {submitMessage.text}
                     </div>
                 )}
@@ -408,11 +407,11 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                 <div className="md:col-span-2">
                     <FloatingInput label="Username" name="username" value={formData.username} onChange={handleChange} icon={User} required error={errors.username} />
                 </div>
-                <FloatingInput type={showPassword ? "text" : "password"} label="Password" name="password" value={formData.password} onChange={handleChange} 
+                <FloatingInput type={showPassword ? "text" : "password"} label="Password" name="password" value={formData.password} onChange={handleChange}
                     showPassword={showPassword} setShowPassword={setShowPassword} required error={errors.password} />
-                <FloatingInput type={showConfirmPassword ? "text" : "password"} label="Confirm Password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} 
+                <FloatingInput type={showConfirmPassword ? "text" : "password"} label="Confirm Password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
                     showPassword={showConfirmPassword} setShowPassword={setShowConfirmPassword} required error={errors.confirmPassword} />
-                
+
                 <div className="md:col-span-2">
                     <label className="block text-xs md:text-sm font-medium mb-2">Profile Photo</label>
                     <div onClick={handleFileClick} className="border border-dashed border-gray-300 rounded-md p-4 md:p-5 flex items-center cursor-pointer hover:border-blue-500 transition h-20 md:h-[96px]">
@@ -423,13 +422,13 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                     </div>
                     <input ref={fileInputRef} name="photo" type="file" accept="image/*" onChange={handleChange} className="hidden" />
                 </div>
-                
+
                 <div className="md:col-span-2">
                     <FloatingTextarea label="Bio" name="bio" value={formData.bio} onChange={handleChange} rows={3} />
                 </div>
-                
+
                 <div className="md:col-span-2 flex items-center gap-2">
-                    <input type="checkbox" id="agreed" name="agreed" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} 
+                    <input type="checkbox" id="agreed" name="agreed" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300" />
                     <label htmlFor="agreed" className="text-xs md:text-sm">
                         I agree to the <a href="#" className="underline-none">terms and conditions</a>
@@ -442,11 +441,10 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                     <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /> Back
                 </button>
                 <button type="submit" disabled={!agreed || isSubmitting}
-                    className={`px-6 md:px-8 py-2 rounded-full flex items-center gap-2 transition text-sm md:text-base ${
-                        agreed && !isSubmitting 
-                            ? "bg-green-600 text-white hover:bg-green-700" 
+                    className={`px-6 md:px-8 py-2 rounded-full flex items-center gap-2 transition text-sm md:text-base ${agreed && !isSubmitting
+                            ? "bg-green-600 text-white hover:bg-green-700"
                             : "bg-gray-400 text-gray-600 cursor-not-allowed"
-                    }`}>
+                        }`}>
                     <Check className="w-4 h-4 md:w-5 md:h-5" />
                     {isSubmitting ? "Submitting..." : "Submit"}
                 </button>

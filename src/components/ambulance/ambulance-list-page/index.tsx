@@ -368,7 +368,7 @@ export default function AmbulanceListPage() {
                               <td className="px-4 text-sm">Ramona Freeman</td>
                               <td className="px-4 text-sm">
                                 <div className="flex items-center">
-                                 GT6456345645
+                                  GT6456345645
                                 </div>
                               </td>
 

@@ -457,10 +457,10 @@ export default function AmbulanceCallList() {
                                 <span className="font-semibold w-28">Gender:</span>
                                 <span
                                   className={`px-2 py-1 text-xs font-semibold rounded ${item.gender === "Female"
-                                      ? "bg-[#6f42c126] text-[#6f42c1]"
-                                      : item.gender === "Male"
-                                        ? "bg-[#19875426] text-[#198754]"
-                                        : "bg-[#ffc10726] text-[#ffc107]"
+                                    ? "bg-[#6f42c126] text-[#6f42c1]"
+                                    : item.gender === "Male"
+                                      ? "bg-[#19875426] text-[#198754]"
+                                      : "bg-[#ffc10726] text-[#ffc107]"
                                     }`}
                                 >
                                   {item.gender || "—"}

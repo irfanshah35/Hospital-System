@@ -241,13 +241,13 @@ export default function BloodStockPage() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setBloodStock(prev => 
-                prev.map(item => 
+
+            setBloodStock(prev =>
+                prev.map(item =>
                     item.id === editingItem?.id ? editingItem : item
                 )
             );
-            
+
             alert("Blood stock updated successfully!");
             setIsEditModalOpen(false);
         } catch (error) {
@@ -411,12 +411,11 @@ export default function BloodStockPage() {
                                                             </td>
 
                                                             <td className="px-4 text-sm whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.bloodType.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {item.bloodType}
                                                                 </span>
                                                             </td>
@@ -428,11 +427,10 @@ export default function BloodStockPage() {
                                                             </td>
 
                                                             <td className="px-4 whitespace-nowrap">
-                                                                <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                                    item.quantityInStock > 20 ? 'bg-green-100 text-green-800' :
-                                                                    item.quantityInStock > 10 ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-red-100 text-red-800'
-                                                                }`}>
+                                                                <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${item.quantityInStock > 20 ? 'bg-green-100 text-green-800' :
+                                                                        item.quantityInStock > 10 ? 'bg-yellow-100 text-yellow-800' :
+                                                                            'bg-red-100 text-red-800'
+                                                                    }`}>
                                                                     {item.quantityInStock} units
                                                                 </span>
                                                             </td>
@@ -450,11 +448,10 @@ export default function BloodStockPage() {
                                                             </td>
 
                                                             <td className="px-4 text-sm">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.donationStatus === 'Fresh' ? 'bg-green-100 text-green-800' :
-                                                                    item.donationStatus === 'Processed' ? 'bg-blue-100 text-blue-800' :
-                                                                    'bg-gray-100 text-gray-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.donationStatus === 'Fresh' ? 'bg-green-100 text-green-800' :
+                                                                        item.donationStatus === 'Processed' ? 'bg-blue-100 text-blue-800' :
+                                                                            'bg-gray-100 text-gray-800'
+                                                                    }`}>
                                                                     {item.donationStatus}
                                                                 </span>
                                                             </td>
@@ -464,11 +461,10 @@ export default function BloodStockPage() {
                                                             </td>
 
                                                             <td className="px-4 text-sm">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.conditionStatus === 'Excellent' ? 'bg-green-100 text-green-800' :
-                                                                    item.conditionStatus === 'Good' ? 'bg-blue-100 text-blue-800' :
-                                                                    'bg-yellow-100 text-yellow-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.conditionStatus === 'Excellent' ? 'bg-green-100 text-green-800' :
+                                                                        item.conditionStatus === 'Good' ? 'bg-blue-100 text-blue-800' :
+                                                                            'bg-yellow-100 text-yellow-800'
+                                                                    }`}>
                                                                     {item.conditionStatus}
                                                                 </span>
                                                             </td>
@@ -523,12 +519,11 @@ export default function BloodStockPage() {
                                                             {/* Blood Type */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Blood Type:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.bloodType.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {item.bloodType}
                                                                 </span>
                                                             </div>
@@ -542,11 +537,10 @@ export default function BloodStockPage() {
                                                             {/* Quantity */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Quantity:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.quantityInStock > 20 ? 'bg-green-100 text-green-800' :
-                                                                    item.quantityInStock > 10 ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-red-100 text-red-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.quantityInStock > 20 ? 'bg-green-100 text-green-800' :
+                                                                        item.quantityInStock > 10 ? 'bg-yellow-100 text-yellow-800' :
+                                                                            'bg-red-100 text-red-800'
+                                                                    }`}>
                                                                     {item.quantityInStock} units
                                                                 </span>
                                                             </div>
@@ -572,11 +566,10 @@ export default function BloodStockPage() {
                                                             {/* Donation Status */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Status:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.donationStatus === 'Fresh' ? 'bg-green-100 text-green-800' :
-                                                                    item.donationStatus === 'Processed' ? 'bg-blue-100 text-blue-800' :
-                                                                    'bg-gray-100 text-gray-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.donationStatus === 'Fresh' ? 'bg-green-100 text-green-800' :
+                                                                        item.donationStatus === 'Processed' ? 'bg-blue-100 text-blue-800' :
+                                                                            'bg-gray-100 text-gray-800'
+                                                                    }`}>
                                                                     {item.donationStatus}
                                                                 </span>
                                                             </div>
@@ -590,11 +583,10 @@ export default function BloodStockPage() {
                                                             {/* Condition Status */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Condition:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.conditionStatus === 'Excellent' ? 'bg-green-100 text-green-800' :
-                                                                    item.conditionStatus === 'Good' ? 'bg-blue-100 text-blue-800' :
-                                                                    'bg-yellow-100 text-yellow-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.conditionStatus === 'Excellent' ? 'bg-green-100 text-green-800' :
+                                                                        item.conditionStatus === 'Good' ? 'bg-blue-100 text-blue-800' :
+                                                                            'bg-yellow-100 text-yellow-800'
+                                                                    }`}>
                                                                     {item.conditionStatus}
                                                                 </span>
                                                             </div>
@@ -668,7 +660,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="text"
                                         value={editingItem.bloodProductId}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodProductId: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, bloodProductId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -680,7 +672,7 @@ export default function BloodStockPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.bloodType}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodType: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, bloodType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="O+">O+</option>
@@ -701,7 +693,7 @@ export default function BloodStockPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.componentType}
-                                        onChange={(e) => setEditingItem({...editingItem, componentType: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, componentType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Whole Blood">Whole Blood</option>
@@ -720,7 +712,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="number"
                                         value={editingItem.quantityInStock}
-                                        onChange={(e) => setEditingItem({...editingItem, quantityInStock: parseInt(e.target.value)})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, quantityInStock: parseInt(e.target.value) })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -733,7 +725,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="date"
                                         value={editingItem.expiryDate}
-                                        onChange={(e) => setEditingItem({...editingItem, expiryDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, expiryDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -746,7 +738,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="date"
                                         value={editingItem.collectionDate}
-                                        onChange={(e) => setEditingItem({...editingItem, collectionDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, collectionDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -760,7 +752,7 @@ export default function BloodStockPage() {
                                 <input
                                     type="text"
                                     value={editingItem.storageLocation}
-                                    onChange={(e) => setEditingItem({...editingItem, storageLocation: e.target.value})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, storageLocation: e.target.value })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 />
                                 <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -773,7 +765,7 @@ export default function BloodStockPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.donationStatus}
-                                        onChange={(e) => setEditingItem({...editingItem, donationStatus: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, donationStatus: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Fresh">Fresh</option>
@@ -790,7 +782,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="text"
                                         value={editingItem.batchNumber}
-                                        onChange={(e) => setEditingItem({...editingItem, batchNumber: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, batchNumber: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -802,7 +794,7 @@ export default function BloodStockPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.conditionStatus}
-                                        onChange={(e) => setEditingItem({...editingItem, conditionStatus: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, conditionStatus: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Excellent">Excellent</option>
@@ -819,7 +811,7 @@ export default function BloodStockPage() {
                                     <input
                                         type="text"
                                         value={editingItem.temperatureRange}
-                                        onChange={(e) => setEditingItem({...editingItem, temperatureRange: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, temperatureRange: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
