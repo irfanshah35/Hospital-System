@@ -45,7 +45,7 @@ export default function AllDoctorPage() {
 
   const router = useRouter();
 
-  const handleEdit = (doctor:any) => {
+  const handleEdit = (doctor: any) => {
     router.push(`/admin/doctors/${doctor.id}`);
   };
 
@@ -415,10 +415,10 @@ export default function AllDoctorPage() {
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button onClick={()=> handleEdit(doctor)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button onClick={() => handleEdit(doctor)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  
+
                                   <button onClick={() => deleteSelectedDoctors(doctor.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
                                     <Trash2 className="w-5 h-5" />
                                   </button>

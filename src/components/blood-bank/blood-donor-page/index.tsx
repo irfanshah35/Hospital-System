@@ -275,13 +275,13 @@ export default function BloodDonorPage() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setBloodDonors(prev => 
-                prev.map(donor => 
+
+            setBloodDonors(prev =>
+                prev.map(donor =>
                     donor.id === editingItem?.id ? editingItem : donor
                 )
             );
-            
+
             alert("Blood donor updated successfully!");
             setIsEditModalOpen(false);
         } catch (error) {
@@ -452,20 +452,18 @@ export default function BloodDonorPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
+                                                                    }`}>
                                                                     {donor.gender}
                                                                 </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {donor.bloodType}
                                                                 </span>
                                                             </td>
@@ -485,11 +483,10 @@ export default function BloodDonorPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
-                                                                    donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
-                                                                    "bg-red-100 text-red-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
+                                                                        donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
+                                                                            "bg-red-100 text-red-800"
+                                                                    }`}>
                                                                     {donor.donorStatus}
                                                                 </span>
                                                             </td>
@@ -516,14 +513,14 @@ export default function BloodDonorPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(donor)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(donor)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(donor.id)} 
+                                                                    <button
+                                                                        onClick={() => deleteSelectedItem(donor.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -572,9 +569,8 @@ export default function BloodDonorPage() {
                                                             {/* Gender */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Gender:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
+                                                                    }`}>
                                                                     {donor.gender}
                                                                 </span>
                                                             </div>
@@ -582,12 +578,11 @@ export default function BloodDonorPage() {
                                                             {/* Blood Type */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Blood Type:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' :
+                                                                        donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                            donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                                'bg-purple-100 text-purple-800'
+                                                                    }`}>
                                                                     {donor.bloodType}
                                                                 </span>
                                                             </div>
@@ -613,11 +608,10 @@ export default function BloodDonorPage() {
                                                             {/* Donor Status */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                                                 <span className="font-semibold w-32">Status:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
-                                                                    donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
-                                                                    "bg-red-100 text-red-800"
-                                                                }`}>
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
+                                                                        donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
+                                                                            "bg-red-100 text-red-800"
+                                                                    }`}>
                                                                     {donor.donorStatus}
                                                                 </span>
                                                             </div>
@@ -703,7 +697,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="text"
                                         value={editingItem.donorId}
-                                        onChange={(e) => setEditingItem({...editingItem, donorId: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, donorId: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -716,7 +710,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="text"
                                         value={editingItem.donorName}
-                                        onChange={(e) => setEditingItem({...editingItem, donorName: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, donorName: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -729,7 +723,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="date"
                                         value={editingItem.dateOfBirth}
-                                        onChange={(e) => setEditingItem({...editingItem, dateOfBirth: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, dateOfBirth: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -741,7 +735,7 @@ export default function BloodDonorPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.gender}
-                                        onChange={(e) => setEditingItem({...editingItem, gender: e.target.value as "Male" | "Female"})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, gender: e.target.value as "Male" | "Female" })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Male">Male</option>
@@ -756,7 +750,7 @@ export default function BloodDonorPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.bloodType}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodType: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, bloodType: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="O+">O+</option>
@@ -778,7 +772,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="text"
                                         value={editingItem.phoneNumber}
-                                        onChange={(e) => setEditingItem({...editingItem, phoneNumber: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, phoneNumber: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -792,7 +786,7 @@ export default function BloodDonorPage() {
                                 <input
                                     type="email"
                                     value={editingItem.email}
-                                    onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
+                                    onChange={(e) => setEditingItem({ ...editingItem, email: e.target.value })}
                                     className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                 />
                                 <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -805,7 +799,7 @@ export default function BloodDonorPage() {
                                 <div className="relative">
                                     <select
                                         value={editingItem.donorStatus}
-                                        onChange={(e) => setEditingItem({...editingItem, donorStatus: e.target.value as "Active" | "Inactive" | "Suspended"})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, donorStatus: e.target.value as "Active" | "Inactive" | "Suspended" })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     >
                                         <option value="Active">Active</option>
@@ -822,7 +816,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="date"
                                         value={editingItem.lastDonationDate}
-                                        onChange={(e) => setEditingItem({...editingItem, lastDonationDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, lastDonationDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -835,7 +829,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="date"
                                         value={editingItem.nextEligibleDonationDate}
-                                        onChange={(e) => setEditingItem({...editingItem, nextEligibleDonationDate: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, nextEligibleDonationDate: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
@@ -848,7 +842,7 @@ export default function BloodDonorPage() {
                                     <input
                                         type="text"
                                         value={editingItem.donorLocation}
-                                        onChange={(e) => setEditingItem({...editingItem, donorLocation: e.target.value})}
+                                        onChange={(e) => setEditingItem({ ...editingItem, donorLocation: e.target.value })}
                                         className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
                                     />
                                     <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">

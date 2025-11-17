@@ -371,10 +371,10 @@ export default function BillListComponent() {
                             <span className="font-semibold w-32">Status:</span>
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${item.status === "Paid"
-                                  ? "bg-[#19875426] text-[#198754]"
-                                  : item.status === "Unpaid"
-                                    ? "bg-[#ffc10726] text-[#ffc107]"
-                                    : "bg-[#0dcaf026] text-[#0dcaf0]"
+                                ? "bg-[#19875426] text-[#198754]"
+                                : item.status === "Unpaid"
+                                  ? "bg-[#ffc10726] text-[#ffc107]"
+                                  : "bg-[#0dcaf026] text-[#0dcaf0]"
                                 }`}
                             >
                               {item.status || "Pending"}
