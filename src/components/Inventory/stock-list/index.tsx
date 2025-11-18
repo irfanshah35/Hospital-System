@@ -1,13 +1,12 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Package, Tag, DollarSign, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Package, Tag, DollarSign, Calendar, User } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Link from 'next/link';
 
 interface StockItem {
-    id: number;
+    id: string;
     itemName: string;
     category: string;
     quantity: number;
@@ -19,105 +18,43 @@ interface StockItem {
 export default function StockList() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [stockItems, setStockItems] = useState<StockItem[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<StockItem | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // Stock Items Data Array
     const stockItemsData: StockItem[] = [
         {
-            id: 1,
+            id: "1",
             itemName: "Paracetamol 500mg",
             category: "Medicines",
             quantity: 150,
             date: "2024-10-15",
             price: 25.50,
-            details: "Pain Relief Tablet"
+            details: "Pain Relief Tablet",
         },
         {
-            id: 2,
+            id: "2",
             itemName: "Amoxicillin Capsules",
             category: "Antibiotics",
             quantity: 80,
             date: "2024-10-16",
             price: 45.75,
-            details: "500mg Capsules"
+            details: "500mg Capsules",
         },
         {
-            id: 3,
+            id: "3",
             itemName: "Insulin Syringes",
             category: "Medical Supplies",
             quantity: 200,
             date: "2024-10-17",
             price: 12.30,
-            details: "1ml Disposable Syringes"
-        },
-        {
-            id: 4,
-            itemName: "Surgical Masks",
-            category: "Protective Equipment",
-            quantity: 500,
-            date: "2024-10-18",
-            price: 8.99,
-            details: "3-Ply Surgical Masks"
-        },
-        {
-            id: 5,
-            itemName: "Blood Pressure Monitor",
-            category: "Medical Devices",
-            quantity: 15,
-            date: "2024-10-19",
-            price: 89.99,
-            details: "Digital BP Monitor"
-        },
-        {
-            id: 6,
-            itemName: "Vitamin C Tablets",
-            category: "Supplements",
-            quantity: 120,
-            date: "2024-10-20",
-            price: 15.25,
-            details: "1000mg Vitamin C"
-        },
-        {
-            id: 7,
-            itemName: "Glucose Test Strips",
-            category: "Diagnostic",
-            quantity: 300,
-            date: "2024-10-21",
-            price: 35.50,
-            details: "Blood Glucose Testing"
-        },
-        {
-            id: 8,
-            itemName: "First Aid Kit",
-            category: "Emergency",
-            quantity: 25,
-            date: "2024-10-22",
-            price: 120.00,
-            details: "Complete First Aid Kit"
-        },
-        {
-            id: 9,
-            itemName: "Antiseptic Solution",
-            category: "Disinfectants",
-            quantity: 75,
-            date: "2024-10-23",
-            price: 18.75,
-            details: "500ml Antiseptic Liquid"
-        },
-        {
-            id: 10,
-            itemName: "Thermometer Digital",
-            category: "Medical Devices",
-            quantity: 40,
-            date: "2024-10-24",
-            price: 22.50,
-            details: "Digital Fever Thermometer"
+            details: "1ml Disposable Syringes",
         }
     ];
 
@@ -177,18 +114,80 @@ export default function StockList() {
         saveAs(blob, "stock-items.xlsx");
     };
 
-    const removeData = () => {
+    const removeData = (id: string) => {
+        if (window.confirm("Are you sure you want to delete this stock item?")) {
+            try {
+                setStockItems(prev => prev.filter(item => item.id !== id));
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting stock item");
+            }
+        }
+    };
+
+    const handleDeleteSelected = async () => {
         if (selectedIds.length === 0) {
             alert("Please select at least one item to delete.");
             return;
         }
         if (window.confirm(`Delete ${selectedIds.length} item(s)?`)) {
-            setStockItems(prev => prev.filter(item => !selectedIds.includes(item.id)));
-            setSelectedIds([]);
+            try {
+                setStockItems(prev => prev.filter(item => !selectedIds.includes(item.id)));
+                setSelectedIds([]);
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting stock items");
+            }
         }
     };
 
-    const handleCheckboxChange = (id: number) => {
+    const handleAddClick = () => {
+        setEditingItem({
+            id: '',
+            itemName: '',
+            category: 'Medicines',
+            quantity: 0,
+            date: new Date().toISOString().split('T')[0],
+            price: 0,
+            details: '',
+        });
+        setIsEditMode(false);
+        setIsModalOpen(true);
+    };
+
+    const handleEditClick = (item: StockItem) => {
+        setEditingItem(item);
+        setIsEditMode(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = (formData: StockItem) => {
+        if (isEditMode && editingItem?.id) {
+            // Edit existing record
+            setStockItems(prev =>
+                prev.map(item =>
+                    item.id === editingItem.id ? { ...formData, id: editingItem.id } : item
+                )
+            );
+        } else {
+            // Add new record
+            const newItem = {
+                ...formData,
+                id: Math.random().toString(36).substr(2, 9)
+            };
+            setStockItems(prev => [...prev, newItem]);
+        }
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleCheckboxChange = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         );
@@ -214,44 +213,11 @@ export default function StockList() {
         { label: "Date", checked: true },
         { label: "Price", checked: true },
         { label: "Details", checked: true },
+        { label: "Issue To", checked: true },
+        { label: "Return Date", checked: true },
+        { label: "Status", checked: true },
         { label: "Actions", checked: true },
     ];
-
-    const deleteSelectedItem = async (id: any) => {
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setStockItems(prev => prev.filter(item => item.id !== id));
-            console.log("Stock item deleted:", id);
-        } catch (error) {
-            console.error("Error deleting stock item:", error);
-        }
-    };
-
-    const handleEditClick = (item: StockItem) => {
-        setEditingItem(item);
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateItem = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            setStockItems(prev =>
-                prev.map(item =>
-                    item.id === editingItem?.id ? editingItem : item
-                )
-            );
-
-            alert("Stock item updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating stock item:", error);
-            alert("An unexpected error occurred.");
-        }
-    };
 
     return (
         <>
@@ -292,7 +258,7 @@ export default function StockList() {
                                 <div className="flex items-center gap-1">
                                     {selectedIds.length > 0 && (
                                         <button
-                                            onClick={removeData}
+                                            onClick={handleDeleteSelected}
                                             className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
                                             title="Delete Selected"
                                         >
@@ -333,11 +299,13 @@ export default function StockList() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-stock-item">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add New Stock Item"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -359,7 +327,7 @@ export default function StockList() {
                                     ) : (
                                         <>
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -379,7 +347,7 @@ export default function StockList() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                     {stockItems.map((item) => (
                                                         <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
@@ -392,57 +360,58 @@ export default function StockList() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="text-sm font-medium">
-                                                                        {item.itemName}
-                                                                    </div>
+                                                                <div className="text-sm font-medium text-gray-900">
+                                                                    {item.itemName}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
-                                                                        {item.category}
-                                                                    </span>
-                                                                </div>
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 rounded-[6px]`}>
+                                                                    {item.category}
+                                                                </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full`}>
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5  rounded-[6px]`}>
                                                                     {item.quantity} pcs
                                                                 </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="flex items-center gap-2">
+                                                                <div className="text-sm flex items-center gap-2">
                                                                     <Calendar className="w-4 h-4 text-gray-600" />
-                                                                    <span className="text-sm">{item.date}</span>
+                                                                    {item.date}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-sm font-medium">${item.price.toFixed(2)}</span>
+                                                                <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                                                                    <DollarSign className="w-4 h-4 text-green-600" />
+                                                                    ${item.price.toFixed(2)}
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 py-3">
-                                                                <div className="text-sm max-w-[200px] truncate" title={item.details}>
+                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                                <div className="text-sm flex items-center gap-2">
                                                                     {item.details}
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                        
+
+                                                            <td className="px-4 py-3 text-sm font-medium">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Edit"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => deleteSelectedItem(item.id)}
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Delete"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
                                                                     </button>
@@ -454,72 +423,62 @@ export default function StockList() {
                                             </table>
 
                                             {/* Mobile View */}
-                                            <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                            <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                 {stockItems.map((item) => (
                                                     <div key={item.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
                                                                 checked={selectedIds.includes(item.id)}
                                                                 onChange={() => handleCheckboxChange(item.id)}
-                                                                type="checkbox"
-                                                                className="w-4 h-4 text-blue-600 rounded"
-                                                            />
+                                                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                                                         </div>
-
-                                                        {/* Stock Item Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            {/* Item Name */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Item Name:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="font-medium">{item.itemName}</span>
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Item Name:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Package className='w-5 h-5 text-blue-500' />
+                                                                    <span className="ml-1">{item.itemName}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Category */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Category:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
-                                                                        {item.category}
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Category:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Tag className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">{item.category}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Quantity:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs`}>
+                                                                        {item.quantity} pcs
                                                                     </span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Quantity */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Quantity:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
-                                                                    {item.quantity} pcs
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Date */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Date:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                                    <span>{item.date}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Date:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Calendar className='w-5 h-5 text-purple-500' />
+                                                                    <span className="ml-1">{item.date}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Price */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Price:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="font-medium">${item.price.toFixed(2)}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Price:</span>
+                                                                <div className='flex items-center'>
+                                                                    <DollarSign className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">${item.price.toFixed(2)}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Details */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-28">Details:</span>
-                                                                <span>{item.details}</span>
+                                                            
+                                                            
+                                                            
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Details:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className="ml-1">{item.details}</span>
+                                                                </div>
                                                             </div>
-
-                                                            {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
@@ -528,7 +487,7 @@ export default function StockList() {
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => deleteSelectedItem(item.id)}
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -552,144 +511,288 @@ export default function StockList() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <h2 className="text-lg font-semibold">
-                                Edit Stock Item - {editingItem.itemName}
-                            </h2>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateItem} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Item Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.itemName}
-                                        onChange={(e) => setEditingItem({ ...editingItem, itemName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Item Name*
-                                    </label>
-                                </div>
-
-                                {/* Category */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.category}
-                                        onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Medicines">Medicines</option>
-                                        <option value="Antibiotics">Antibiotics</option>
-                                        <option value="Medical Supplies">Medical Supplies</option>
-                                        <option value="Protective Equipment">Protective Equipment</option>
-                                        <option value="Medical Devices">Medical Devices</option>
-                                        <option value="Supplements">Supplements</option>
-                                        <option value="Diagnostic">Diagnostic</option>
-                                        <option value="Emergency">Emergency</option>
-                                        <option value="Disinfectants">Disinfectants</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Category*
-                                    </label>
-                                </div>
-
-                                {/* Quantity */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        value={editingItem.quantity}
-                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: parseInt(e.target.value) })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Quantity*
-                                    </label>
-                                </div>
-
-                                {/* Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.date}
-                                        onChange={(e) => setEditingItem({ ...editingItem, date: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Date*
-                                    </label>
-                                </div>
-
-                                {/* Price */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={editingItem.price}
-                                        onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Price*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Details */}
-                            <div className="relative">
-                                <textarea
-                                    value={editingItem.details}
-                                    onChange={(e) => setEditingItem({ ...editingItem, details: e.target.value })}
-                                    rows={3}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
-                                />
-                                <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Details*
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-4">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {/* Stock Item Modal */}
+            {isModalOpen && (
+                <StockItemModal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    initialData={editingItem}
+                    isEditMode={isEditMode}
+                />
             )}
 
             <style jsx>{`
-        @keyframes slideDown {
-          0% { transform: translateY(-20px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
-      `}</style>
+                @keyframes slideDown {
+                    0% { transform: translateY(-20px); opacity: 0; }
+                    100% { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+            `}</style>
         </>
     );
 }
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, options, required = false, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value="">Select {label}</option>
+                {options.map((option: string) => (
+                    <option key={option} value={option}>{option}</option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <div className="absolute right-3 top-3.5 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+// Modal Component
+interface StockItemModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: StockItem) => void;
+    initialData?: StockItem | null;
+    isEditMode?: boolean;
+}
+
+const StockItemModal: React.FC<StockItemModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    isEditMode = false
+}) => {
+    const [formData, setFormData] = useState<StockItem>({
+        id: '',
+        itemName: '',
+        category: 'Medicines',
+        quantity: 0,
+        date: new Date().toISOString().split('T')[0],
+        price: 0,
+        details: '',
+    });
+
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    const isFormValid =
+        formData.itemName.trim() !== '' &&
+        formData.category.trim() !== '' &&
+        formData.quantity > 0 &&
+        formData.date.trim() !== '' &&
+        formData.price >= 0 &&
+        formData.details.trim() !== '' &&
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset form when adding new
+            setFormData({
+                id: '',
+                itemName: '',
+                category: 'Medicines',
+                quantity: 0,
+                date: new Date().toISOString().split('T')[0],
+                price: 0,
+                details: '',
+            });
+        }
+    }, [initialData, isOpen]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'quantity' ? parseInt(value) : name === 'price' ? parseFloat(value) : value
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[800px] mx-4 max-h-[90vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                    <div className="flex items-center">
+                        <h2 className="font-semibold leading-[35px]">
+                            {isEditMode ? `${formData.itemName}` : 'New Stock Item'}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="py-5 px-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Item Name */}
+                            <FloatingInput
+                                label="Item Name"
+                                name="itemName"
+                                value={formData.itemName}
+                                onChange={handleInputChange}
+                                icon={Package}
+                                required
+                            />
+
+                            {/* Category */}
+                            <FloatingSelect
+                                label="Category"
+                                name="category"
+                                value={formData.category}
+                                onChange={handleInputChange}
+                                options={['Medicines', 'Antibiotics', 'Medical Supplies', 'Protective Equipment', 'Medical Devices', 'Supplements', 'Diagnostic', 'Emergency', 'Disinfectants']}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Quantity */}
+                            <FloatingInput
+                                label="Quantity"
+                                name="quantity"
+                                value={formData.quantity}
+                                onChange={handleInputChange}
+                                type="number"
+                                required
+                            />
+
+                            {/* Price */}
+                            <FloatingInput
+                                label="Price ($)"
+                                name="price"
+                                value={formData.price}
+                                onChange={handleInputChange}
+                                type="number"
+                                step="0.01"
+                                icon={DollarSign}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Issue Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Issue Date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        {/* Details */}
+                        <div className="relative">
+                            <textarea
+                                name="details"
+                                value={formData.details}
+                                onChange={handleInputChange}
+                                placeholder=" "
+                                rows={3}
+                                className="peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none border-gray-300"
+                            />
+                            <label className="absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm -top-2 text-blue-600">
+                                Details
+                            </label>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="submit"
+                                disabled={!isFormValid}
+                                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                    : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                    }`}
+                            >
+                                {isEditMode ? 'Update' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

@@ -1,10 +1,8 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin } from 'lucide-react';
-import React, { useEffect, useState, useRef } from "react";
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import Link from 'next/link';
 
 interface Claim {
     id: number;
@@ -20,6 +18,317 @@ interface Claim {
     rejectionReason: string;
 }
 
+// Reusable Input Component
+interface ReusableInputProps {
+    label: string;
+    type?: "text" | "number" | "email" | "password" | "date" | "textarea";
+    value: string | number;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
+    className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+    label,
+    type = "text",
+    value,
+    onChange,
+    placeholder = " ",
+    required = false,
+    className = ""
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    if (type === "textarea") {
+        return (
+            <div className={`relative ${className}`}>
+                <textarea
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={3}
+                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
+                />
+                <label
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                >
+                    {label}{required && "*"}
+                </label>
+            </div>
+        );
+    }
+
+    return (
+        <div className={`relative ${className}`}>
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder={placeholder}
+                required={required}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+            />
+            <label
+                className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                    } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+            >
+                {label}{required && "*"}
+            </label>
+        </div>
+    );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    required?: boolean;
+    className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+    label,
+    value,
+    onChange,
+    options,
+    required = false,
+    className = ""
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+    return (
+        <div className={`relative ${className}`}>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                required={required}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+            >
+                <option hidden></option>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+            >
+                {label}{required && "*"}
+            </label>
+        </div>
+    );
+};
+
+// Claim Modal Component
+interface ClaimModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    mode: 'add' | 'edit';
+    claim?: Claim | null;
+    onSubmit: (claim: Omit<Claim, 'id'>) => void;
+}
+
+const ClaimModal: React.FC<ClaimModalProps> = ({
+    isOpen,
+    onClose,
+    mode,
+    claim,
+    onSubmit
+}) => {
+    const [formData, setFormData] = useState<Omit<Claim, 'id'>>({
+        claimId: '',
+        patientName: '',
+        claimType: '',
+        claimStatus: 'Pending',
+        doctorName: '',
+        hospitalName: '',
+        claimAmount: '',
+        approvedAmount: '',
+        claimDate: '',
+        rejectionReason: ''
+    });
+
+    useEffect(() => {
+        if (mode === 'edit' && claim) {
+            const { id, ...rest } = claim;
+            setFormData(rest);
+        } else {
+            setFormData({
+                claimId: '',
+                patientName: '',
+                claimType: '',
+                claimStatus: 'Pending',
+                doctorName: '',
+                hospitalName: '',
+                claimAmount: '',
+                approvedAmount: '',
+                claimDate: '',
+                rejectionReason: ''
+            });
+        }
+    }, [mode, claim, isOpen]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+            <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
+                <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+                    <div className="flex items-center space-x-3">
+                        
+                        <h2 className="text-lg font-semibold">
+                            {mode === 'add' ? 'New Patient' : ` ${claim?.patientName}`}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <div className="grid grid-cols-2 gap-6">
+                        {/* Claim ID */}
+                        <ReusableInput
+                            label="Claim ID"
+                            value={formData.claimId}
+                            onChange={(value) => setFormData({ ...formData, claimId: value })}
+                            required
+                        />
+
+                        {/* Patient Name */}
+                        <ReusableInput
+                            label="Patient Name"
+                            value={formData.patientName}
+                            onChange={(value) => setFormData({ ...formData, patientName: value })}
+                            required
+                        />
+
+                        {/* Claim Type */}
+                        <ReusableSelect
+                            label="Claim Type"
+                            value={formData.claimType}
+                            onChange={(value) => setFormData({ ...formData, claimType: value })}
+                            options={[
+                                { value: "Medical Treatment", label: "Medical Treatment" },
+                                { value: "Surgery", label: "Surgery" },
+                                { value: "Emergency Care", label: "Emergency Care" },
+                                { value: "Diagnostic Tests", label: "Diagnostic Tests" },
+                                { value: "Hospital Stay", label: "Hospital Stay" },
+                                { value: "Medication", label: "Medication" }
+                            ]}
+                            required
+                        />
+
+                        {/* Status */}
+                        <ReusableSelect
+                            label="Status"
+                            value={formData.claimStatus}
+                            onChange={(value) => setFormData({ ...formData, claimStatus: value as "Pending" | "Approved" | "Rejected" | "Under Review" | "Paid" })}
+                            options={[
+                                { value: "Pending", label: "Pending" },
+                                { value: "Approved", label: "Approved" },
+                                { value: "Rejected", label: "Rejected" },
+                                { value: "Under Review", label: "Under Review" },
+                                { value: "Paid", label: "Paid" }
+                            ]}
+                            required
+                        />
+
+                        {/* Doctor Name */}
+                        <ReusableInput
+                            label="Doctor Name"
+                            value={formData.doctorName}
+                            onChange={(value) => setFormData({ ...formData, doctorName: value })}
+                            required
+                        />
+
+                        {/* Hospital Name */}
+                        <ReusableInput
+                            label="Hospital Name"
+                            value={formData.hospitalName}
+                            onChange={(value) => setFormData({ ...formData, hospitalName: value })}
+                            required
+                        />
+
+                        {/* Amount */}
+                        <ReusableInput
+                            label="Amount"
+                            type="text"
+                            value={formData.claimAmount}
+                            onChange={(value) => setFormData({ ...formData, claimAmount: value })}
+                            required
+                        />
+
+                        {/* Approved Amount */}
+                        <ReusableInput
+                            label="Approved Amount"
+                            type="text"
+                            value={formData.approvedAmount}
+                            onChange={(value) => setFormData({ ...formData, approvedAmount: value })}
+                            required
+                        />
+
+                        {/* Claim Date */}
+                        <ReusableInput
+                            label="Claim Date"
+                            type="date"
+                            value={formData.claimDate}
+                            onChange={(value) => setFormData({ ...formData, claimDate: value })}
+                            required
+                        />
+                    </div>
+
+                    {/* Rejection Reason */}
+                    <ReusableInput
+                        label="Rejection Reason"
+                        type="textarea"
+                        value={formData.rejectionReason}
+                        onChange={(value) => setFormData({ ...formData, rejectionReason: value })}
+                        className="col-span-2"
+                    />
+
+                    {/* Submit Buttons */}
+                    <div className="flex gap-2 pt-3">
+                        <button
+                            type="submit"
+                            className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+                        >
+                            {mode === 'add' ? 'Add Claim' : 'Save Changes'}
+                        </button>
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
 export default function ClaimStatusPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
@@ -27,8 +336,8 @@ export default function ClaimStatusPage() {
     const [claims, setClaims] = useState<Claim[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [editingClaim, setEditingClaim] = useState<Claim | null>(null);
 
     // Sample claim data
@@ -171,7 +480,12 @@ export default function ClaimStatusPage() {
         XLSX.utils.book_append_sheet(workbook, worksheet, "Claim Status");
         const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
         const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-        saveAs(blob, "claim_status.xlsx");
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "claim_status.xlsx";
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     const removeData = () => {
@@ -218,38 +532,39 @@ export default function ClaimStatusPage() {
         { label: "Actions", checked: true },
     ];
 
-    const deleteClaim = async (id: number) => {
-        try {
-            // Simulate API call
+    const deleteClaim = (id: number) => {
+        if (window.confirm("Are you sure you want to delete this claim?")) {
             setClaims(prev => prev.filter(claim => claim.id !== id));
-            console.log("Claim deleted:", id);
-        } catch (error) {
-            console.error("Error deleting claim:", error);
         }
+    };
+
+    const handleAddClick = () => {
+        setModalMode('add');
+        setEditingClaim(null);
+        setIsModalOpen(true);
     };
 
     const handleEditClick = (claim: Claim) => {
+        setModalMode('edit');
         setEditingClaim(claim);
-        setIsEditModalOpen(true);
+        setIsModalOpen(true);
     };
 
-    const handleUpdateClaim = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingClaim) return;
-
-        try {
-            // Simulate API call
+    const handleModalSubmit = (claimData: Omit<Claim, 'id'>) => {
+        if (modalMode === 'add') {
+            const newClaim: Claim = {
+                ...claimData,
+                id: Math.max(...claims.map(c => c.id), 0) + 1
+            };
+            setClaims(prev => [...prev, newClaim]);
+            alert("Claim added successfully!");
+        } else if (modalMode === 'edit' && editingClaim) {
             setClaims(prev =>
-                prev.map(claim =>
-                    claim.id === editingClaim.id ? editingClaim : claim
-                )
+                prev.map(c => c.id === editingClaim.id ? { ...claimData, id: editingClaim.id } : c)
             );
             alert("Claim updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating claim:", error);
-            alert("An unexpected error occurred.");
         }
+        setIsModalOpen(false);
     };
 
     const getStatusColor = (status: string) => {
@@ -280,7 +595,7 @@ export default function ClaimStatusPage() {
 
                 <div className="h-auto mt-3">
                     <div className="max-w-full">
-                        <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
+                        <div className="bg-[#f8f9fa] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
                             <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
@@ -289,7 +604,7 @@ export default function ClaimStatusPage() {
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] pr-0 py-2 focus:outline-none"
+                                            className="w-full max-w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -343,11 +658,13 @@ export default function ClaimStatusPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-claim">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -369,7 +686,7 @@ export default function ClaimStatusPage() {
                                     ) : (
                                         <>
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -393,7 +710,7 @@ export default function ClaimStatusPage() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                     {claims.map((item) => (
                                                         <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
@@ -405,7 +722,7 @@ export default function ClaimStatusPage() {
                                                                 />
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium ">
+                                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-600">
                                                                 {item.claimId}
                                                             </td>
 
@@ -435,7 +752,7 @@ export default function ClaimStatusPage() {
                                                                 {item.claimAmount}
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold ">
+                                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-green-600">
                                                                 {item.approvedAmount}
                                                             </td>
 
@@ -472,72 +789,70 @@ export default function ClaimStatusPage() {
                                             <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                 {claims.map((item) => (
                                                     <div key={item.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
                                                                 checked={selectedIds.includes(item.id)}
                                                                 onChange={() => handleCheckboxChange(item.id)}
                                                                 type="checkbox"
-                                                                className="w-4 h-4  rounded"
+                                                                className="w-4 h-4 text-blue-600 rounded"
                                                             />
                                                         </div>
 
-                                                        {/* Claim Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Claim ID:</span>
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
+                                                                <span className="font-semibold w-40">Claim ID:</span>
                                                                 <span className="text-blue-600 font-medium">{item.claimId}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Patient Name:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Patient Name:</span>
                                                                 <span>{item.patientName}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Claim Type:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Claim Type:</span>
                                                                 <span>{item.claimType}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Claim Status:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Claim Status:</span>
                                                                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.claimStatus)}`}>
                                                                     {item.claimStatus}
                                                                 </span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Doctor Name:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Doctor Name:</span>
                                                                 <span>{item.doctorName}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Hospital Name:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Hospital Name:</span>
                                                                 <span>{item.hospitalName}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Claim Amount:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Claim Amount:</span>
                                                                 <span className="font-semibold">{item.claimAmount}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Approved Amount:</span>
-                                                                <span className=" font-semibold">{item.approvedAmount}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Approved Amount:</span>
+                                                                <span className="font-semibold text-green-600">{item.approvedAmount}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Claim Date:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Claim Date:</span>
                                                                 <span>{item.claimDate}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Rejection Reason:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Rejection Reason:</span>
                                                                 <span className="text-red-600">{item.rejectionReason || "-"}</span>
                                                             </div>
 
                                                             {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
@@ -570,194 +885,14 @@ export default function ClaimStatusPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingClaim && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    </svg>
-                                </div>
-                                <h2 className="text-lg font-semibold">
-                                    Edit Claim - {editingClaim.claimId}
-                                </h2>
-                            </div>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateClaim} className="p-6 space-y-6 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Claim ID */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.claimId}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimId: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Claim ID*
-                                    </label>
-                                </div>
-
-                                {/* Patient Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.patientName}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, patientName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient Name*
-                                    </label>
-                                </div>
-
-                                {/* Claim Type */}
-                                <div className="relative">
-                                    <select
-                                        value={editingClaim.claimType}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimType: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Medical Treatment">Medical Treatment</option>
-                                        <option value="Surgery">Surgery</option>
-                                        <option value="Emergency Care">Emergency Care</option>
-                                        <option value="Diagnostic Tests">Diagnostic Tests</option>
-                                        <option value="Hospital Stay">Hospital Stay</option>
-                                        <option value="Medication">Medication</option>
-                                    </select>
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Claim Type*
-                                    </label>
-                                </div>
-
-                                {/* Claim Status */}
-                                <div className="relative">
-                                    <select
-                                        value={editingClaim.claimStatus}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimStatus: e.target.value as any })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="Approved">Approved</option>
-                                        <option value="Rejected">Rejected</option>
-                                        <option value="Under Review">Under Review</option>
-                                        <option value="Paid">Paid</option>
-                                    </select>
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Claim Status*
-                                    </label>
-                                </div>
-
-                                {/* Doctor Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.doctorName}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, doctorName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Doctor Name*
-                                    </label>
-                                </div>
-
-                                {/* Hospital Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.hospitalName}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, hospitalName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Hospital Name*
-                                    </label>
-                                </div>
-
-                                {/* Claim Amount */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.claimAmount}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimAmount: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Claim Amount*
-                                    </label>
-                                </div>
-
-                                {/* Approved Amount */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingClaim.approvedAmount}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, approvedAmount: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Approved Amount*
-                                    </label>
-                                </div>
-
-                                {/* Claim Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingClaim.claimDate}
-                                        onChange={(e) => setEditingClaim({ ...editingClaim, claimDate: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Claim Date*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Rejection Reason */}
-                            <div className="relative">
-                                <textarea
-                                    value={editingClaim.rejectionReason}
-                                    onChange={(e) => setEditingClaim({ ...editingClaim, rejectionReason: e.target.value })}
-                                    placeholder=" "
-                                    rows={3}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                ></textarea>
-                                <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Rejection Reason
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-3">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a9b]"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9b1515]"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            {/* Claim Modal */}
+            <ClaimModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                mode={modalMode}
+                claim={editingClaim}
+                onSubmit={handleModalSubmit}
+            />
 
             <style jsx>{`
                 @keyframes slideDown {
@@ -765,6 +900,8 @@ export default function ClaimStatusPage() {
                     100% { transform: translateY(0); opacity: 1; }
                 }
                 .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
         </>
     );

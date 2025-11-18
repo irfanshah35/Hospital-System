@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, MessageCircle, MapPin } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, MessageCircle, MapPin, User, Receipt, Calendar, PhoneCall, CircleUserRound } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -10,7 +10,7 @@ interface DeathRecord {
   id: string;
   caseNumber: string;
   patientName: string;
-  gender: "Male" | "Female";
+  gender: "Male" | "Female" | "Other";
   deathDate: string;
   guardianName: string;
   mobile: string;
@@ -26,6 +26,10 @@ export default function DeathRecordsComponent() {
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<DeathRecord | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   // Static death records data matching the design
   const staticDeathRecords: DeathRecord[] = [
     {
@@ -33,7 +37,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "3453",
       patientName: "Eva Willis",
       gender: "Female",
-      deathDate: "02/25/2021",
+      deathDate: "2021-02-25",
       guardianName: "Laurel Max...",
       mobile: "1234567890",
       address: "76 E. Lo...",
@@ -44,7 +48,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "3276",
       patientName: "Camille McK...",
       gender: "Female",
-      deathDate: "02/22/2021",
+      deathDate: "2021-02-22",
       guardianName: "Terry Ball",
       mobile: "1234567891",
       address: "36 Addi...",
@@ -55,7 +59,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "6823",
       patientName: "Ramona Fre...",
       gender: "Male",
-      deathDate: "02/12/2021",
+      deathDate: "2021-02-12",
       guardianName: "Johnny Mack",
       mobile: "1234567892",
       address: "374 HiC...",
@@ -66,7 +70,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "1563",
       patientName: "Serena Bond",
       gender: "Male",
-      deathDate: "02/15/2021",
+      deathDate: "2021-02-15",
       guardianName: "Marvin Miller",
       mobile: "1234567893",
       address: "8108 Co...",
@@ -77,7 +81,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "342",
       patientName: "Mia Howell",
       gender: "Female",
-      deathDate: "02/05/2021",
+      deathDate: "2021-02-05",
       guardianName: "Woody Robi...",
       mobile: "1234567894",
       address: "43 St M...",
@@ -88,7 +92,7 @@ export default function DeathRecordsComponent() {
       caseNumber: "78",
       patientName: "Vania Jacks...",
       gender: "Male",
-      deathDate: "02/02/2021",
+      deathDate: "2021-02-02",
       guardianName: "Baxter Burg...",
       mobile: "1234567895",
       address: "8642 Gr...",
@@ -182,9 +186,51 @@ export default function DeathRecordsComponent() {
     }
   };
 
-  const handleEdit = (id: string) => {
-    console.log("Edit death record:", id);
-    // Add edit functionality here
+  const handleAddClick = () => {
+    setEditingRecord({
+      id: '',
+      caseNumber: '',
+      patientName: '',
+      gender: "Male",
+      deathDate: new Date().toISOString().split('T')[0],
+      guardianName: '',
+      mobile: '',
+      address: '',
+      notes: ''
+    });
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (record: DeathRecord) => {
+    setEditingRecord(record);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (formData: DeathRecord) => {
+    if (isEditMode && editingRecord?.id) {
+      // Edit existing record
+      setDeathRecords(prev =>
+        prev.map(record =>
+          record.id === editingRecord.id ? { ...formData, id: editingRecord.id } : record
+        )
+      );
+    } else {
+      // Add new record
+      const newRecord = {
+        ...formData,
+        id: Math.random().toString(36).substr(2, 9)
+      };
+      setDeathRecords(prev => [...prev, newRecord]);
+    }
+    setIsModalOpen(false);
+    setEditingRecord(null);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingRecord(null);
   };
 
   const handleCheckboxChange = (id: string) => {
@@ -194,7 +240,7 @@ export default function DeathRecordsComponent() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedIds(checked ? deathRecords.map(p => p.id) : []);
+    setSelectedIds(checked ? deathRecords.map(record => record.id) : []);
   };
 
   useEffect(() => {
@@ -298,11 +344,13 @@ export default function DeathRecordsComponent() {
                     )}
                   </div>
 
-                  <Link href="/add-death-record">
-                    <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                      <CirclePlus className='w-[22px] h-[22px]' />
-                    </button>
-                  </Link>
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add New Death Record"
+                  >
+                    <CirclePlus className='w-[22px] h-[22px]' />
+                  </button>
 
                   <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                     <RotateCw className='w-[20px] h-[20px]' />
@@ -376,7 +424,7 @@ export default function DeathRecordsComponent() {
                               </td>
 
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : "bg-[#fd7e1426] text-[#fd7e14]"
                                   }`}>
                                   {item.gender}
                                 </span>
@@ -408,7 +456,7 @@ export default function DeathRecordsComponent() {
                               <td className="px-4 py-3 text-sm font-medium">
                                 <div className="flex space-x-2">
                                   <button
-                                    onClick={() => handleEdit(item.id)}
+                                    onClick={() => handleEditClick(item)}
                                     className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                     title="Edit"
                                   >
@@ -421,7 +469,6 @@ export default function DeathRecordsComponent() {
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-
                                 </div>
                               </td>
                             </tr>
@@ -429,11 +476,10 @@ export default function DeathRecordsComponent() {
                         </tbody>
                       </table>
 
-
+                      {/* Mobile View */}
                       <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-
-                        {staticDeathRecords.map((item) => (
-                          <div className={``}>
+                        {deathRecords.map((item) => (
+                          <div key={item.id} className="border-b border-gray-200 py-4">
                             <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                               <input
                                 checked={selectedIds.includes(item.id)}
@@ -441,64 +487,74 @@ export default function DeathRecordsComponent() {
                                 type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                             </div>
                             <div className="text-sm text-gray-800">
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Case Number:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Case Number:</span>
                                 <div className='flex items-center'>
-                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
-                                  />
-                                  <span className="ml-1"> {item.caseNumber}</span>
+                                  <Receipt className='w-5 h-5 text-blue-500' />
+                                  <span className="ml-1">{item.caseNumber}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Child Name:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Patient Name:</span>
                                 <div className='flex items-center'>
+                                  <User className='w-5 h-5 text-green-500' />
                                   <span className="ml-1">{item.patientName}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Gender:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Gender:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1">{item.gender}</span>
+                                  <span className={`px-2 py-1 rounded-full text-xs ${item.gender === "Female" ? "bg-pink-100 text-pink-800" : item.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"}`}>
+                                    {item.gender}
+                                  </span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Death Date:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Death Date:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1"> {item.deathDate} </span>
+                                  <Calendar className='w-5 h-5 text-purple-500' />
+                                  <span className="ml-1">{item.deathDate}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Guardian Name:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Guardian Name:</span>
                                 <div className='flex items-center'>
+                                  <User className='w-5 h-5 text-red-500' />
                                   <span className="ml-1">{item.guardianName}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Mobile:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mobile:</span>
                                 <div className='flex items-center'>
                                   <Phone className='w-5 h-5 text-green-500' />
-                                  <span className="ml-1"> {item.mobile}</span>
+                                  <span className="ml-1">{item.mobile}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Address:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Address:</span>
                                 <div className='flex items-center'>
                                   <MapPin className='w-5 h-5 text-blue-500' />
-                                  <span className="ml-1">  {item.address} </span>
+                                  <span className="ml-1">{item.address}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Notes:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Notes:</span>
                                 <div className='flex items-center'>
                                   <span className="ml-1">{item.notes}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <div className="flex space-x-2">
-                                  <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => removeData(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -520,6 +576,17 @@ export default function DeathRecordsComponent() {
         </div>
       </div>
 
+      {/* Death Record Modal */}
+      {isModalOpen && (
+        <DeathRecordModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          initialData={editingRecord}
+          isEditMode={isEditMode}
+        />
+      )}
+
       <style jsx>{`
         @keyframes slideDown {
           0% { transform: translateY(-20px); opacity: 0; }
@@ -530,6 +597,307 @@ export default function DeathRecordsComponent() {
     </>
   );
 }
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+  const isDate = type === "date";
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+      />
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  )
+}
+
+function FloatingTextarea({ label, name, value, onChange, icon: Icon, required = false, rows = 3, error }: any) {
+  return (
+    <div className="relative">
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        rows={rows}
+        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+      />
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  )
+}
+
+// Modal Component
+interface DeathRecordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: DeathRecord) => void;
+  initialData?: DeathRecord | null;
+  isEditMode?: boolean;
+}
+
+const DeathRecordModal: React.FC<DeathRecordModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditMode = false
+}) => {
+  const [formData, setFormData] = useState<DeathRecord>({
+    id: '',
+    caseNumber: '',
+    patientName: '',
+    gender: "Male",
+    deathDate: new Date().toISOString().split('T')[0],
+    guardianName: '',
+    mobile: '',
+    address: '',
+    notes: ''
+  });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const isFormValid =
+    formData.caseNumber.trim() !== '' &&
+    formData.patientName.trim() !== '' &&
+    formData.deathDate.trim() !== '' &&
+    formData.guardianName.trim() !== '';
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      // Reset form when adding new
+      setFormData({
+        id: '',
+        caseNumber: '',
+        patientName: '',
+        gender: "Male",
+        deathDate: new Date().toISOString().split('T')[0],
+        guardianName: '',
+        mobile: '',
+        address: '',
+        notes: ''
+      });
+    }
+  }, [initialData, isOpen]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isFormValid) {
+      onSubmit(formData);
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[646.8px] mx-4 max-h-[80vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex items-center">
+            {isEditMode && (
+              <div className="relative w-10 h-10 mr-3">
+                <img
+                  src="/assets/images/user/new.jpg"
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            )}
+            <h2 className="font-semibold leading-[35px]">
+              {isEditMode ? 'Edit Death Record' : 'New Death Record'}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="py-5 px-6 max-h-[65vh] overflow-y-auto scrollbar-hide">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Case No */}
+              <FloatingInput
+                label="Case No"
+                name="caseNumber"
+                value={formData.caseNumber}
+                onChange={handleInputChange}
+                icon={Receipt}
+                required
+              />
+
+              {/* Patient Name */}
+              <FloatingInput
+                label="Patient Name"
+                name="patientName"
+                value={formData.patientName}
+                onChange={handleInputChange}
+                icon={User}
+                required
+              />
+            </div>
+
+            {/* Gender */}
+            <div className="flex items-center gap-8">
+              <label className="text-sm font-medium text-gray-700">Gender <span className="text-red-500">*</span></label>
+              <div className="flex space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Male"
+                    checked={formData.gender === "Male"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Female"
+                    checked={formData.gender === "Female"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Female</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Other"
+                    checked={formData.gender === "Other"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Death Date */}
+              <FloatingInput
+                type="date"
+                label="Death Date"
+                name="deathDate"
+                value={formData.deathDate}
+                onChange={handleInputChange}
+                required
+              />
+
+              {/* Guardian Name */}
+              <FloatingInput
+                label="Guardian Name"
+                name="guardianName"
+                value={formData.guardianName}
+                onChange={handleInputChange}
+                icon={CircleUserRound}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Mobile */}
+              <FloatingInput
+                label="Mobile"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleInputChange}
+                icon={Phone}
+                type="tel"
+              />
+
+              {/* Empty column for alignment */}
+              <div></div>
+            </div>
+
+            {/* Address */}
+            <FloatingTextarea
+              label="Address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              icon={MapPin}
+              rows={2}
+            />
+
+            {/* Buttons */}
+            <div className="flex space-x-3 pt-4">
+              <button
+                type="submit"
+                disabled={!isFormValid}
+                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                  ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                  }`}
+              >
+                {isEditMode ? 'Update' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

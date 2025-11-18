@@ -1,36 +1,322 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Mail } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Mail, User } from 'lucide-react';
 import React, { useState, useRef, useEffect } from "react";
 import * as XLSX from "xlsx";
 
 interface EmployeeSalary {
   id: number;
+  employeeId: string;
   employeeName: string;
   avatar: string;
   email: string;
   department: string;
+  role: string;
   salary: number;
   bonus: number;
   deductions: number;
   netSalary: number;
 }
 
+// Reusable Input Component
+interface ReusableInputProps {
+  label: string;
+  type?: "text" | "number" | "email" | "password";
+  value: string | number;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = ""
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+          } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+  className = ""
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+      >
+        <option value="">Select {label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <label
+        className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Employee Salary Modal Component
+interface EmployeeSalaryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: 'add' | 'edit';
+  salary?: EmployeeSalary | null;
+  onSubmit: (salary: Omit<EmployeeSalary, 'id'>) => void;
+}
+
+const EmployeeSalaryModal: React.FC<EmployeeSalaryModalProps> = ({
+  isOpen,
+  onClose,
+  mode,
+  salary,
+  onSubmit
+}) => {
+  const [formData, setFormData] = useState<Omit<EmployeeSalary, 'id'>>({
+    employeeId: '',
+    employeeName: '',
+    avatar: 'https://i.pravatar.cc/150?img=8',
+    email: '',
+    department: '',
+    role: '',
+    salary: 0,
+    bonus: 0,
+    deductions: 0,
+    netSalary: 0
+  });
+
+  useEffect(() => {
+    if (mode === 'edit' && salary) {
+      const { id, ...rest } = salary;
+      setFormData(rest);
+    } else {
+      setFormData({
+        employeeId: '',
+        employeeName: '',
+        avatar: 'https://i.pravatar.cc/150?img=8',
+        email: '',
+        department: '',
+        role: '',
+        salary: 0,
+        bonus: 0,
+        deductions: 0,
+        netSalary: 0
+      });
+    }
+  }, [mode, salary, isOpen]);
+
+  // Auto-calculate net salary whenever salary, bonus, or deductions change
+  useEffect(() => {
+    const netSalary = formData.salary + formData.bonus - formData.deductions;
+    setFormData(prev => ({ ...prev, netSalary }));
+  }, [formData.salary, formData.bonus, formData.deductions]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+      <div className="bg-white rounded-lg shadow-lg w-[700px] max-w-[90%] max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gray-200 border flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-500" />
+            </div>
+            <h2 className="text-lg font-semibold">
+              {mode === 'add' ? 'Add New Employee Salary' : `Edit Salary - ${salary?.employeeName}`}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Employee Name */}
+            <ReusableInput
+              label="Employee Name"
+              value={formData.employeeName}
+              onChange={(value) => setFormData({ ...formData, employeeName: value })}
+              required
+            />
+
+            {/* Employee ID */}
+            <ReusableInput
+              label="Employee ID"
+              value={formData.employeeId}
+              onChange={(value) => setFormData({ ...formData, employeeId: value })}
+              required
+            />
+
+            {/* Email */}
+            <ReusableInput
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(value) => setFormData({ ...formData, email: value })}
+              required
+              className=""
+            />
+
+            {/* Department */}
+            <ReusableSelect
+              label="Department"
+              value={formData.department}
+              onChange={(value) => setFormData({ ...formData, department: value })}
+              options={[
+                { value: "Cardiology", label: "Cardiology" },
+                { value: "Emergency", label: "Emergency" },
+                { value: "Orthopedics", label: "Orthopedics" },
+                { value: "Surgery", label: "Surgery" },
+                { value: "Pathology", label: "Pathology" },
+                { value: "Neurology", label: "Neurology" },
+                { value: "Pediatrics", label: "Pediatrics" }
+              ]}
+              required
+            />
+
+            {/* Role */}
+            <ReusableSelect
+              label="Role"
+              value={formData.role}
+              onChange={(value) => setFormData({ ...formData, role: value })}
+              options={[
+                { value: "Doctor", label: "Doctor" },
+                { value: "Nurse", label: "Nurse" },
+                { value: "Technician", label: "Technician" },
+                { value: "Receptionist", label: "Receptionist" },
+                { value: "Administrator", label: "Administrator" },
+                { value: "Pharmacist", label: "Pharmacist" },
+                { value: "Therapist", label: "Therapist" }
+              ]}
+              required
+            />
+
+            {/* Salary */}
+            <ReusableInput
+              label="Salary"
+              type="number"
+              value={formData.salary}
+              onChange={(value) => setFormData({ ...formData, salary: Number(value) })}
+              required
+            />
+
+            {/* Bonus */}
+            <ReusableInput
+              label="Bonus"
+              type="number"
+              value={formData.bonus}
+              onChange={(value) => setFormData({ ...formData, bonus: Number(value) })}
+            />
+
+            {/* Deductions */}
+            <ReusableInput
+              label="Deductions"
+              type="number"
+              value={formData.deductions}
+              onChange={(value) => setFormData({ ...formData, deductions: Number(value) })}
+            />
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-2 pt-3">
+            <button
+              type="submit"
+              className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+            >
+              {mode === 'add' ? 'Add Salary' : 'Save Changes'}
+            </button>
+            <button
+              onClick={onClose}
+              type="button"
+              className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 export default function EmployeeSalaryComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [editingSalary, setEditingSalary] = useState<EmployeeSalary | null>(null);
 
   const [employeeSalaries, setEmployeeSalaries] = useState<EmployeeSalary[]>([
     {
       id: 1,
+      employeeId: "EMP001",
       employeeName: "John Doe",
       avatar: "https://i.pravatar.cc/150?img=1",
-      email: "test@example.com",
+      email: "john.doe@example.com",
       department: "Cardiology",
+      role: "Doctor",
       salary: 2574,
       bonus: 200,
       deductions: 100,
@@ -38,10 +324,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 2,
+      employeeId: "EMP002",
       employeeName: "Sarah Smith",
       avatar: "https://i.pravatar.cc/150?img=2",
-      email: "test@example.com",
+      email: "sarah.smith@example.com",
       department: "Emergency",
+      role: "Nurse",
       salary: 3587,
       bonus: 300,
       deductions: 150,
@@ -49,10 +337,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 3,
-      employeeName: "Rajesh",
+      employeeId: "EMP003",
+      employeeName: "Rajesh Kumar",
       avatar: "https://i.pravatar.cc/150?img=3",
-      email: "test@example.com",
+      email: "rajesh.kumar@example.com",
       department: "Orthopedics",
+      role: "Doctor",
       salary: 7897,
       bonus: 500,
       deductions: 200,
@@ -60,10 +350,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 4,
+      employeeId: "EMP004",
       employeeName: "Jay Soni",
       avatar: "https://i.pravatar.cc/150?img=4",
-      email: "test@example.com",
+      email: "jay.soni@example.com",
       department: "Surgery",
+      role: "Technician",
       salary: 2697,
       bonus: 150,
       deductions: 80,
@@ -71,10 +363,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 5,
-      employeeName: "Rajesh",
+      employeeId: "EMP005",
+      employeeName: "Priya Patel",
       avatar: "https://i.pravatar.cc/150?img=5",
-      email: "test@example.com",
+      email: "priya.patel@example.com",
       department: "Pathology",
+      role: "Technician",
       salary: 6587,
       bonus: 400,
       deductions: 200,
@@ -82,10 +376,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 6,
-      employeeName: "John Doe",
+      employeeId: "EMP006",
+      employeeName: "Mike Johnson",
       avatar: "https://i.pravatar.cc/150?img=6",
-      email: "test@example.com",
+      email: "mike.johnson@example.com",
       department: "Neurology",
+      role: "Doctor",
       salary: 8256,
       bonus: 600,
       deductions: 250,
@@ -93,10 +389,12 @@ export default function EmployeeSalaryComponent() {
     },
     {
       id: 7,
+      employeeId: "EMP007",
       employeeName: "Cara Stevens",
       avatar: "https://i.pravatar.cc/150?img=7",
-      email: "test@example.com",
+      email: "cara.stevens@example.com",
       department: "Pediatrics",
+      role: "Nurse",
       salary: 7112,
       bonus: 350,
       deductions: 150,
@@ -123,9 +421,11 @@ export default function EmployeeSalaryComponent() {
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       employeeSalaries.map((item) => ({
+        "Employee ID": item.employeeId,
         "Employee Name": item.employeeName,
         "Email": item.email,
         "Department": item.department,
+        "Role": item.role,
         "Salary": item.salary,
         "Bonus": item.bonus,
         "Deductions": item.deductions,
@@ -176,9 +476,11 @@ export default function EmployeeSalaryComponent() {
 
   const checkboxItems = [
     { label: "Checkbox", checked: true },
+    { label: "Employee ID", checked: true },
     { label: "Employee Name", checked: true },
     { label: "Email", checked: true },
     { label: "Department", checked: true },
+    { label: "Role", checked: true },
     { label: "Salary", checked: true },
     { label: "Bonus", checked: true },
     { label: "Deductions", checked: true },
@@ -193,28 +495,38 @@ export default function EmployeeSalaryComponent() {
     }
   };
 
-  const handleEditClick = (salary: EmployeeSalary) => {
-    setEditingSalary(salary);
-    setIsEditModalOpen(true);
+  const handleAddClick = () => {
+    setModalMode('add');
+    setEditingSalary(null);
+    setIsModalOpen(true);
   };
 
-  const handleUpdateSalary = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingSalary) {
-      const updatedSalary = {
-        ...editingSalary,
-        netSalary: editingSalary.salary + editingSalary.bonus - editingSalary.deductions
+  const handleEditClick = (salary: EmployeeSalary) => {
+    setModalMode('edit');
+    setEditingSalary(salary);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (salaryData: Omit<EmployeeSalary, 'id'>) => {
+    if (modalMode === 'add') {
+      const newSalary: EmployeeSalary = {
+        ...salaryData,
+        id: Math.max(...employeeSalaries.map(s => s.id), 0) + 1
       };
+      setEmployeeSalaries(prev => [...prev, newSalary]);
+      alert("Employee salary added successfully!");
+    } else if (modalMode === 'edit' && editingSalary) {
       setEmployeeSalaries(prev =>
-        prev.map(r => (r.id === updatedSalary.id ? updatedSalary : r))
+        prev.map(s => s.id === editingSalary.id ? { ...salaryData, id: editingSalary.id } : s)
       );
-      setIsEditModalOpen(false);
       alert("Employee salary updated successfully!");
     }
+    setIsModalOpen(false);
   };
 
   const handleDownloadPayslip = (employee: EmployeeSalary) => {
     alert(`Downloading payslip for ${employee.employeeName}`);
+    // Actual implementation would generate PDF here
   };
 
   return (
@@ -297,7 +609,11 @@ export default function EmployeeSalaryComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -329,9 +645,11 @@ export default function EmployeeSalaryComponent() {
                                 className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                               />
                             </th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee ID</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee Name</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Email</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Department</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Role</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Salary</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Bonus</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Deductions</th>
@@ -353,6 +671,8 @@ export default function EmployeeSalaryComponent() {
                                 />
                               </td>
 
+                              <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.employeeId}</td>
+
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div className="h-[40px] w-[40px] rounded-full flex-shrink-0">
@@ -372,6 +692,7 @@ export default function EmployeeSalaryComponent() {
                               </td>
 
                               <td className="px-4 py-3 text-sm text-gray-900">{item.department}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900">{item.role}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">${item.salary.toLocaleString()}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">${item.bonus}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">${item.deductions}</td>
@@ -389,10 +710,18 @@ export default function EmployeeSalaryComponent() {
 
                               <td className="px-4 py-3 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer" title="Edit">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                    title="Edit"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => deleteSalary(item.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer" title="Delete">
+                                  <button
+                                    onClick={() => deleteSalary(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                    title="Delete"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -402,6 +731,7 @@ export default function EmployeeSalaryComponent() {
                         </tbody>
                       </table>
 
+                      {/* Mobile View */}
                       <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                         {employeeSalaries.map((item) => (
                           <div key={item.id} className="border-b border-gray-200 py-4">
@@ -415,6 +745,11 @@ export default function EmployeeSalaryComponent() {
                             </div>
 
                             <div className="text-sm text-gray-800">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
+                                <span className="font-semibold w-40">Employee ID:</span>
+                                <span className="font-medium">{item.employeeId}</span>
+                              </div>
+
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
                                 <span className="font-semibold w-40">Employee:</span>
                                 <div className="flex items-center">
@@ -434,6 +769,11 @@ export default function EmployeeSalaryComponent() {
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold w-40">Department:</span>
                                 <span className="ml-1">{item.department}</span>
+                              </div>
+
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-40">Role:</span>
+                                <span className="ml-1">{item.role}</span>
                               </div>
 
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
@@ -499,149 +839,14 @@ export default function EmployeeSalaryComponent() {
         </div>
       </div>
 
-      {isEditModalOpen && editingSalary && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[700px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <div className="flex items-center space-x-3">
-                <img className="w-10 h-10 rounded-full object-cover" src={editingSalary.avatar} alt={editingSalary.employeeName} />
-                <h2 className="text-lg font-semibold">
-                  Edit Salary - {editingSalary.employeeName}
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateSalary} className="p-6 space-y-6 max-h-[500px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="employeeName"
-                    value={editingSalary.employeeName}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, employeeName: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="employeeName" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Employee Name*
-                  </label>
-                </div>
-
-                <div className="relative col-span-2">
-                  <input
-                    type="email"
-                    id="email"
-                    value={editingSalary.email}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, email: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="email" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Email*
-                  </label>
-                </div>
-
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="department"
-                    value={editingSalary.department}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, department: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="department" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Department*
-                  </label>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="salary"
-                    value={editingSalary.salary}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, salary: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="salary" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Salary*
-                  </label>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="bonus"
-                    value={editingSalary.bonus}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, bonus: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="bonus" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Bonus*
-                  </label>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="deductions"
-                    value={editingSalary.deductions}
-                    onChange={(e) => setEditingSalary({ ...editingSalary, deductions: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label htmlFor="deductions" className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]">
-                    Deductions*
-                  </label>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="netSalary"
-                    value={editingSalary.salary + editingSalary.bonus - editingSalary.deductions}
-                    readOnly
-                    className="peer w-full rounded-md border bg-gray-100 px-3 pt-5 pb-2 text-sm text-gray-800 outline-none"
-                  />
-                  <label htmlFor="netSalary" className="absolute left-3 px-[4px] bg-gray-100 -top-2 text-xs text-gray-600">
-                    Net Salary (Auto-calculated)
-                  </label>
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Employee Salary Modal */}
+      <EmployeeSalaryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        salary={editingSalary}
+        onSubmit={handleModalSubmit}
+      />
 
       <style jsx>{`
         @keyframes slideDown {
@@ -656,6 +861,7 @@ export default function EmployeeSalaryComponent() {
   );
 }
 
+// Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;

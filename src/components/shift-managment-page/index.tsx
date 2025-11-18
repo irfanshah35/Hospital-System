@@ -1,25 +1,111 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, Calendar, User, Building, AlertCircle, FileText } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Calendar, User, Building, AlertCircle, FileText } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Link from 'next/link';
+
+interface Doctor {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    department: string;
+    specialization: string;
+    profilephoto: string | null;
+}
+
+interface Department {
+    id: number;
+    departmentname: string;
+    description: string;
+}
 
 interface ShiftData {
     id?: number;
-    doctorName: string;
-    department: string;
+    doctorid: number;
+    departmentid: number;
     specialty: string;
-    shiftStartDate: string;
-    shiftEndDate: string;
-    workDays: string;
-    shiftHours: string;
-    shiftType: string;
-    availabilityStatus: string;
-    overtimeHours: string;
-    totalHoursPerWeek: string;
-    shiftNotes: string;
+    shiftstartdate: string;
+    shiftenddate: string;
+    workdays: string;
+    shifthours: string;
+    shifttype: string;
+    availabilitystatus: string;
+    overtimehours: string;
+    totalhoursperweek: string;
+    shiftnotes: string;
+    doctors?: Doctor;
+    departments?: Department;
+}
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, icon: Icon, required = false, children, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full appearance-none rounded-md border bg-white px-10 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value=""></option>
+                {children}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            <svg className="absolute top-4 right-10 w-4 h-4 md:w-5 md:h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingTextarea({ label, name, value, onChange, icon: Icon, required = false, rows = 3, error }: any) {
+    return (
+        <div className="relative">
+            <textarea
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                rows={rows}
+                className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
 }
 
 export default function ShiftManagementPage() {
@@ -27,6 +113,8 @@ export default function ShiftManagementPage() {
     const detailref = useRef<HTMLDivElement | null>(null);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [shifts, setShifts] = useState<ShiftData[]>([]);
+    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const [allDepartments, setAllDepartments] = useState<Department[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -34,62 +122,40 @@ export default function ShiftManagementPage() {
     const [editingShift, setEditingShift] = useState<ShiftData | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
 
-    // Sample data
-    const sampleShifts: ShiftData[] = [
-        {
-            id: 1,
-            doctorName: "Dr. Chris Wilson",
-            department: "ENT",
-            specialty: "Breast Cancer",
-            shiftStartDate: "2024-02-01",
-            shiftEndDate: "2024-02-28",
-            workDays: "Mon-Fri",
-            shiftHours: "9:00 AM - 5:00 PM",
-            shiftType: "Day Shift",
-            availabilityStatus: "Available",
-            overtimeHours: "2",
-            totalHoursPerWeek: "40",
-            shiftNotes: "Regular shift schedule"
-        },
-        {
-            id: 2,
-            doctorName: "Dr. Sarah Johnson",
-            department: "Cardiology",
-            specialty: "Heart Surgery",
-            shiftStartDate: "2024-02-01",
-            shiftEndDate: "2024-02-29",
-            workDays: "Mon-Sat",
-            shiftHours: "8:00 AM - 4:00 PM",
-            shiftType: "Day Shift",
-            availabilityStatus: "Available",
-            overtimeHours: "5",
-            totalHoursPerWeek: "48",
-            shiftNotes: "Includes weekend duties"
-        }
-    ];
-
-    // Fetch data from API
-    const fetchShifts = async () => {
+    // Fetch data from APIs
+    const fetchData = async () => {
         setLoading(true);
         try {
-            // Yahan aap actual API call kar sakte hain
-            // const res = await fetch("/api/shifts");
-            // const data = await res.json();
-            // setShifts(data);
+            // Fetch shifts
+            const res = await fetch("/api/shifts");
+            if (!res.ok) throw new Error("Failed to fetch shifts");
+            const shiftsData = await res.json();
+            setShifts(shiftsData);
 
-            // Temporary sample data
-            setTimeout(() => {
-                setShifts(sampleShifts);
-                setLoading(false);
-            }, 1000);
+            // Fetch doctors
+            const doctorsRes = await fetch("/api/doctors");
+            if (!doctorsRes.ok) throw new Error("Failed to fetch doctors");
+            const doctorsData = await doctorsRes.json();
+            setDoctors(doctorsData);
+            console.log(doctorsData, "hello from doctor");
+
+
+            // Fetch departments
+            const deptRes = await fetch("/api/departments");
+            if (!deptRes.ok) throw new Error("Failed to fetch departments");
+            const deptData = await deptRes.json();
+            setAllDepartments(deptData);
+
         } catch (error) {
-            console.error("Failed to fetch shifts:", error);
+            console.error("Failed to fetch data:", error);
+            alert("Failed to load data. Please try again.");
+        } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchShifts();
+        fetchData();
     }, []);
 
     // Click outside dropdown
@@ -106,7 +172,7 @@ export default function ShiftManagementPage() {
 
     const handleRefresh = () => {
         setAnimate(true);
-        fetchShifts().then(() => {
+        fetchData().then(() => {
             setTimeout(() => setAnimate(false), 300);
         });
     };
@@ -114,17 +180,17 @@ export default function ShiftManagementPage() {
     const handleDownloadXLSX = () => {
         const worksheet = XLSX.utils.json_to_sheet(
             shifts.map((item) => ({
-                "Doctor Name": item.doctorName,
-                "Department": item.department,
+                "Doctor Name": `${item.doctors?.firstname || ''} ${item.doctors?.lastname || ''}`,
+                "Department": item.departments?.departmentname || '',
                 "Specialty": item.specialty,
-                "Shift Start Date": item.shiftStartDate,
-                "Shift End Date": item.shiftEndDate,
-                "Work Days": item.workDays,
-                "Shift Hours": item.shiftHours,
-                "Shift Type": item.shiftType,
-                "Availability Status": item.availabilityStatus,
-                "Overtime Hours": item.overtimeHours,
-                "Total Hours Per Week": item.totalHoursPerWeek,
+                "Shift Start Date": item.shiftstartdate,
+                "Shift End Date": item.shiftenddate,
+                "Work Days": item.workdays,
+                "Shift Hours": item.shifthours,
+                "Shift Type": item.shifttype,
+                "Availability Status": item.availabilitystatus,
+                "Overtime Hours": item.overtimehours,
+                "Total Hours Per Week": item.totalhoursperweek,
             }))
         );
 
@@ -135,14 +201,54 @@ export default function ShiftManagementPage() {
         saveAs(blob, "shifts.xlsx");
     };
 
-    const removeData = () => {
+    const removeData = async () => {
         if (selectedIds.length === 0) {
             alert("Please select at least one shift to delete.");
             return;
         }
+
         if (window.confirm(`Delete ${selectedIds.length} shift(s)?`)) {
-            setShifts(prev => prev.filter(shift => !selectedIds.includes(shift.id!)));
-            setSelectedIds([]);
+            try {
+                // Delete multiple shifts
+                const deletePromises = selectedIds.map(id =>
+                    fetch(`/api/shifts/${id}`, {
+                        method: "DELETE",
+                    })
+                );
+
+                await Promise.all(deletePromises);
+
+                // Refresh the data
+                await fetchData();
+                setSelectedIds([]);
+                console.log("Shifts deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting shifts:", error);
+                alert("Failed to delete shifts. Please try again.");
+            }
+        }
+    };
+
+    const deleteSelectedShift = async (id: number) => {
+        if (window.confirm("Are you sure you want to delete this shift?")) {
+            try {
+                const response = await fetch(`/api/shifts/${id}`, {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    // Remove from local state
+                    setShifts(prev => prev.filter(shift => shift.id !== id));
+                    // Also remove from selected IDs if it's there
+                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                    console.log("Shift deleted successfully!");
+                } else {
+                    throw new Error("Failed to delete shift");
+                }
+            } catch (error) {
+                console.error("Error deleting shift:", error);
+                alert("Failed to delete shift. Please try again.");
+            }
         }
     };
 
@@ -157,7 +263,6 @@ export default function ShiftManagementPage() {
     };
 
     useEffect(() => {
-        console.log(shifts);
         const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
         if (selectAllCheckbox) {
             selectAllCheckbox.indeterminate =
@@ -179,35 +284,20 @@ export default function ShiftManagementPage() {
         { label: "Actions", checked: true },
     ];
 
-    const deleteSelectedShift = async (id: number) => {
-        try {
-            // Yahan aap actual API call kar sakte hain
-            // const response = await fetch(`/api/shifts/${id}`, {
-            //   method: "DELETE",
-            // });
-
-            // Temporary: Frontend se delete
-            setShifts(prev => prev.filter(shift => shift.id !== id));
-            console.log("Shift deleted:", id);
-        } catch (error) {
-            console.error("Error deleting shift:", error);
-        }
-    };
-
     const handleAddClick = () => {
         setEditingShift({
-            doctorName: '',
-            department: '',
+            doctorid: 0,
+            departmentid: 0,
             specialty: '',
-            shiftStartDate: new Date().toISOString().split('T')[0],
-            shiftEndDate: new Date().toISOString().split('T')[0],
-            workDays: '',
-            shiftHours: '',
-            shiftType: '',
-            availabilityStatus: 'Available',
-            overtimeHours: '',
-            totalHoursPerWeek: '',
-            shiftNotes: ''
+            shiftstartdate: new Date().toISOString().split('T')[0],
+            shiftenddate: new Date().toISOString().split('T')[0],
+            workdays: '',
+            shifthours: '',
+            shifttype: '',
+            availabilitystatus: 'Available',
+            overtimehours: '',
+            totalhoursperweek: '',
+            shiftnotes: ''
         });
         setIsEditMode(false);
         setIsModalOpen(true);
@@ -219,29 +309,398 @@ export default function ShiftManagementPage() {
         setIsModalOpen(true);
     };
 
-    const handleModalSubmit = (formData: ShiftData) => {
-        if (isEditMode && editingShift?.id) {
-            // Edit existing shift
-            setShifts(prev =>
-                prev.map(shift =>
-                    shift.id === editingShift.id ? { ...formData, id: editingShift.id } : shift
-                )
-            );
-        } else {
-            // Add new shift
-            const newShift = {
-                ...formData,
-                id: Math.max(0, ...shifts.map(s => s.id!)) + 1
-            };
-            setShifts(prev => [...prev, newShift]);
+    const handleModalSubmit = async (formData: any) => {
+        try {
+            if (isEditMode && editingShift?.id) {
+                // Edit existing shift
+                const response = await fetch(`/api/shifts/${editingShift.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        doctorid: formData.doctorid,
+                        departmentid: formData.departmentid,
+                        specialty: formData.specialty,
+                        shiftstartdate: formData.shiftstartdate,
+                        shiftenddate: formData.shiftenddate,
+                        workdays: formData.workdays,
+                        shifthours: formData.shifthours,
+                        shifttype: formData.shifttype,
+                        availabilitystatus: formData.availabilitystatus,
+                        overtimehours: formData.overtimehours,
+                        totalhoursperweek: formData.totalhoursperweek,
+                        shiftnotes: formData.shiftnotes
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const updatedShift = await response.json();
+                setShifts(prev =>
+                    prev.map(shift =>
+                        shift.id === editingShift.id ? updatedShift : shift
+                    )
+                );
+                alert("Shift updated successfully!");
+            } else {
+                // Add new shift
+                const response = await fetch("/api/shifts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        doctorid: formData.doctorid,
+                        departmentid: formData.departmentid,
+                        specialty: formData.specialty,
+                        shiftstartdate: formData.shiftstartdate,
+                        shiftenddate: formData.shiftenddate,
+                        workdays: formData.workdays,
+                        shifthours: formData.shifthours,
+                        shifttype: formData.shifttype,
+                        availabilitystatus: formData.availabilitystatus,
+                        overtimehours: formData.overtimehours,
+                        totalhoursperweek: formData.totalhoursperweek,
+                        shiftnotes: formData.shiftnotes
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const newShift = await response.json();
+                setShifts(prev => [...prev, newShift]);
+                alert("Shift assigned successfully!");
+            }
+            setIsModalOpen(false);
+            setEditingShift(null);
+            handleRefresh();
+        } catch (error: any) {
+            console.error("Error submitting shift:", error);
+            alert(`Error: ${error.message}`);
         }
-        setIsModalOpen(false);
-        setEditingShift(null);
     };
 
     const handleModalClose = () => {
         setIsModalOpen(false);
         setEditingShift(null);
+    };
+
+    // Modal Component
+    const ShiftModal = ({ isOpen, onClose, onSubmit, initialData, isEditMode = false }: any) => {
+        const [formData, setFormData] = useState({
+            doctorid: 0,
+            departmentid: 0,
+            specialty: '',
+            shiftstartdate: new Date().toISOString().split('T')[0],
+            shiftenddate: new Date().toISOString().split('T')[0],
+            workdays: '',
+            shifthours: '',
+            shifttype: '',
+            availabilitystatus: 'Available',
+            overtimehours: '',
+            totalhoursperweek: '',
+            shiftnotes: ''
+        });
+
+        const modalRef = useRef<HTMLDivElement>(null);
+
+        const isFormValid =
+            formData.doctorid !== 0 &&
+            formData.departmentid !== 0 &&
+            formData.shiftstartdate.trim() !== '' &&
+            formData.shiftenddate.trim() !== '' &&
+            formData.workdays.trim() !== '' &&
+            formData.shifthours.trim() !== '' &&
+            formData.shifttype.trim() !== '' &&
+            formData.availabilitystatus.trim() !== '';
+
+        useEffect(() => {
+            if (initialData) {
+                setFormData({
+                    doctorid: initialData.doctorid || 0,
+                    departmentid: initialData.departmentid || 0,
+                    specialty: initialData.specialty || '',
+                    shiftstartdate: initialData.shiftstartdate || new Date().toISOString().split('T')[0],
+                    shiftenddate: initialData.shiftenddate || new Date().toISOString().split('T')[0],
+                    workdays: initialData.workdays || '',
+                    shifthours: initialData.shifthours || '',
+                    shifttype: initialData.shifttype || '',
+                    availabilitystatus: initialData.availabilitystatus || 'Available',
+                    overtimehours: initialData.overtimehours || '',
+                    totalhoursperweek: initialData.totalhoursperweek || '',
+                    shiftnotes: initialData.shiftnotes || ''
+                });
+            } else {
+                // Reset form when adding new
+                setFormData({
+                    doctorid: 0,
+                    departmentid: 0,
+                    specialty: '',
+                    shiftstartdate: new Date().toISOString().split('T')[0],
+                    shiftenddate: new Date().toISOString().split('T')[0],
+                    workdays: '',
+                    shifthours: '',
+                    shifttype: '',
+                    availabilitystatus: 'Available',
+                    overtimehours: '',
+                    totalhoursperweek: '',
+                    shiftnotes: ''
+                });
+            }
+        }, [initialData, isOpen]);
+
+        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+            const { name, value } = e.target;
+            setFormData(prev => ({
+                ...prev,
+                [name]: name === 'doctorid' || name === 'departmentid' ? parseInt(value) || 0 : value
+            }));
+        };
+
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            if (isFormValid) {
+                onSubmit(formData);
+            }
+        };
+
+        useEffect(() => {
+            function handleClickOutside(e: MouseEvent) {
+                if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                    onClose();
+                }
+            }
+
+            if (isOpen) {
+                document.addEventListener('mousedown', handleClickOutside);
+            }
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }, [isOpen, onClose]);
+
+        if (!isOpen) return null;
+
+        return (
+            <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+                <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+                    {/* Modal Header */}
+                    <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                        <div className="flex items-center">
+                            {isEditMode && (
+                                <div className="relative w-10 h-10 mr-3">
+                                    <img
+                                        src="/assets/images/user/new.jpg"
+                                        alt="avatar"
+                                        className="w-full h-full rounded-full object-cover"
+                                    />
+                                </div>
+                            )}
+                            <h2 className="text-xl font-semibold">
+                                {isEditMode ? 'Edit Shift' : 'New Shift'}
+                            </h2>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                            type="button"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Modal Content */}
+                    <div className="py-5 px-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Doctor Name */}
+                                <FloatingSelect
+                                    label="Doctor Name"
+                                    name="doctorid"
+                                    value={formData.doctorid}
+                                    onChange={handleInputChange}
+                                    icon={User}
+                                    required
+                                >
+                                    <option hidden></option>
+                                    {doctors.map((doctor) => (
+                                        <option key={doctor.id} value={doctor.id}>
+                                            {doctor.firstname} {doctor.lastname}
+                                        </option>
+                                    ))}
+                                </FloatingSelect>
+
+                                {/* Department */}
+                                <FloatingSelect
+                                    label="Department"
+                                    name="departmentid"
+                                    value={formData.departmentid}
+                                    onChange={handleInputChange}
+                                    icon={Building}
+                                    required
+                                >
+                                    <option hidden></option>
+                                    {allDepartments.map((dept) => (
+                                        <option key={dept.id} value={dept.id}>
+                                            {dept.departmentname}
+                                        </option>
+                                    ))}
+                                </FloatingSelect>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Specialty */}
+                                <FloatingInput
+                                    label="Specialty"
+                                    name="specialty"
+                                    value={formData.specialty}
+                                    onChange={handleInputChange}
+                                    icon={AlertCircle}
+                                />
+
+                                {/* Shift Start Date */}
+                                <FloatingInput
+                                    type="date"
+                                    label="Shift Start Date"
+                                    name="shiftstartdate"
+                                    value={formData.shiftstartdate}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Shift End Date */}
+                                <FloatingInput
+                                    type="date"
+                                    label="Shift End Date"
+                                    name="shiftenddate"
+                                    value={formData.shiftenddate}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+
+                                {/* Work Days */}
+                                <FloatingInput
+                                    label="Work Days"
+                                    name="workdays"
+                                    value={formData.workdays}
+                                    onChange={handleInputChange}
+                                    icon={Calendar}
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Shift Hours */}
+                                <FloatingInput
+                                    label="Shift Hours"
+                                    name="shifthours"
+                                    value={formData.shifthours}
+                                    onChange={handleInputChange}
+                                    icon={Clock}
+                                    required
+                                />
+
+                                {/* Shift Type */}
+                                <FloatingSelect
+                                    label="Shift Type"
+                                    name="shifttype"
+                                    value={formData.shifttype}
+                                    onChange={handleInputChange}
+                                    icon={Clock}
+                                    required
+                                >
+                                    <option value="Day Shift">Day Shift</option>
+                                    <option value="Night Shift">Night Shift</option>
+                                    <option value="Evening Shift">Evening Shift</option>
+                                    <option value="Rotating Shift">Rotating Shift</option>
+                                    <option value="Weekend Shift">Weekend Shift</option>
+                                </FloatingSelect>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Availability Status */}
+                                <FloatingSelect
+                                    label="Availability Status"
+                                    name="availabilitystatus"
+                                    value={formData.availabilitystatus}
+                                    onChange={handleInputChange}
+                                    icon={AlertCircle}
+                                    required
+                                >
+                                    <option value="Available">Available</option>
+                                    <option value="On Leave">On Leave</option>
+                                    <option value="Sick Leave">Sick Leave</option>
+                                    <option value="Vacation">Vacation</option>
+                                    <option value="Training">Training</option>
+                                </FloatingSelect>
+
+                                {/* Overtime Hours */}
+                                <FloatingInput
+                                    type="number"
+                                    label="Overtime Hours"
+                                    name="overtimehours"
+                                    value={formData.overtimehours}
+                                    onChange={handleInputChange}
+                                    icon={Clock}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Total Hours Per Week */}
+                                <FloatingInput
+                                    type="number"
+                                    label="Total Hours Per Week"
+                                    name="totalhoursperweek"
+                                    value={formData.totalhoursperweek}
+                                    onChange={handleInputChange}
+                                    icon={Clock}
+                                />
+                            </div>
+
+                            {/* Shift Notes */}
+                            <FloatingTextarea
+                                label="Shift Notes"
+                                name="shiftnotes"
+                                value={formData.shiftnotes}
+                                onChange={handleInputChange}
+                                icon={FileText}
+                                rows={3}
+                            />
+
+                            {/* Buttons */}
+                            <div className="flex space-x-3 pt-4">
+                                <button
+                                    type="submit"
+                                    disabled={!isFormValid}
+                                    className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                                        ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                        : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                        }`}
+                                >
+                                    {isEditMode ? 'Update' : 'Save'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -389,16 +848,26 @@ export default function ShiftManagementPage() {
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="flex items-center">
-                                                                    <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
+                                                                    <img
+                                                                        className='h-[30px] w-[30px] rounded-full'
+                                                                        src={
+                                                                            item?.doctors?.profilephoto &&
+                                                                                item.doctors.profilephoto !== "null" &&
+                                                                                item.doctors.profilephoto !== "{}"
+                                                                                ? item.doctors.profilephoto
+                                                                                : "/default-avatar.png"
+                                                                        }
+                                                                        alt=""
+                                                                    />
                                                                     <div className="ml-4 w-[110px] overflow-hidden text-ellipsis whitespace-nowrap">
                                                                         <div className="text-sm font-medium">
-                                                                            {item.doctorName}
+                                                                            {item.doctors?.firstname} {item.doctors?.lastname}
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
+                                                            <td className="px-4 text-sm whitespace-nowrap">{item.departments?.departmentname}</td>
 
                                                             <td className="px-4 whitespace-nowrap">
                                                                 <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px]`}>
@@ -407,21 +876,37 @@ export default function ShiftManagementPage() {
                                                             </td>
                                                             <td className="px-4 text-sm">
                                                                 <div className="flex items-center">
-                                                                    {item.shiftStartDate}
+                                                                    {item.shiftstartdate}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 text-sm">{item.shiftEndDate}</td>
+                                                            <td className="px-4 text-sm">{item.shiftenddate}</td>
                                                             <td className="px-4 text-sm">
                                                                 <div className={`flex items-center `}>
-                                                                    {item.workDays}
+                                                                    {item.workdays}
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 text-sm">{item.shiftHours}</td>
-                                                            <td className="px-4 text-sm">{item.shiftType}</td>
+                                                            <td className="px-4 text-sm">{item.shifthours}</td>
+                                                            <td className="px-4 text-sm">{item.shifttype}</td>
                                                             <td className="px-4 text-sm">
-                                                                <div className={`flex items-center `}>
-                                                                    {item.availabilityStatus}
+                                                                <div className={`flex items-center`}>
+                                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                                         ${item.availabilitystatus === 'Available'
+                                                                            ? 'bg-green-100 text-green-800 border border-green-200'
+                                                                            : item.availabilitystatus === 'On Leave'
+                                                                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                                                : item.availabilitystatus === 'Sick Leave'
+                                                                                    ? 'bg-red-100 text-red-800 border border-red-200'
+                                                                                    : item.availabilitystatus === 'Vacation'
+                                                                                        ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                                                                        : item.availabilitystatus === 'Training'
+                                                                                            ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                                                                            : 'bg-gray-100 text-gray-800 border border-gray-200'
+                                                                        }`}
+                                                                    >
+
+                                                                        {item.availabilitystatus}
+                                                                    </span>
                                                                 </div>
                                                             </td>
 
@@ -442,13 +927,10 @@ export default function ShiftManagementPage() {
                                                 </tbody>
                                             </table>
 
-                                            <div
-                                                className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""
-                                                    }`}
-                                            >
+                                            {/* Mobile View */}
+                                            <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                 {shifts.map((item) => (
                                                     <div key={item.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
                                                         <div className="flex items-center justify-between mb-3">
                                                             <input
                                                                 checked={selectedIds.includes(item.id!)}
@@ -458,72 +940,85 @@ export default function ShiftManagementPage() {
                                                             />
                                                         </div>
 
-                                                        {/* Shift Info */}
                                                         <div className="space-y-2 text-sm text-gray-800">
-                                                            {/* Name */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Name:</span>
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-dashed border-gray-400"></div>
-                                                                    <span>{item.doctorName || "—"}</span>
+                                                                    <img
+                                                                        className='w-8 h-8 rounded-full'
+                                                                        src={
+                                                                            item?.doctors?.profilephoto &&
+                                                                                item.doctors.profilephoto !== "null" &&
+                                                                                item.doctors.profilephoto !== "{}"
+                                                                                ? item.doctors.profilephoto
+                                                                                : "/default-avatar.png"
+                                                                        }
+                                                                        alt=""
+                                                                    />
+                                                                    <span>{item.doctors?.firstname} {item.doctors?.lastname}</span>
                                                                 </div>
                                                             </div>
 
-                                                            {/* Department */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Department:</span>
-                                                                <span>{item.department || "—"}</span>
+                                                                <span>{item.departments?.departmentname}</span>
                                                             </div>
 
-                                                            {/* Specialization */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Specialization:</span>
                                                                 <span>{item.specialty || "—"}</span>
                                                             </div>
 
-                                                            {/* Shift Start Date */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Shift Start Date:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Calendar className="w-4 h-4 text-gray-600" />
-                                                                    <span>{item.shiftStartDate || "—"}</span>
+                                                                    <span>{item.shiftstartdate || "—"}</span>
                                                                 </div>
                                                             </div>
 
-                                                            {/* Shift End Date */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Shift End Date:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Calendar className="w-4 h-4 text-gray-600" />
-                                                                    <span>{item.shiftEndDate || "—"}</span>
+                                                                    <span>{item.shiftenddate || "—"}</span>
                                                                 </div>
                                                             </div>
 
-                                                            {/* Work Days */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Work Days:</span>
-                                                                <span>{item.workDays || "—"}</span>
+                                                                <span>{item.workdays || "—"}</span>
                                                             </div>
 
-                                                            {/* Shift Hours */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Shift Hours:</span>
-                                                                <span>{item.shiftHours || "—"}</span>
+                                                                <span>{item.shifthours || "—"}</span>
                                                             </div>
 
-                                                            {/* Shift Type */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Shift Type:</span>
-                                                                <span>{item.shiftType || "—"}</span>
+                                                                <span>{item.shifttype || "—"}</span>
                                                             </div>
 
-                                                            {/* Availability Status */}
                                                             <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                                                 <span className="font-semibold w-36">Availability Status:</span>
-                                                                <span>{item.availabilityStatus || "Available"}</span>
+                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                                        ${item.availabilitystatus === 'Available'
+                                                                        ? 'bg-green-100 text-green-800 border border-green-200'
+                                                                        : item.availabilitystatus === 'On Leave'
+                                                                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                                            : item.availabilitystatus === 'Sick Leave'
+                                                                                ? 'bg-red-100 text-red-800 border border-red-200'
+                                                                                : item.availabilitystatus === 'Vacation'
+                                                                                    ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                                                                    : item.availabilitystatus === 'Training'
+                                                                                        ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                                                                        : 'bg-gray-100 text-gray-800 border border-gray-200'
+                                                                    }`}>
+                                                                    {item.availabilitystatus}
+                                                                </span>
                                                             </div>
 
-                                                            {/* Actions */}
                                                             <div className="flex items-center gap-3 pt-2">
                                                                 <div className="flex space-x-2">
                                                                     <button
@@ -544,7 +1039,6 @@ export default function ShiftManagementPage() {
                                                     </div>
                                                 ))}
                                             </div>
-
                                         </>
                                     )}
                                 </div>
@@ -579,389 +1073,6 @@ export default function ShiftManagementPage() {
         </>
     );
 }
-
-// Modal Component
-interface ShiftModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: (formData: ShiftData) => void;
-    initialData?: ShiftData | null;
-    isEditMode?: boolean;
-}
-
-// Create a type for form fields only (excluding id)
-type FormFieldName = Exclude<keyof ShiftData, 'id'>;
-
-
-// Floating Input Components (same as aapke paas hain)
-function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, showPassword, setShowPassword, error }: any) {
-    const isDate = type === "date";
-    return (
-        <div className="relative">
-            <input
-                type={type}
-                name={name}
-                value={value}
-                onChange={onChange}
-                placeholder=" "
-                required={required}
-                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
-                {label} {required && <span className="text-red-500">*</span>}
-            </label>
-            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
-            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
-        </div>
-    )
-}
-
-function FloatingSelect({ label, name, value, onChange, icon: Icon, required = false, children, error }: any) {
-    return (
-        <div className="relative">
-            <select
-                name={name}
-                value={value}
-                onChange={onChange}
-                required={required}
-                className={`peer w-full appearance-none rounded-md border bg-white px-10 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-300'}`}
-            >
-                <option value=""></option>
-                {children}
-            </select>
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
-                {label} {required && <span className="text-red-500">*</span>}
-            </label>
-            {Icon && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
-            <svg className="absolute top-4 right-10 w-4 h-4 md:w-5 md:h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
-        </div>
-    )
-}
-
-function FloatingTextarea({ label, name, value, onChange, icon: Icon, required = false, rows = 3, error }: any) {
-    return (
-        <div className="relative">
-            <textarea
-                name={name}
-                value={value}
-                onChange={onChange}
-                placeholder=" "
-                required={required}
-                rows={rows}
-                className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
-            />
-            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
-                {label} {required && <span className="text-red-500">*</span>}
-            </label>
-            {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
-            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
-        </div>
-    )
-}
-
-// Modal Component with Floating Inputs
-const ShiftModal: React.FC<ShiftModalProps> = ({
-    isOpen,
-    onClose,
-    onSubmit,
-    initialData,
-    isEditMode = false
-}) => {
-    const [formData, setFormData] = useState<ShiftData>({
-        doctorName: '',
-        department: '',
-        specialty: '',
-        shiftStartDate: new Date().toISOString().split('T')[0],
-        shiftEndDate: new Date().toISOString().split('T')[0],
-        workDays: '',
-        shiftHours: '',
-        shiftType: '',
-        availabilityStatus: 'Available',
-        overtimeHours: '',
-        totalHoursPerWeek: '',
-        shiftNotes: ''
-    });
-
-    const modalRef = useRef<HTMLDivElement>(null);
-
-    const isFormValid =
-        formData.doctorName.trim() !== '' &&
-        formData.department.trim() !== '' &&
-        formData.shiftStartDate.trim() !== '' &&
-        formData.shiftEndDate.trim() !== '' &&
-        formData.workDays.trim() !== '' &&
-        formData.shiftHours.trim() !== '' &&
-        formData.shiftType.trim() !== '' &&
-        formData.availabilityStatus.trim() !== '';
-
-    useEffect(() => {
-        if (initialData) {
-            setFormData(initialData);
-        } else {
-            // Reset form when adding new
-            setFormData({
-                doctorName: '',
-                department: '',
-                specialty: '',
-                shiftStartDate: new Date().toISOString().split('T')[0],
-                shiftEndDate: new Date().toISOString().split('T')[0],
-                workDays: '',
-                shiftHours: '',
-                shiftType: '',
-                availabilityStatus: 'Available',
-                overtimeHours: '',
-                totalHoursPerWeek: '',
-                shiftNotes: ''
-            });
-        }
-    }, [initialData, isOpen]);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(formData);
-    };
-
-    useEffect(() => {
-        function handleClickOutside(e: MouseEvent) {
-            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-                onClose();
-            }
-        }
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, onClose]);
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
-            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
-                {/* Modal Header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-300">
-                    <div className="flex items-center">
-                        {isEditMode && (
-                            <div className="relative w-10 h-10 mr-3">
-                                <img
-                                    src="/assets/images/user/new.jpg"
-                                    alt="avatar"
-                                    className="w-full h-full rounded-full object-cover"
-                                />
-                            </div>
-                        )}
-                        <h2 className="text-xl font-semibold">
-                            {isEditMode ? 'Edit Shift' : 'New Shift'}
-                        </h2>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
-                        type="button"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                {/* Modal Content */}
-                <div className="py-5 px-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Doctor Name */}
-                            <FloatingInput
-                                label="Doctor Name"
-                                name="doctorName"
-                                value={formData.doctorName}
-                                onChange={handleInputChange}
-                                icon={User}
-                                required
-                            />
-
-                            {/* Department */}
-                            <FloatingSelect
-                                label="Department"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleInputChange}
-                                icon={Building}
-                                required
-                            >
-                                <option value="cardiology">Cardiology</option>
-                                <option value="neurology">Neurology</option>
-                                <option value="orthopedics">Orthopedics</option>
-                                <option value="pediatrics">Pediatrics</option>
-                                <option value="ent">ENT</option>
-                                <option value="surgery">Surgery</option>
-                                <option value="radiology">Radiology</option>
-                            </FloatingSelect>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Specialty */}
-                            <FloatingInput
-                                label="Specialty"
-                                name="specialty"
-                                value={formData.specialty}
-                                onChange={handleInputChange}
-                                icon={AlertCircle}
-                            />
-
-                            {/* Shift Start Date */}
-                            <FloatingInput
-                                type="date"
-                                label="Shift Start Date"
-                                name="shiftStartDate"
-                                value={formData.shiftStartDate}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Shift End Date */}
-                            <FloatingInput
-                                type="date"
-                                label="Shift End Date"
-                                name="shiftEndDate"
-                                value={formData.shiftEndDate}
-                                onChange={handleInputChange}
-                                required
-                            />
-
-                            {/* Work Days */}
-                            <FloatingInput
-                                label="Work Days"
-                                name="workDays"
-                                value={formData.workDays}
-                                onChange={handleInputChange}
-                                icon={Calendar}
-                                required
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Shift Hours */}
-                            <FloatingInput
-                                label="Shift Hours"
-                                name="shiftHours"
-                                value={formData.shiftHours}
-                                onChange={handleInputChange}
-                                icon={Clock}
-                                required
-                            />
-
-                            {/* Shift Type */}
-                            <FloatingSelect
-                                label="Shift Type"
-                                name="shiftType"
-                                value={formData.shiftType}
-                                onChange={handleInputChange}
-                                icon={Clock}
-                                required
-                            >
-                                <option value="Day Shift">Day Shift</option>
-                                <option value="Night Shift">Night Shift</option>
-                                <option value="Evening Shift">Evening Shift</option>
-                                <option value="Rotating Shift">Rotating Shift</option>
-                                <option value="Weekend Shift">Weekend Shift</option>
-                            </FloatingSelect>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Availability Status */}
-                            <FloatingSelect
-                                label="Availability Status"
-                                name="availabilityStatus"
-                                value={formData.availabilityStatus}
-                                onChange={handleInputChange}
-                                icon={AlertCircle}
-                                required
-                            >
-                                <option value="Available">Available</option>
-                                <option value="On Leave">On Leave</option>
-                                <option value="Sick Leave">Sick Leave</option>
-                                <option value="Vacation">Vacation</option>
-                                <option value="Training">Training</option>
-                            </FloatingSelect>
-
-                            {/* Overtime Hours */}
-                            <FloatingInput
-                                type="number"
-                                label="Overtime Hours"
-                                name="overtimeHours"
-                                value={formData.overtimeHours}
-                                onChange={handleInputChange}
-                                icon={Clock}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Total Hours Per Week */}
-                            <FloatingInput
-                                type="number"
-                                label="Total Hours Per Week"
-                                name="totalHoursPerWeek"
-                                value={formData.totalHoursPerWeek}
-                                onChange={handleInputChange}
-                                icon={Clock}
-                            />
-                        </div>
-
-                        {/* Shift Notes */}
-                        <FloatingTextarea
-                            label="Shift Notes"
-                            name="shiftNotes"
-                            value={formData.shiftNotes}
-                            onChange={handleInputChange}
-                            icon={FileText}
-                            rows={3}
-                        />
-
-                        {/* Buttons */}
-                        <div className="flex space-x-3 pt-4">
-                            <button
-                                type="submit"
-                                disabled={!isEditMode && !isFormValid}
-                                className={`px-4 py-2 rounded-full transition-colors ${isEditMode
-                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                                    : isFormValid
-                                        ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                                        : "bg-gray-300 text-[#44474e] cursor-not-allowed"
-                                    }`}
-                            >
-                                {isEditMode ? 'Update' : 'Save'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
