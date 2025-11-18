@@ -1,10 +1,9 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, Mail, MapPin, User, Calendar, FileText, X } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, Mail, MapPin, User, Calendar, FileText, X, Save } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Link from 'next/link';
 
 interface Contact {
     id: number;
@@ -13,9 +12,248 @@ interface Contact {
     birthDate: string;
     mobile: string;
     address: string;
+    note: string;
     avatar: string;
     selected: boolean;
 }
+
+// Reusable Input Component
+interface ReusableInputProps {
+    label: string;
+    type?: "text" | "number" | "email" | "password" | "date" | "textarea";
+    value: string | number;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
+    className?: string;
+    icon?: React.ReactNode;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+    label,
+    type = "text",
+    value,
+    onChange,
+    placeholder = " ",
+    required = false,
+    className = "",
+    icon
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    if (type === "textarea") {
+        return (
+            <div className={`relative ${className}`}>
+                <textarea
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={3}
+                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
+                />
+                <label
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                >
+                    {label}{required && "*"}
+                </label>
+            </div>
+        );
+    }
+
+    return (
+        <div className={`relative ${className}`}>
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder={placeholder}
+                required={required}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+            />
+            {icon && (
+                <div className="absolute right-3 top-3 text-gray-400">
+                    {icon}
+                </div>
+            )}
+            <label
+                className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                    } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+            >
+                {label}{required && "*"}
+            </label>
+        </div>
+    );
+};
+
+// Contact Modal Component
+interface ContactModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    mode: 'add' | 'edit';
+    contact?: Contact | null;
+    onSubmit: (contact: Omit<Contact, 'id' | 'selected'>) => void;
+}
+
+const ContactModal: React.FC<ContactModalProps> = ({
+    isOpen,
+    onClose,
+    mode,
+    contact,
+    onSubmit
+}) => {
+    const [formData, setFormData] = useState<Omit<Contact, 'id' | 'selected'>>({
+        name: '',
+        email: '',
+        birthDate: '',
+        mobile: '',
+        address: '',
+        note: '',
+        avatar: '/assets/patient-1.jpg'
+    });
+
+    useEffect(() => {
+        if (mode === 'edit' && contact) {
+            const { id, selected, ...rest } = contact;
+            setFormData(rest);
+        } else {
+            setFormData({
+                name: '',
+                email: '',
+                birthDate: '',
+                mobile: '',
+                address: '',
+                note: '',
+                avatar: '/assets/patient-1.jpg'
+            });
+        }
+    }, [mode, contact, isOpen]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+            <div className="bg-white rounded-lg shadow-lg w-[63vw] max-h-[80vh] overflow-hidden">
+                <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                            {formData.avatar ? (
+                                <img
+                                    src={formData.avatar}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <User className="w-6 h-6 text-gray-600" />
+                            )}
+                        </div>
+                        <h2 className="text-lg font-semibold">
+                            {mode === 'add' ? 'New Contact' : `Edit Contact - ${contact?.name}`}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[65vh] overflow-y-auto scrollbar-hide">
+                    <div className="grid grid-cols-2 gap-8">
+                        {/* Name */}
+                        <ReusableInput
+                            label="Name"
+                            value={formData.name}
+                            onChange={(value) => handleInputChange('name', value)}
+                            required
+                            icon={<User className="w-4 h-4" />}
+                        />
+
+                        {/* Email */}
+                        <ReusableInput
+                            label="Email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(value) => handleInputChange('email', value)}
+                            required
+                            icon={<Mail className="w-4 h-4" />}
+                        />
+
+                        {/* Mobile */}
+                        <ReusableInput
+                            label="Mobile"
+                            type="number"
+                            value={formData.mobile}
+                            onChange={(value) => handleInputChange('mobile', value)}
+                            required
+                            icon={<Phone className="w-4 h-4" />}
+                        />
+
+                        {/* Birth Date */}
+                        <ReusableInput
+                            label="Birth Date"
+                            type="date"
+                            value={formData.birthDate}
+                            onChange={(value) => handleInputChange('birthDate', value)}
+                            required
+                            icon={<Calendar className="w-4 h-4" />}
+                        />
+                    </div>
+
+                    {/* Address */}
+                    <ReusableInput
+                        label="Address"
+                        type="textarea"
+                        value={formData.address}
+                        onChange={(value) => handleInputChange('address', value)}
+                    />
+
+                    {/* Note */}
+                    <ReusableInput
+                        label="Note"
+                        type="textarea"
+                        value={formData.note}
+                        onChange={(value) => handleInputChange('note', value)}
+                    />
+
+                    {/* Submit Buttons */}
+                    <div className="flex gap-2 pt-3">
+                        <button
+                            type="submit"
+                            className="flex items-center gap-2 bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+                        >
+                            <Save className="w-4 h-4" />
+                            {mode === 'add' ? 'Add Contact' : 'Save Changes'}
+                        </button>
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
 
 export default function ContactsPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
@@ -24,8 +262,8 @@ export default function ContactsPage() {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
     // Sample contact data
@@ -37,6 +275,7 @@ export default function ContactsPage() {
             birthDate: "1990-05-15",
             mobile: "+1 (555) 123-4567",
             address: "123 Main St, New York, NY 10001",
+            note: "Important client",
             avatar: "/assets/patient-1.jpg",
             selected: false
         },
@@ -47,6 +286,7 @@ export default function ContactsPage() {
             birthDate: "1985-08-22",
             mobile: "+1 (555) 234-5678",
             address: "456 Oak Ave, Los Angeles, CA 90210",
+            note: "Regular customer",
             avatar: "/assets/patient-1.jpg",
             selected: false
         },
@@ -57,6 +297,7 @@ export default function ContactsPage() {
             birthDate: "1992-12-03",
             mobile: "+1 (555) 345-6789",
             address: "789 Pine Rd, Chicago, IL 60601",
+            note: "VIP client",
             avatar: "/assets/patient-1.jpg",
             selected: false
         },
@@ -67,6 +308,7 @@ export default function ContactsPage() {
             birthDate: "1988-03-18",
             mobile: "+1 (555) 456-7890",
             address: "321 Elm St, Miami, FL 33101",
+            note: "New contact",
             avatar: "/assets/patient-1.jpg",
             selected: false
         },
@@ -77,56 +319,7 @@ export default function ContactsPage() {
             birthDate: "1995-07-29",
             mobile: "+1 (555) 567-8901",
             address: "654 Maple Dr, Seattle, WA 98101",
-            avatar: "/assets/patient-1.jpg",
-            selected: false
-        },
-        {
-            id: 6,
-            name: "Sarah Williams",
-            email: "sarah.w@example.com",
-            birthDate: "1991-11-14",
-            mobile: "+1 (555) 678-9012",
-            address: "987 Cedar Ln, Boston, MA 02101",
-            avatar: "/assets/patient-1.jpg",
-            selected: false
-        },
-        {
-            id: 7,
-            name: "Michael Brown",
-            email: "michael.b@example.com",
-            birthDate: "1987-02-25",
-            mobile: "+1 (555) 789-0123",
-            address: "147 Birch St, Austin, TX 73301",
-            avatar: "/assets/patient-1.jpg",
-            selected: false
-        },
-        {
-            id: 8,
-            name: "Emily Davis",
-            email: "emily.davis@example.com",
-            birthDate: "1993-09-08",
-            mobile: "+1 (555) 890-1234",
-            address: "258 Walnut Ave, Denver, CO 80201",
-            avatar: "/assets/patient-1.jpg",
-            selected: false
-        },
-        {
-            id: 9,
-            name: "James Wilson",
-            email: "james.w@example.com",
-            birthDate: "1989-06-17",
-            mobile: "+1 (555) 901-2345",
-            address: "369 Spruce Blvd, Phoenix, AZ 85001",
-            avatar: "/assets/patient-1.jpg",
-            selected: false
-        },
-        {
-            id: 10,
-            name: "Lisa Taylor",
-            email: "lisa.taylor@example.com",
-            birthDate: "1994-04-12",
-            mobile: "+1 (555) 012-3456",
-            address: "741 Oakwood Dr, Atlanta, GA 30301",
+            note: "Business partner",
             avatar: "/assets/patient-1.jpg",
             selected: false
         }
@@ -178,6 +371,7 @@ export default function ContactsPage() {
                 "Birth Date": item.birthDate,
                 "Mobile": item.mobile,
                 "Address": item.address,
+                "Note": item.note,
             }))
         );
 
@@ -227,38 +421,40 @@ export default function ContactsPage() {
         { label: "Actions", checked: true },
     ];
 
-    const deleteContact = async (id: number) => {
-        try {
-            // Simulate API call
+    const deleteContact = (id: number) => {
+        if (window.confirm("Are you sure you want to delete this contact?")) {
             setContacts(prev => prev.filter(contact => contact.id !== id));
-            console.log("Contact deleted:", id);
-        } catch (error) {
-            console.error("Error deleting contact:", error);
         }
+    };
+
+    const handleAddClick = () => {
+        setModalMode('add');
+        setEditingContact(null);
+        setIsModalOpen(true);
     };
 
     const handleEditClick = (contact: Contact) => {
+        setModalMode('edit');
         setEditingContact(contact);
-        setIsEditModalOpen(true);
+        setIsModalOpen(true);
     };
 
-    const handleUpdateContact = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingContact) return;
-
-        try {
-            // Simulate API call
+    const handleModalSubmit = (contactData: Omit<Contact, 'id' | 'selected'>) => {
+        if (modalMode === 'add') {
+            const newContact: Contact = {
+                ...contactData,
+                id: Math.max(...contacts.map(c => c.id), 0) + 1,
+                selected: false
+            };
+            setContacts(prev => [...prev, newContact]);
+            alert("Contact added successfully!");
+        } else if (modalMode === 'edit' && editingContact) {
             setContacts(prev =>
-                prev.map(contact =>
-                    contact.id === editingContact.id ? editingContact : contact
-                )
+                prev.map(c => c.id === editingContact.id ? { ...contactData, id: editingContact.id, selected: editingContact.selected } : c)
             );
             alert("Contact updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating contact:", error);
-            alert("An unexpected error occurred.");
         }
+        setIsModalOpen(false);
     };
 
     return (
@@ -278,7 +474,7 @@ export default function ContactsPage() {
 
                 <div className="h-auto mt-3">
                     <div className="max-w-full">
-                        <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
+                        <div className="bg-[#f8f9fa] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
                             <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
@@ -287,7 +483,7 @@ export default function ContactsPage() {
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] pr-0 py-2 focus:outline-none"
+                                            className="w-full max-w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -341,11 +537,13 @@ export default function ContactsPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-contact">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -368,7 +566,7 @@ export default function ContactsPage() {
                                         <>
                                             {/* Desktop Table */}
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -387,7 +585,7 @@ export default function ContactsPage() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                     {contacts.map((contact) => (
                                                         <tr key={contact.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
@@ -467,18 +665,17 @@ export default function ContactsPage() {
                                                 {contacts.map((contact) => (
                                                     <div key={contact.id} className="border-b border-gray-200 py-4">
                                                         {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
                                                                 checked={selectedIds.includes(contact.id)}
                                                                 onChange={() => handleCheckboxChange(contact.id)}
                                                                 type="checkbox"
-                                                                className="w-4 h-4 rounded"
+                                                                className="w-4 h-4 text-blue-600 rounded"
                                                             />
                                                         </div>
 
-                                                        {/* Contact Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
                                                                 <span className="font-semibold w-20">Name:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
@@ -496,7 +693,7 @@ export default function ContactsPage() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <span className="font-semibold w-20">Email:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Mail className="w-4 h-4 text-gray-400" />
@@ -504,12 +701,12 @@ export default function ContactsPage() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <span className="font-semibold w-20">Birth Date:</span>
                                                                 <span>{new Date(contact.birthDate).toLocaleDateString()}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <span className="font-semibold w-20">Mobile:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Phone className="w-4 h-4 text-gray-400" />
@@ -517,7 +714,7 @@ export default function ContactsPage() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <span className="font-semibold w-20">Address:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <MapPin className="w-4 h-4 text-gray-400" />
@@ -526,7 +723,7 @@ export default function ContactsPage() {
                                                             </div>
 
                                                             {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(contact)}
@@ -559,76 +756,14 @@ export default function ContactsPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingContact && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
-                    <div className="bg-white rounded-lg shadow-lg w-[450px] max-w-[90%] max-h-[85vh] overflow-hidden flex flex-col">
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-                            <div className="flex items-center space-x-3">
-                                <img
-                                    src={editingContact.avatar || "https://via.placeholder.com/40"}
-                                    alt={editingContact.name}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    {editingContact.name}
-                                </h2>
-                            </div>
-                            <button
-                                onClick={() => setIsEditModalOpen(!isEditModalOpen)}
-                                className="text-gray-500 hover:text-gray-800 transition"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div className="p-6 overflow-y-auto space-y-6 text-gray-700">
-                            {/* Email */}
-                            <div className="flex items-start space-x-4">
-                                <Mail className="w-5 h-5 text-gray-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm">{editingContact.email}</p>
-                                </div>
-                            </div>
-
-                            {/* Phone */}
-                            <div className="flex items-start space-x-4">
-                                <Phone className="w-5 h-5 text-gray-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm">{editingContact.mobile}</p>
-                                </div>
-                            </div>
-
-                            {/* Birth Date */}
-                            <div className="flex items-start space-x-4">
-                                <Calendar className="w-5 h-5 text-gray-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm">{editingContact.birthDate}</p>
-                                </div>
-                            </div>
-
-                            {/* Address */}
-                            <div className="flex items-start space-x-4">
-                                <MapPin className="w-5 h-5 text-gray-600 mt-0.5" />
-                                <div>
-                                    <p className="text-sm leading-relaxed">{editingContact.address}</p>
-                                </div>
-                            </div>
-
-                            {/* Notes / Description */}
-                            {/* <div className="flex items-start space-x-4">
-                                <FileText className="w-5 h-5 text-gray-600 mt-0.5" />
-                                <div className="space-y-3">
-                                    <p className="text-sm leading-relaxed">{editingContact.notes1}</p>
-                                    <p className="text-sm leading-relaxed">{editingContact.notes2}</p>
-                                </div>
-                            </div> */}
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Contact Modal */}
+            <ContactModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                mode={modalMode}
+                contact={editingContact}
+                onSubmit={handleModalSubmit}
+            />
 
             <style jsx>{`
                 @keyframes slideDown {
@@ -636,6 +771,8 @@ export default function ContactsPage() {
                     100% { transform: translateY(0); opacity: 1; }
                 }
                 .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
         </>
     );

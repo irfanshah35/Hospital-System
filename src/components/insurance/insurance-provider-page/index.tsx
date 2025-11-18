@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, Mail, MapPin } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -17,9 +17,329 @@ interface InsuranceProvider {
     customerSupportNumber: string;
     contractStartDate: string;
     reimbursementRate: string;
-    coverageTypes: string[];
+    coverageTypes: string;
     status: "Active" | "Inactive" | "Pending" | "Suspended";
 }
+
+// Reusable Input Component
+interface ReusableInputProps {
+    label: string;
+    type?: "text" | "number" | "email" | "password" | "date" | "textarea";
+    value: string | number;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    required?: boolean;
+    className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+    label,
+    type = "text",
+    value,
+    onChange,
+    placeholder = " ",
+    required = false,
+    className = ""
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    if (type === "textarea") {
+        return (
+            <div className={`relative ${className}`}>
+                <textarea
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={3}
+                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
+                />
+                <label
+                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+                >
+                    {label}{required && "*"}
+                </label>
+            </div>
+        );
+    }
+
+    return (
+        <div className={`relative ${className}`}>
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder={placeholder}
+                required={required}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+            />
+            <label
+                className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                    } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+            >
+                {label}{required && "*"}
+            </label>
+        </div>
+    );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    required?: boolean;
+    className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+    label,
+    value,
+    onChange,
+    options,
+    required = false,
+    className = ""
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+    return (
+        <div className={`relative ${className}`}>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                required={required}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+            >
+                <option hidden></option>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+                } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+            >
+                {label}{required && "*"}
+            </label>
+        </div>
+    );
+};
+
+// Insurance Provider Modal Component
+interface InsuranceProviderModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    mode: 'add' | 'edit';
+    provider?: InsuranceProvider | null;
+    onSubmit: (provider: Omit<InsuranceProvider, 'id'>) => void;
+}
+
+const InsuranceProviderModal: React.FC<InsuranceProviderModalProps> = ({
+    isOpen,
+    onClose,
+    mode,
+    provider,
+    onSubmit
+}) => {
+    const [formData, setFormData] = useState<Omit<InsuranceProvider, 'id'>>({
+        providerName: '',
+        providerCode: '',
+        contactPhone: '',
+        contactEmail: '',
+        address: '',
+        websiteUrl: '',
+        customerSupportNumber: '',
+        contractStartDate: '',
+        reimbursementRate: '',
+        coverageTypes: '',
+        status: 'Active'
+    });
+
+    const [coverageTypeInput, setCoverageTypeInput] = useState('');
+
+    useEffect(() => {
+        if (mode === 'edit' && provider) {
+            const { id, ...rest } = provider;
+            setFormData(rest);
+        } else {
+            setFormData({
+                providerName: '',
+                providerCode: '',
+                contactPhone: '',
+                contactEmail: '',
+                address: '',
+                websiteUrl: '',
+                customerSupportNumber: '',
+                contractStartDate: '',
+                reimbursementRate: '',
+                coverageTypes: '',
+                status: 'Active'
+            });
+        }
+    }, [mode, provider, isOpen]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+            <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
+                <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+                    <div className="flex items-center space-x-3">
+                        
+                        <h2 className="text-lg font-semibold">
+                            {mode === 'add' ? 'New Provider' : `Edit Provider - ${provider?.providerName}`}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <div className="grid grid-cols-2 gap-8">
+                        {/* Provider Name */}
+                        <ReusableInput
+                            label="Provider Name"
+                            value={formData.providerName}
+                            onChange={(value) => setFormData({ ...formData, providerName: value })}
+                            required
+                        />
+
+                        {/* Provider Code */}
+                        <ReusableInput
+                            label="Provider Code"
+                            value={formData.providerCode}
+                            onChange={(value) => setFormData({ ...formData, providerCode: value })}
+                            required
+                        />
+
+                        {/* Contact Phone */}
+                        <ReusableInput
+                            label="Contact Phone"
+                            value={formData.contactPhone}
+                            onChange={(value) => setFormData({ ...formData, contactPhone: value })}
+                            required
+                        />
+
+                        {/* Contact Email */}
+                        <ReusableInput
+                            label="Contact Email"
+                            type="email"
+                            value={formData.contactEmail}
+                            onChange={(value) => setFormData({ ...formData, contactEmail: value })}
+                            required
+                        />
+
+                        {/* Website URL */}
+                        <ReusableInput
+                            label="Website URL"
+                            value={formData.websiteUrl}
+                            onChange={(value) => setFormData({ ...formData, websiteUrl: value })}
+                            required
+                        />
+
+                        {/* Customer Support Number */}
+                        <ReusableInput
+                            label="Customer Support Number"
+                            value={formData.customerSupportNumber}
+                            onChange={(value) => setFormData({ ...formData, customerSupportNumber: value })}
+                            required
+                        />
+
+                        {/* Contract Start Date */}
+                        <ReusableInput
+                            label="Contract Start Date"
+                            type="date"
+                            value={formData.contractStartDate}
+                            onChange={(value) => setFormData({ ...formData, contractStartDate: value })}
+                            required
+                        />
+
+                        {/* Reimbursement Rate */}
+                        <ReusableInput
+                            label="Reimbursement Rate"
+                            value={formData.reimbursementRate}
+                            onChange={(value) => setFormData({ ...formData, reimbursementRate: value })}
+                            required
+                        />
+
+                        {/* Status */}
+                        <ReusableSelect
+                            label="Status"
+                            value={formData.status}
+                            onChange={(value) => setFormData({ ...formData, status: value as "Active" | "Inactive" | "Pending" | "Suspended" })}
+                            options={[
+                                { value: "Active", label: "Active" },
+                                { value: "Inactive", label: "Inactive" },
+                                { value: "Pending", label: "Pending" },
+                                { value: "Suspended", label: "Suspended" }
+                            ]}
+                            required
+                        />
+
+                        <ReusableInput
+                            label="Coverage Types"
+                            value={formData.coverageTypes}
+                            onChange={(value) => setFormData({ ...formData, coverageTypes: value })}
+                            required
+                        />
+                    </div>
+
+                    {/* Address */}
+                    <ReusableInput
+                        label="Address"
+                        type="textarea"
+                        value={formData.address}
+                        onChange={(value) => setFormData({ ...formData, address: value })}
+                        required
+                    />
+
+                    {/* Submit Buttons */}
+                    <div className="flex gap-2 pt-3">
+                        <button
+                            type="submit"
+                            className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+                        >
+                            {mode === 'add' ? 'Add Provider' : 'Save Changes'}
+                        </button>
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
 
 export default function InsuranceProviderPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
@@ -28,8 +348,8 @@ export default function InsuranceProviderPage() {
     const [providers, setProviders] = useState<InsuranceProvider[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [editingProvider, setEditingProvider] = useState<InsuranceProvider | null>(null);
 
     // Sample insurance provider data
@@ -45,7 +365,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-5678",
             contractStartDate: "2023-01-15",
             reimbursementRate: "85%",
-            coverageTypes: ["Health", "Dental", "Vision"],
+            coverageTypes: 'Health',
             status: "Active"
         },
         {
@@ -59,7 +379,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-6789",
             contractStartDate: "2023-03-20",
             reimbursementRate: "80%",
-            coverageTypes: ["Health", "Mental Health"],
+            coverageTypes: 'Health',
             status: "Active"
         },
         {
@@ -73,7 +393,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-7890",
             contractStartDate: "2022-11-10",
             reimbursementRate: "82%",
-            coverageTypes: ["Health", "Dental", "Pharmacy"],
+            coverageTypes: 'Health',
             status: "Pending"
         },
         {
@@ -87,7 +407,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-8901",
             contractStartDate: "2023-06-05",
             reimbursementRate: "78%",
-            coverageTypes: ["Health", "Vision"],
+            coverageTypes: 'Health',
             status: "Inactive"
         },
         {
@@ -101,7 +421,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-9012",
             contractStartDate: "2023-02-28",
             reimbursementRate: "88%",
-            coverageTypes: ["Health", "Dental", "Vision", "Mental Health"],
+            coverageTypes: 'Health',
             status: "Active"
         },
         {
@@ -115,7 +435,7 @@ export default function InsuranceProviderPage() {
             customerSupportNumber: "+1-800-555-0123",
             contractStartDate: "2023-04-15",
             reimbursementRate: "75%",
-            coverageTypes: ["Health", "Pharmacy"],
+            coverageTypes: 'Health',
             status: "Suspended"
         }
     ];
@@ -170,7 +490,7 @@ export default function InsuranceProviderPage() {
                 "Customer Support": item.customerSupportNumber,
                 "Contract Start Date": item.contractStartDate,
                 "Reimbursement Rate": item.reimbursementRate,
-                "Coverage Types": item.coverageTypes.join(", "),
+                "Coverage Types": item.coverageTypes,
                 "Status": item.status,
             }))
         );
@@ -227,38 +547,39 @@ export default function InsuranceProviderPage() {
         { label: "Actions", checked: true },
     ];
 
-    const deleteProvider = async (id: number) => {
-        try {
-            // Simulate API call
+    const deleteProvider = (id: number) => {
+        if (window.confirm("Are you sure you want to delete this provider?")) {
             setProviders(prev => prev.filter(provider => provider.id !== id));
-            console.log("Provider deleted:", id);
-        } catch (error) {
-            console.error("Error deleting provider:", error);
         }
+    };
+
+    const handleAddClick = () => {
+        setModalMode('add');
+        setEditingProvider(null);
+        setIsModalOpen(true);
     };
 
     const handleEditClick = (provider: InsuranceProvider) => {
+        setModalMode('edit');
         setEditingProvider(provider);
-        setIsEditModalOpen(true);
+        setIsModalOpen(true);
     };
 
-    const handleUpdateProvider = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingProvider) return;
-
-        try {
-            // Simulate API call
+    const handleModalSubmit = (providerData: Omit<InsuranceProvider, 'id'>) => {
+        if (modalMode === 'add') {
+            const newProvider: InsuranceProvider = {
+                ...providerData,
+                id: Math.max(...providers.map(p => p.id), 0) + 1
+            };
+            setProviders(prev => [...prev, newProvider]);
+            alert("Provider added successfully!");
+        } else if (modalMode === 'edit' && editingProvider) {
             setProviders(prev =>
-                prev.map(provider =>
-                    provider.id === editingProvider.id ? editingProvider : provider
-                )
+                prev.map(p => p.id === editingProvider.id ? { ...providerData, id: editingProvider.id } : p)
             );
             alert("Provider updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating provider:", error);
-            alert("An unexpected error occurred.");
         }
+        setIsModalOpen(false);
     };
 
     const getStatusColor = (status: string) => {
@@ -288,7 +609,7 @@ export default function InsuranceProviderPage() {
 
                 <div className="h-auto mt-3">
                     <div className="max-w-full">
-                        <div className="bg-[var(--tableHeaderBg)] rounded-t-xl shadow-md overflow-hidden">
+                        <div className="bg-[#f8f9fa] rounded-t-xl shadow-md overflow-hidden">
                             {/* Header */}
                             <div className="pr-[15px] pl-[20px] py-[8px] border-b border-gray-200 flex max-[390px]:gap-2 items-center flex-wrap">
                                 <div className='flex items-center flex-[35%]'>
@@ -297,7 +618,7 @@ export default function InsuranceProviderPage() {
                                         <input
                                             type="text"
                                             placeholder="Search"
-                                            className="w-full md:w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] pr-0 py-2 focus:outline-none"
+                                            className="w-full max-w-[212px] h-[45px] rounded-[5px] border-0 bg-white text-[14px] font-medium px-[50px] py-2 focus:outline-none"
                                         />
                                         <span className='absolute left-2 top-2'>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -351,11 +672,13 @@ export default function InsuranceProviderPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-provider">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -377,7 +700,7 @@ export default function InsuranceProviderPage() {
                                     ) : (
                                         <>
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -402,7 +725,7 @@ export default function InsuranceProviderPage() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                     {providers.map((item) => (
                                                         <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
@@ -414,7 +737,7 @@ export default function InsuranceProviderPage() {
                                                                 />
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap text-sm ">
+                                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                                                                 {item.providerName}
                                                             </td>
 
@@ -465,12 +788,10 @@ export default function InsuranceProviderPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 text-sm">
-                                                                <div className="flex flex-row gap-1">
-                                                                    {item.coverageTypes.map((type, index) => (
-                                                                        <span key={index} className="text-xs">
-                                                                            {type}
-                                                                        </span>
-                                                                    ))}
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                                                        {item.coverageTypes}
+                                                                    </span>
                                                                 </div>
                                                             </td>
 
@@ -505,8 +826,7 @@ export default function InsuranceProviderPage() {
                                             <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                 {providers.map((item) => (
                                                     <div key={item.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
                                                                 checked={selectedIds.includes(item.id)}
                                                                 onChange={() => handleCheckboxChange(item.id)}
@@ -515,28 +835,27 @@ export default function InsuranceProviderPage() {
                                                             />
                                                         </div>
 
-                                                        {/* Provider Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Provider Name:</span>
-                                                                <span className="text-blue-600 font-medium">{item.providerName}</span>
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
+                                                                <span className="font-semibold w-40">Provider Name:</span>
+                                                                <span className="font-medium text-blue-600">{item.providerName}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Provider Code:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Provider Code:</span>
                                                                 <span className="font-mono">{item.providerCode}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Contact Phone:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Contact Phone:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Phone className="w-4 h-4 text-gray-400" />
                                                                     <span>{item.contactPhone}</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Contact Email:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Contact Email:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <Mail className="w-4 h-4 text-gray-400" />
                                                                     <a href={`mailto:${item.contactEmail}`} className="text-blue-600 hover:underline">
@@ -545,56 +864,55 @@ export default function InsuranceProviderPage() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Address:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Address:</span>
                                                                 <div className="flex items-center gap-2">
                                                                     <MapPin className="w-4 h-4 text-gray-400" />
                                                                     <span>{item.address}</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Website:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Website:</span>
                                                                 <a href={`https://${item.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                                     {item.websiteUrl}
                                                                 </a>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Support Number:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Support Number:</span>
                                                                 <span>{item.customerSupportNumber}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Contract Start:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Contract Start:</span>
                                                                 <span>{item.contractStartDate}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Reimbursement Rate:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Reimbursement Rate:</span>
                                                                 <span className="text-green-600 font-semibold">{item.reimbursementRate}</span>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Coverage Types:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Coverage Types:</span>
                                                                 <div className="flex flex-wrap gap-1">
-                                                                    {item.coverageTypes.map((type, index) => (
-                                                                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                                                            {type}
-                                                                        </span>
-                                                                    ))}
+
+                                                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                                                        {item.coverageTypes}
+                                                                    </span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Status:</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold w-40">Status:</span>
                                                                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
                                                                     {item.status}
                                                                 </span>
                                                             </div>
 
                                                             {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
@@ -627,187 +945,14 @@ export default function InsuranceProviderPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingProvider && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
-                                </div>
-                                <h2 className="text-lg font-semibold">
-                                    Edit Provider - {editingProvider.providerName}
-                                </h2>
-                            </div>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateProvider} className="p-6 space-y-6 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Provider Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.providerName}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, providerName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Provider Name*
-                                    </label>
-                                </div>
-
-                                {/* Provider Code */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.providerCode}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, providerCode: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Provider Code*
-                                    </label>
-                                </div>
-
-                                {/* Contact Phone */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.contactPhone}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, contactPhone: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Contact Phone*
-                                    </label>
-                                </div>
-
-                                {/* Contact Email */}
-                                <div className="relative">
-                                    <input
-                                        type="email"
-                                        value={editingProvider.contactEmail}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, contactEmail: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Contact Email*
-                                    </label>
-                                </div>
-
-                                {/* Website URL */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.websiteUrl}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, websiteUrl: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Website URL*
-                                    </label>
-                                </div>
-
-                                {/* Customer Support Number */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.customerSupportNumber}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, customerSupportNumber: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Support Number*
-                                    </label>
-                                </div>
-
-                                {/* Contract Start Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingProvider.contractStartDate}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, contractStartDate: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Contract Start Date*
-                                    </label>
-                                </div>
-
-                                {/* Reimbursement Rate */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingProvider.reimbursementRate}
-                                        onChange={(e) => setEditingProvider({ ...editingProvider, reimbursementRate: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Reimbursement Rate*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Address */}
-                            <div className="relative">
-                                <textarea
-                                    value={editingProvider.address}
-                                    onChange={(e) => setEditingProvider({ ...editingProvider, address: e.target.value })}
-                                    placeholder=" "
-                                    rows={3}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                ></textarea>
-                                <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Address*
-                                </label>
-                            </div>
-
-                            {/* Status */}
-                            <div className="relative">
-                                <select
-                                    value={editingProvider.status}
-                                    onChange={(e) => setEditingProvider({ ...editingProvider, status: e.target.value as any })}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Suspended">Suspended</option>
-                                </select>
-                                <label className="absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Status*
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-3">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a9b]"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9b1515]"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            {/* Insurance Provider Modal */}
+            <InsuranceProviderModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                mode={modalMode}
+                provider={editingProvider}
+                onSubmit={handleModalSubmit}
+            />
 
             <style jsx>{`
                 @keyframes slideDown {
@@ -815,6 +960,8 @@ export default function InsuranceProviderPage() {
                     100% { transform: translateY(0); opacity: 1; }
                 }
                 .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
         </>
     );
