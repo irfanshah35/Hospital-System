@@ -1,13 +1,12 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin, User, Calendar, Tag } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Link from 'next/link';
 
 interface BloodDonor {
-    id: number;
+    id: string;
     donorId: string;
     donorName: string;
     dateOfBirth: string;
@@ -19,23 +18,29 @@ interface BloodDonor {
     lastDonationDate: string;
     nextEligibleDonationDate: string;
     donorLocation: string;
+    address: string;
+    donationFrequency: string;
+    healthStatus: string;
+    donationHistory: string;
+    donorNotes: string;
 }
 
 export default function BloodDonorPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [bloodDonors, setBloodDonors] = useState<BloodDonor[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<BloodDonor | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // Blood Donor Data Array
     const bloodDonorData: BloodDonor[] = [
         {
-            id: 1,
+            id: "1",
             donorId: "DNR001",
             donorName: "John Smith",
             dateOfBirth: "1985-03-15",
@@ -46,10 +51,15 @@ export default function BloodDonorPage() {
             donorStatus: "Active",
             lastDonationDate: "2024-10-15",
             nextEligibleDonationDate: "2024-12-15",
-            donorLocation: "New York, NY"
+            donorLocation: "New York, NY",
+            address: "123 Main St, New York, NY",
+            donationFrequency: "Every 3 months",
+            healthStatus: "Excellent",
+            donationHistory: "Regular donor since 2020",
+            donorNotes: "Prefers morning appointments"
         },
         {
-            id: 2,
+            id: "2",
             donorId: "DNR002",
             donorName: "Sarah Johnson",
             dateOfBirth: "1990-07-22",
@@ -60,10 +70,15 @@ export default function BloodDonorPage() {
             donorStatus: "Active",
             lastDonationDate: "2024-10-10",
             nextEligibleDonationDate: "2024-12-10",
-            donorLocation: "Los Angeles, CA"
+            donorLocation: "Los Angeles, CA",
+            address: "456 Oak Ave, Los Angeles, CA",
+            donationFrequency: "Every 4 months",
+            healthStatus: "Good",
+            donationHistory: "5 donations total",
+            donorNotes: "Allergic to latex"
         },
         {
-            id: 3,
+            id: "3",
             donorId: "DNR003",
             donorName: "Michael Brown",
             dateOfBirth: "1982-11-30",
@@ -74,77 +89,12 @@ export default function BloodDonorPage() {
             donorStatus: "Inactive",
             lastDonationDate: "2024-09-20",
             nextEligibleDonationDate: "2024-11-20",
-            donorLocation: "Chicago, IL"
-        },
-        {
-            id: 4,
-            donorId: "DNR004",
-            donorName: "Emily Davis",
-            dateOfBirth: "1995-05-18",
-            gender: "Female",
-            bloodType: "AB+",
-            phoneNumber: "+1-555-0104",
-            email: "emily.davis@email.com",
-            donorStatus: "Active",
-            lastDonationDate: "2024-10-18",
-            nextEligibleDonationDate: "2024-12-18",
-            donorLocation: "Houston, TX"
-        },
-        {
-            id: 5,
-            donorId: "DNR005",
-            donorName: "Robert Wilson",
-            dateOfBirth: "1978-12-05",
-            gender: "Male",
-            bloodType: "O-",
-            phoneNumber: "+1-555-0105",
-            email: "r.wilson@email.com",
-            donorStatus: "Suspended",
-            lastDonationDate: "2024-08-25",
-            nextEligibleDonationDate: "2024-10-25",
-            donorLocation: "Phoenix, AZ"
-        },
-        {
-            id: 6,
-            donorId: "DNR006",
-            donorName: "Lisa Anderson",
-            dateOfBirth: "1988-09-14",
-            gender: "Female",
-            bloodType: "A-",
-            phoneNumber: "+1-555-0106",
-            email: "lisa.anderson@email.com",
-            donorStatus: "Active",
-            lastDonationDate: "2024-10-12",
-            nextEligibleDonationDate: "2024-12-12",
-            donorLocation: "Philadelphia, PA"
-        },
-        {
-            id: 7,
-            donorId: "DNR007",
-            donorName: "David Miller",
-            dateOfBirth: "1992-02-28",
-            gender: "Male",
-            bloodType: "B+",
-            phoneNumber: "+1-555-0107",
-            email: "d.miller@email.com",
-            donorStatus: "Active",
-            lastDonationDate: "2024-10-08",
-            nextEligibleDonationDate: "2024-12-08",
-            donorLocation: "San Antonio, TX"
-        },
-        {
-            id: 8,
-            donorId: "DNR008",
-            donorName: "Jennifer Taylor",
-            dateOfBirth: "1987-06-11",
-            gender: "Female",
-            bloodType: "AB-",
-            phoneNumber: "+1-555-0108",
-            email: "j.taylor@email.com",
-            donorStatus: "Inactive",
-            lastDonationDate: "2024-09-15",
-            nextEligibleDonationDate: "2024-11-15",
-            donorLocation: "San Diego, CA"
+            donorLocation: "Chicago, IL",
+            address: "789 Pine St, Chicago, IL",
+            donationFrequency: "Every 6 months",
+            healthStatus: "Fair",
+            donationHistory: "On temporary break",
+            donorNotes: "Traveling abroad"
         }
     ];
 
@@ -199,6 +149,9 @@ export default function BloodDonorPage() {
                 "Last Donation Date": item.lastDonationDate,
                 "Next Eligible Donation Date": item.nextEligibleDonationDate,
                 "Donor Location": item.donorLocation,
+                "Address": item.address,
+                "Donation Frequency": item.donationFrequency,
+                "Health Status": item.healthStatus,
             }))
         );
 
@@ -209,25 +162,97 @@ export default function BloodDonorPage() {
         saveAs(blob, "blood-donors.xlsx");
     };
 
-    const removeData = () => {
-        if (selectedIds.length === 0) {
-            alert("Please select at least one donor to delete.");
-            return;
-        }
-        if (window.confirm(`Delete ${selectedIds.length} donor(s)?`)) {
-            setBloodDonors(prev => prev.filter(donor => !selectedIds.includes(donor.id)));
-            setSelectedIds([]);
+    const removeData = (id: string) => {
+        if (window.confirm("Are you sure you want to delete this blood donor?")) {
+            try {
+                setBloodDonors(prev => prev.filter(item => item.id !== id));
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting blood donor");
+            }
         }
     };
 
-    const handleCheckboxChange = (id: number) => {
+    const handleDeleteSelected = async () => {
+        if (selectedIds.length === 0) {
+            alert("Please select at least one blood donor to delete.");
+            return;
+        }
+        if (window.confirm(`Delete ${selectedIds.length} blood donor(s)?`)) {
+            try {
+                setBloodDonors(prev => prev.filter(item => !selectedIds.includes(item.id)));
+                setSelectedIds([]);
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting blood donors");
+            }
+        }
+    };
+
+    const handleAddClick = () => {
+        setEditingItem({
+            id: '',
+            donorId: '',
+            donorName: '',
+            dateOfBirth: new Date().toISOString().split('T')[0],
+            gender: 'Male',
+            bloodType: 'O+',
+            phoneNumber: '',
+            email: '',
+            donorStatus: 'Active',
+            lastDonationDate: new Date().toISOString().split('T')[0],
+            nextEligibleDonationDate: new Date().toISOString().split('T')[0],
+            donorLocation: '',
+            address: '',
+            donationFrequency: '',
+            healthStatus: '',
+            donationHistory: '',
+            donorNotes: ''
+        });
+        setIsEditMode(false);
+        setIsModalOpen(true);
+    };
+
+    const handleEditClick = (item: BloodDonor) => {
+        setEditingItem(item);
+        setIsEditMode(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = (formData: BloodDonor) => {
+        if (isEditMode && editingItem?.id) {
+            // Edit existing record
+            setBloodDonors(prev =>
+                prev.map(item =>
+                    item.id === editingItem.id ? { ...formData, id: editingItem.id } : item
+                )
+            );
+        } else {
+            // Add new record
+            const newItem = {
+                ...formData,
+                id: Math.random().toString(36).substr(2, 9)
+            };
+            setBloodDonors(prev => [...prev, newItem]);
+        }
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleCheckboxChange = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         );
     };
 
     const handleSelectAll = (checked: boolean) => {
-        setSelectedIds(checked ? bloodDonors.map(donor => donor.id) : []);
+        setSelectedIds(checked ? bloodDonors.map(item => item.id) : []);
     };
 
     useEffect(() => {
@@ -253,42 +278,6 @@ export default function BloodDonorPage() {
         { label: "Donor Location", checked: true },
         { label: "Actions", checked: true },
     ];
-
-    const deleteSelectedItem = async (id: any) => {
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setBloodDonors(prev => prev.filter(donor => donor.id !== id));
-            console.log("Blood donor deleted:", id);
-        } catch (error) {
-            console.error("Error deleting blood donor:", error);
-        }
-    };
-
-    const handleEditClick = (donor: BloodDonor) => {
-        setEditingItem(donor);
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateItem = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setBloodDonors(prev => 
-                prev.map(donor => 
-                    donor.id === editingItem?.id ? editingItem : donor
-                )
-            );
-            
-            alert("Blood donor updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating blood donor:", error);
-            alert("An unexpected error occurred.");
-        }
-    };
 
     return (
         <>
@@ -329,7 +318,7 @@ export default function BloodDonorPage() {
                                 <div className="flex items-center gap-1">
                                     {selectedIds.length > 0 && (
                                         <button
-                                            onClick={removeData}
+                                            onClick={handleDeleteSelected}
                                             className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
                                             title="Delete Selected"
                                         >
@@ -370,11 +359,13 @@ export default function BloodDonorPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-blood-donor">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add New Blood Donor"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -396,7 +387,7 @@ export default function BloodDonorPage() {
                                     ) : (
                                         <>
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -421,110 +412,112 @@ export default function BloodDonorPage() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                                                    {bloodDonors.map((donor) => (
-                                                        <tr key={donor.id} className="transition-colors duration-150 hover:bg-gray-50">
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                    {bloodDonors.map((item) => (
+                                                        <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
                                                                 <input
                                                                     type="checkbox"
-                                                                    checked={selectedIds.includes(donor.id)}
-                                                                    onChange={() => handleCheckboxChange(donor.id)}
+                                                                    checked={selectedIds.includes(item.id)}
+                                                                    onChange={() => handleCheckboxChange(item.id)}
                                                                     className="h-[18px] w-[18px] rounded-[2px] border-[2px] border-[#1a1b1f]"
                                                                 />
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium">
-                                                                    {donor.donorId}
+                                                                <div className="text-sm font-medium text-gray-900">
+                                                                    {item.donorId}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium">
-                                                                    {donor.donorName}
+                                                                <div className="text-sm font-medium text-gray-900">
+                                                                    {item.donorName}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm">
-                                                                    {donor.dateOfBirth}
+                                                                    {item.dateOfBirth}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
+                                                                    item.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
                                                                 }`}>
-                                                                    {donor.gender}
+                                                                    {item.gender}
                                                                 </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
+                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
+                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
                                                                     'bg-purple-100 text-purple-800'
                                                                 }`}>
-                                                                    {donor.bloodType}
+                                                                    {item.bloodType}
                                                                 </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm flex items-center gap-2">
                                                                     <Phone className="w-4 h-4 text-green-600" />
-                                                                    {donor.phoneNumber}
+                                                                    {item.phoneNumber}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm flex items-center gap-2">
                                                                     <Mail className="w-4 h-4 text-gray-600" />
-                                                                    {donor.email}
+                                                                    {item.email}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
-                                                                    donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
+                                                                    item.donorStatus === "Active" ? "bg-green-100 text-green-800" :
+                                                                    item.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
                                                                     "bg-red-100 text-red-800"
                                                                 }`}>
-                                                                    {donor.donorStatus}
+                                                                    {item.donorStatus}
                                                                 </span>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm flex items-center gap-2">
                                                                     <Clock className="w-4 h-4 text-gray-600" />
-                                                                    {donor.lastDonationDate}
+                                                                    {item.lastDonationDate}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm">
-                                                                    {donor.nextEligibleDonationDate}
+                                                                    {item.nextEligibleDonationDate}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
                                                                 <div className="text-sm flex items-center gap-2">
                                                                     <MapPin className="w-4 h-4 text-red-600" />
-                                                                    {donor.donorLocation}
+                                                                    {item.donorLocation}
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                            <td className="px-4 py-3 text-sm font-medium">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(donor)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Edit"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(donor.id)} 
+                                                                    <button
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Delete"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
                                                                     </button>
@@ -536,127 +529,111 @@ export default function BloodDonorPage() {
                                             </table>
 
                                             {/* Mobile View */}
-                                            <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                                                {bloodDonors.map((donor) => (
-                                                    <div key={donor.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                            <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                {bloodDonors.map((item) => (
+                                                    <div key={item.id} className="border-b border-gray-200 py-4">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
-                                                                checked={selectedIds.includes(donor.id)}
-                                                                onChange={() => handleCheckboxChange(donor.id)}
-                                                                type="checkbox"
-                                                                className="w-4 h-4 text-blue-600 rounded"
-                                                            />
+                                                                checked={selectedIds.includes(item.id)}
+                                                                onChange={() => handleCheckboxChange(item.id)}
+                                                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                                                         </div>
-
-                                                        {/* Donor Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            {/* Donor ID */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Donor ID:</span>
-                                                                <span className="font-medium text-blue-600">{donor.donorId}</span>
-                                                            </div>
-
-                                                            {/* Donor Name */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Donor Name:</span>
-                                                                <span className="font-medium">{donor.donorName}</span>
-                                                            </div>
-
-                                                            {/* Date of Birth */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Date of Birth:</span>
-                                                                <span>{donor.dateOfBirth}</span>
-                                                            </div>
-
-                                                            {/* Gender */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Gender:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
-                                                                    {donor.gender}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Blood Type */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Blood Type:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    donor.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    donor.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
-                                                                    {donor.bloodType}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Phone Number */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Phone:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Phone className="w-4 h-4 text-green-600" />
-                                                                    <span>{donor.phoneNumber}</span>
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Donor ID:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Tag className='w-5 h-5 text-blue-500' />
+                                                                    <span className="ml-1">{item.donorId}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Email */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Email:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Mail className="w-4 h-4 text-gray-600" />
-                                                                    <span>{donor.email}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Donor Name:</span>
+                                                                <div className='flex items-center'>
+                                                                    <User className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">{item.donorName}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Donor Status */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Status:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    donor.donorStatus === "Active" ? "bg-green-100 text-green-800" :
-                                                                    donor.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
-                                                                    "bg-red-100 text-red-800"
-                                                                }`}>
-                                                                    {donor.donorStatus}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Last Donation Date */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Last Donation:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Clock className="w-4 h-4 text-gray-600" />
-                                                                    <span>{donor.lastDonationDate}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Date of Birth:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Calendar className='w-5 h-5 text-purple-500' />
+                                                                    <span className="ml-1">{item.dateOfBirth}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Next Eligible Donation Date */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Next Eligible:</span>
-                                                                <span>{donor.nextEligibleDonationDate}</span>
-                                                            </div>
-
-                                                            {/* Donor Location */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Location:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <MapPin className="w-4 h-4 text-red-600" />
-                                                                    <span>{donor.donorLocation}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Gender:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"}`}>
+                                                                        {item.gender}
+                                                                    </span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Blood Type:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
+                                                                        item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                        item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                        'bg-purple-100 text-purple-800'}`}>
+                                                                        {item.bloodType}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Phone:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Phone className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">{item.phoneNumber}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Email:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Mail className='w-5 h-5 text-gray-500' />
+                                                                    <span className="ml-1">{item.email}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Status:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.donorStatus === "Active" ? "bg-green-100 text-green-800" :
+                                                                        item.donorStatus === "Inactive" ? "bg-yellow-100 text-yellow-800" :
+                                                                        "bg-red-100 text-red-800"}`}>
+                                                                        {item.donorStatus}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Last Donation:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Clock className='w-5 h-5 text-blue-500' />
+                                                                    <span className="ml-1">{item.lastDonationDate}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Next Eligible:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Calendar className='w-5 h-5 text-orange-500' />
+                                                                    <span className="ml-1">{item.nextEligibleDonationDate}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Location:</span>
+                                                                <div className='flex items-center'>
+                                                                    <MapPin className='w-5 h-5 text-red-500' />
+                                                                    <span className="ml-1">{item.donorLocation}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
-                                                                        onClick={() => handleEditClick(donor)}
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => deleteSelectedItem(donor.id)}
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -680,214 +657,420 @@ export default function BloodDonorPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <h2 className="text-lg font-semibold">
-                                Edit Blood Donor - {editingItem.donorName}
-                            </h2>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateItem} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Donor ID */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.donorId}
-                                        onChange={(e) => setEditingItem({...editingItem, donorId: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Donor ID*
-                                    </label>
-                                </div>
-
-                                {/* Donor Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.donorName}
-                                        onChange={(e) => setEditingItem({...editingItem, donorName: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Donor Name*
-                                    </label>
-                                </div>
-
-                                {/* Date of Birth */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.dateOfBirth}
-                                        onChange={(e) => setEditingItem({...editingItem, dateOfBirth: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Date of Birth*
-                                    </label>
-                                </div>
-
-                                {/* Gender */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.gender}
-                                        onChange={(e) => setEditingItem({...editingItem, gender: e.target.value as "Male" | "Female"})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Gender*
-                                    </label>
-                                </div>
-
-                                {/* Blood Type */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.bloodType}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodType: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Blood Type*
-                                    </label>
-                                </div>
-
-                                {/* Phone Number */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.phoneNumber}
-                                        onChange={(e) => setEditingItem({...editingItem, phoneNumber: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Phone Number*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Email */}
-                            <div className="relative">
-                                <input
-                                    type="email"
-                                    value={editingItem.email}
-                                    onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                />
-                                <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Email*
-                                </label>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Donor Status */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.donorStatus}
-                                        onChange={(e) => setEditingItem({...editingItem, donorStatus: e.target.value as "Active" | "Inactive" | "Suspended"})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                        <option value="Suspended">Suspended</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Donor Status*
-                                    </label>
-                                </div>
-
-                                {/* Last Donation Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.lastDonationDate}
-                                        onChange={(e) => setEditingItem({...editingItem, lastDonationDate: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Last Donation Date*
-                                    </label>
-                                </div>
-
-                                {/* Next Eligible Donation Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.nextEligibleDonationDate}
-                                        onChange={(e) => setEditingItem({...editingItem, nextEligibleDonationDate: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Next Eligible Date*
-                                    </label>
-                                </div>
-
-                                {/* Donor Location */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.donorLocation}
-                                        onChange={(e) => setEditingItem({...editingItem, donorLocation: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Donor Location*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-4">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {/* Blood Donor Modal */}
+            {isModalOpen && (
+                <BloodDonorModal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    initialData={editingItem}
+                    isEditMode={isEditMode}
+                />
             )}
 
             <style jsx>{`
-        @keyframes slideDown {
-          0% { transform: translateY(-20px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
-      `}</style>
+                @keyframes slideDown {
+                    0% { transform: translateY(-20px); opacity: 0; }
+                    100% { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+            `}</style>
         </>
     );
 }
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error, textarea = false }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            {textarea ? (
+                <textarea
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder=" "
+                    required={required}
+                    rows={3}
+                    className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+                />
+            ) : (
+                <input
+                    type={type}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder=" "
+                    required={required}
+                    className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+                />
+            )}
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && !textarea && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, options, required = false, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value="">Select {label}</option>
+                {options.map((option: string) => (
+                    <option key={option} value={option}>{option}</option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <div className="absolute right-3 top-3.5 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+// Modal Component
+interface BloodDonorModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: BloodDonor) => void;
+    initialData?: BloodDonor | null;
+    isEditMode?: boolean;
+}
+
+const BloodDonorModal: React.FC<BloodDonorModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    isEditMode = false
+}) => {
+    const [formData, setFormData] = useState<BloodDonor>({
+        id: '',
+        donorId: '',
+        donorName: '',
+        dateOfBirth: new Date().toISOString().split('T')[0],
+        gender: 'Male',
+        bloodType: 'O+',
+        phoneNumber: '',
+        email: '',
+        donorStatus: 'Active',
+        lastDonationDate: new Date().toISOString().split('T')[0],
+        nextEligibleDonationDate: new Date().toISOString().split('T')[0],
+        donorLocation: '',
+        address: '',
+        donationFrequency: '',
+        healthStatus: '',
+        donationHistory: '',
+        donorNotes: ''
+    });
+
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    const isFormValid =
+        formData.donorId.trim() !== '' &&
+        formData.donorName.trim() !== '' &&
+        formData.dateOfBirth.trim() !== '' &&
+        formData.gender.trim() !== '' &&
+        formData.bloodType.trim() !== '' &&
+        formData.phoneNumber.trim() !== '' &&
+        formData.email.trim() !== '' &&
+        formData.donorStatus.trim() !== '' &&
+        formData.lastDonationDate.trim() !== '' &&
+        formData.nextEligibleDonationDate.trim() !== '' &&
+        formData.donorLocation.trim() !== '';
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset form when adding new
+            setFormData({
+                id: '',
+                donorId: '',
+                donorName: '',
+                dateOfBirth: new Date().toISOString().split('T')[0],
+                gender: 'Male',
+                bloodType: 'O+',
+                phoneNumber: '',
+                email: '',
+                donorStatus: 'Active',
+                lastDonationDate: new Date().toISOString().split('T')[0],
+                nextEligibleDonationDate: new Date().toISOString().split('T')[0],
+                donorLocation: '',
+                address: '',
+                donationFrequency: '',
+                healthStatus: '',
+                donationHistory: '',
+                donorNotes: ''
+            });
+        }
+    }, [initialData, isOpen]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[800px] mx-4 max-h-[90vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                    <div className="flex items-center">
+                        <h2 className="font-semibold leading-[35px]">
+                            {isEditMode ? `${formData.donorName}` : 'New Blood Donor'}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="py-5 px-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Donor ID */}
+                            <FloatingInput
+                                label="Donor ID"
+                                name="donorId"
+                                value={formData.donorId}
+                                onChange={handleInputChange}
+                                icon={Tag}
+                                required
+                            />
+
+                            {/* Donor Name */}
+                            <FloatingInput
+                                label="Donor Name"
+                                name="donorName"
+                                value={formData.donorName}
+                                onChange={handleInputChange}
+                                icon={User}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Date of Birth */}
+                            <FloatingInput
+                                type="date"
+                                label="Date of Birth"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Gender */}
+                            <FloatingSelect
+                                label="Gender"
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleInputChange}
+                                options={['Male', 'Female']}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Blood Type */}
+                            <FloatingSelect
+                                label="Blood Type"
+                                name="bloodType"
+                                value={formData.bloodType}
+                                onChange={handleInputChange}
+                                options={['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-']}
+                                required
+                            />
+
+                            {/* Phone Number */}
+                            <FloatingInput
+                                label="Phone Number"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={handleInputChange}
+                                icon={Phone}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Email */}
+                            <FloatingInput
+                                label="Email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                type="email"
+                                icon={Mail}
+                                required
+                            />
+
+                            {/* Donor Status - ADDED THIS FIELD */}
+                            <FloatingSelect
+                                label="Donor Status"
+                                name="donorStatus"
+                                value={formData.donorStatus}
+                                onChange={handleInputChange}
+                                options={['Active', 'Inactive', 'Suspended']}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Last Donation Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Last Donation Date"
+                                name="lastDonationDate"
+                                value={formData.lastDonationDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Next Eligible Donation Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Next Eligible Donation Date"
+                                name="nextEligibleDonationDate"
+                                value={formData.nextEligibleDonationDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Donor Location */}
+                            <FloatingInput
+                                label="Donor Location"
+                                name="donorLocation"
+                                value={formData.donorLocation}
+                                onChange={handleInputChange}
+                                icon={MapPin}
+                                required
+                            />
+
+                            {/* Address */}
+                            <FloatingInput
+                                label="Address"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Donation Frequency */}
+                            <FloatingInput
+                                label="Donation Frequency"
+                                name="donationFrequency"
+                                value={formData.donationFrequency}
+                                onChange={handleInputChange}
+                            />
+
+                            {/* Health Status */}
+                            <FloatingInput
+                                label="Health Status"
+                                name="healthStatus"
+                                value={formData.healthStatus}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
+                        {/* Donation History */}
+                        <FloatingInput
+                            label="Donation History"
+                            name="donationHistory"
+                            value={formData.donationHistory}
+                            onChange={handleInputChange}
+                            textarea={true}
+                        />
+
+                        {/* Donor Notes */}
+                        <FloatingInput
+                            label="Donor Notes"
+                            name="donorNotes"
+                            value={formData.donorNotes}
+                            onChange={handleInputChange}
+                            textarea={true}
+                        />
+
+                        {/* Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="submit"
+                                disabled={!isFormValid}
+                                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                    : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                    }`}
+                            >
+                                {isEditMode ? 'Update' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

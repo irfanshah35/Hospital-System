@@ -1,13 +1,12 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, MapPin, User, Calendar } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Calendar, User, Tag, Stethoscope, Droplets } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Link from 'next/link';
 
 interface BloodIssued {
-    id: number;
+    id: string;
     issueId: string;
     patientId: string;
     patientName: string;
@@ -22,23 +21,26 @@ interface BloodIssued {
     issueReason: string;
     patientBloodGroup: string;
     doctorName: string;
+    batchNumber: string;
+    doctorId: string;
 }
 
 export default function BloodIssuedPage() {
     const [detailDropdown, setDetailDropdown] = useState(false);
     const detailref = useRef<HTMLDivElement | null>(null);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [bloodIssued, setBloodIssued] = useState<BloodIssued[]>([]);
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<BloodIssued | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // Blood Issued Data Array
     const bloodIssuedData: BloodIssued[] = [
         {
-            id: 1,
+            id: "1",
             issueId: "ISS001",
             patientId: "PAT001",
             patientName: "John Smith",
@@ -52,10 +54,12 @@ export default function BloodIssuedPage() {
             issuedBy: "Dr. Sarah Wilson",
             issueReason: "Surgery - Coronary Bypass",
             patientBloodGroup: "O+",
-            doctorName: "Dr. Michael Brown"
+            doctorName: "Dr. Michael Brown",
+            batchNumber: "BATCH12345",
+            doctorId: "DOC001"
         },
         {
-            id: 2,
+            id: "2",
             issueId: "ISS002",
             patientId: "PAT002",
             patientName: "Emily Johnson",
@@ -69,10 +73,12 @@ export default function BloodIssuedPage() {
             issuedBy: "Dr. Robert Davis",
             issueReason: "Chemotherapy Support",
             patientBloodGroup: "A+",
-            doctorName: "Dr. Lisa Anderson"
+            doctorName: "Dr. Lisa Anderson",
+            batchNumber: "BATCH12346",
+            doctorId: "DOC002"
         },
         {
-            id: 3,
+            id: "3",
             issueId: "ISS003",
             patientId: "PAT003",
             patientName: "Michael Brown",
@@ -86,92 +92,9 @@ export default function BloodIssuedPage() {
             issuedBy: "Dr. Jennifer Miller",
             issueReason: "Liver Transplant",
             patientBloodGroup: "B-",
-            doctorName: "Dr. David Wilson"
-        },
-        {
-            id: 4,
-            issueId: "ISS004",
-            patientId: "PAT004",
-            patientName: "Sarah Davis",
-            patientAge: 28,
-            patientGender: "Female",
-            bloodProductId: "BP004",
-            bloodType: "AB+",
-            componentType: "Whole Blood",
-            quantityIssued: 1,
-            issueDate: "2024-10-18",
-            issuedBy: "Dr. James Taylor",
-            issueReason: "Accident - Blood Loss",
-            patientBloodGroup: "AB+",
-            doctorName: "Dr. Amanda Clark"
-        },
-        {
-            id: 5,
-            issueId: "ISS005",
-            patientId: "PAT005",
-            patientName: "Robert Wilson",
-            patientAge: 65,
-            patientGender: "Male",
-            bloodProductId: "BP005",
-            bloodType: "O-",
-            componentType: "Cryoprecipitate",
-            quantityIssued: 2,
-            issueDate: "2024-10-19",
-            issuedBy: "Dr. Patricia Moore",
-            issueReason: "Hemophilia Treatment",
-            patientBloodGroup: "O-",
-            doctorName: "Dr. Richard Lee"
-        },
-        {
-            id: 6,
-            issueId: "ISS006",
-            patientId: "PAT006",
-            patientName: "Lisa Anderson",
-            patientAge: 42,
-            patientGender: "Female",
-            bloodProductId: "BP006",
-            bloodType: "A-",
-            componentType: "Red Blood Cells",
-            quantityIssued: 2,
-            issueDate: "2024-10-20",
-            issuedBy: "Dr. Kevin Martin",
-            issueReason: "Anemia Treatment",
-            patientBloodGroup: "A-",
-            doctorName: "Dr. Susan White"
-        },
-        {
-            id: 7,
-            issueId: "ISS007",
-            patientId: "PAT007",
-            patientName: "David Miller",
-            patientAge: 35,
-            patientGender: "Male",
-            bloodProductId: "BP007",
-            bloodType: "B+",
-            componentType: "Platelets",
-            quantityIssued: 1,
-            issueDate: "2024-10-21",
-            issuedBy: "Dr. Nancy Harris",
-            issueReason: "Dengue Fever",
-            patientBloodGroup: "B+",
-            doctorName: "Dr. Thomas Young"
-        },
-        {
-            id: 8,
-            issueId: "ISS008",
-            patientId: "PAT008",
-            patientName: "Jennifer Taylor",
-            patientAge: 50,
-            patientGender: "Female",
-            bloodProductId: "BP008",
-            bloodType: "AB-",
-            componentType: "Plasma",
-            quantityIssued: 2,
-            issueDate: "2024-10-22",
-            issuedBy: "Dr. Paul Walker",
-            issueReason: "Burn Treatment",
-            patientBloodGroup: "AB-",
-            doctorName: "Dr. Karen King"
+            doctorName: "Dr. David Wilson",
+            batchNumber: "BATCH12347",
+            doctorId: "DOC003"
         }
     ];
 
@@ -229,6 +152,8 @@ export default function BloodIssuedPage() {
                 "Issue Reason": item.issueReason,
                 "Patient Blood Group": item.patientBloodGroup,
                 "Doctor Name": item.doctorName,
+                "Batch Number": item.batchNumber,
+                "Doctor ID": item.doctorId,
             }))
         );
 
@@ -239,18 +164,90 @@ export default function BloodIssuedPage() {
         saveAs(blob, "blood-issued.xlsx");
     };
 
-    const removeData = () => {
+    const removeData = (id: string) => {
+        if (window.confirm("Are you sure you want to delete this blood issued record?")) {
+            try {
+                setBloodIssued(prev => prev.filter(item => item.id !== id));
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting blood issued record");
+            }
+        }
+    };
+
+    const handleDeleteSelected = async () => {
         if (selectedIds.length === 0) {
             alert("Please select at least one record to delete.");
             return;
         }
         if (window.confirm(`Delete ${selectedIds.length} record(s)?`)) {
-            setBloodIssued(prev => prev.filter(item => !selectedIds.includes(item.id)));
-            setSelectedIds([]);
+            try {
+                setBloodIssued(prev => prev.filter(item => !selectedIds.includes(item.id)));
+                setSelectedIds([]);
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Error deleting blood issued records");
+            }
         }
     };
 
-    const handleCheckboxChange = (id: number) => {
+    const handleAddClick = () => {
+        setEditingItem({
+            id: '',
+            issueId: '',
+            patientId: '',
+            patientName: '',
+            patientAge: 0,
+            patientGender: 'Male',
+            bloodProductId: '',
+            bloodType: 'O+',
+            componentType: 'Whole Blood',
+            quantityIssued: 0,
+            issueDate: new Date().toISOString().split('T')[0],
+            issuedBy: '',
+            issueReason: '',
+            patientBloodGroup: 'O+',
+            doctorName: '',
+            batchNumber: '',
+            doctorId: ''
+        });
+        setIsEditMode(false);
+        setIsModalOpen(true);
+    };
+
+    const handleEditClick = (item: BloodIssued) => {
+        setEditingItem(item);
+        setIsEditMode(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = (formData: BloodIssued) => {
+        if (isEditMode && editingItem?.id) {
+            // Edit existing record
+            setBloodIssued(prev =>
+                prev.map(item =>
+                    item.id === editingItem.id ? { ...formData, id: editingItem.id } : item
+                )
+            );
+        } else {
+            // Add new record
+            const newItem = {
+                ...formData,
+                id: Math.random().toString(36).substr(2, 9)
+            };
+            setBloodIssued(prev => [...prev, newItem]);
+        }
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleCheckboxChange = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         );
@@ -286,42 +283,6 @@ export default function BloodIssuedPage() {
         { label: "Doctor Name", checked: true },
         { label: "Actions", checked: true },
     ];
-
-    const deleteSelectedItem = async (id: any) => {
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setBloodIssued(prev => prev.filter(item => item.id !== id));
-            console.log("Blood issued record deleted:", id);
-        } catch (error) {
-            console.error("Error deleting blood issued record:", error);
-        }
-    };
-
-    const handleEditClick = (item: BloodIssued) => {
-        setEditingItem(item);
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateItem = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            setBloodIssued(prev => 
-                prev.map(item => 
-                    item.id === editingItem?.id ? editingItem : item
-                )
-            );
-            
-            alert("Blood issued record updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating blood issued record:", error);
-            alert("An unexpected error occurred.");
-        }
-    };
 
     return (
         <>
@@ -362,7 +323,7 @@ export default function BloodIssuedPage() {
                                 <div className="flex items-center gap-1">
                                     {selectedIds.length > 0 && (
                                         <button
-                                            onClick={removeData}
+                                            onClick={handleDeleteSelected}
                                             className="flex justify-center items-center w-10 h-10 rounded-full text-[#f44336] hover:bg-[#CED5E6] transition cursor-pointer"
                                             title="Delete Selected"
                                         >
@@ -403,11 +364,13 @@ export default function BloodIssuedPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-blood-issued">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add New Blood Issued Record"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -429,7 +392,7 @@ export default function BloodIssuedPage() {
                                     ) : (
                                         <>
                                             <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                                                <thead role="rowgroup" className="bg-white">
+                                                <thead className="bg-white">
                                                     <tr>
                                                         <th scope="col" className="px-4 py-3 pl-[37px] text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             <input
@@ -457,7 +420,7 @@ export default function BloodIssuedPage() {
                                                     </tr>
                                                 </thead>
 
-                                                <tbody role='rowgroup' className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                                <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                     {bloodIssued.map((item) => (
                                                         <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                                                             <td className="px-4 py-3 pl-[37px]">
@@ -470,19 +433,19 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium">
+                                                                <div className="text-sm font-medium text-gray-900">
                                                                     {item.issueId}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium">
+                                                                <div className="text-sm font-medium text-gray-900">
                                                                     {item.patientId}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium flex items-center gap-2">
+                                                                <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
                                                                     <User className="w-4 h-4 text-gray-600" />
                                                                     {item.patientName}
                                                                 </div>
@@ -495,7 +458,7 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
                                                                     item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
                                                                 }`}>
                                                                     {item.patientGender}
@@ -503,13 +466,18 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <div className="text-sm font-medium">
+                                                                <div className="text-sm font-medium text-gray-900">
                                                                     {item.bloodProductId}
                                                                 </div>
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium `}>
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
+                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
+                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                    'bg-purple-100 text-purple-800'
+                                                                }`}>
                                                                     {item.bloodType}
                                                                 </span>
                                                             </td>
@@ -521,7 +489,7 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
                                                                     item.quantityIssued > 2 ? 'bg-red-100 text-red-800' : 
                                                                     item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
                                                                     'bg-green-100 text-green-800'
@@ -550,7 +518,7 @@ export default function BloodIssuedPage() {
                                                             </td>
 
                                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
                                                                     item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' : 
                                                                     item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
                                                                     item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
@@ -566,17 +534,19 @@ export default function BloodIssuedPage() {
                                                                 </div>
                                                             </td>
 
-                                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                            <td className="px-4 py-3 text-sm font-medium">
                                                                 <div className="flex space-x-2">
-                                                                    <button 
-                                                                        onClick={() => handleEditClick(item)} 
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Edit"
                                                                     >
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
-                                                                    <button 
-                                                                        onClick={() => deleteSelectedItem(item.id)} 
+                                                                    <button
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                                                        title="Delete"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
                                                                     </button>
@@ -588,137 +558,123 @@ export default function BloodIssuedPage() {
                                             </table>
 
                                             {/* Mobile View */}
-                                            <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
+                                            <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                                                 {bloodIssued.map((item) => (
                                                     <div key={item.id} className="border-b border-gray-200 py-4">
-                                                        {/* Checkbox Row */}
-                                                        <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
+                                                        <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                                                             <input
                                                                 checked={selectedIds.includes(item.id)}
                                                                 onChange={() => handleCheckboxChange(item.id)}
-                                                                type="checkbox"
-                                                                className="w-4 h-4 text-blue-600 rounded"
-                                                            />
+                                                                type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                                                         </div>
-
-                                                        {/* Blood Issued Info */}
-                                                        <div className="space-y-2 text-sm">
-                                                            {/* Issue ID */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Issue ID:</span>
-                                                                <span className="font-medium text-blue-600">{item.issueId}</span>
-                                                            </div>
-
-                                                            {/* Patient ID */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Patient ID:</span>
-                                                                <span className="font-medium text-green-600">{item.patientId}</span>
-                                                            </div>
-
-                                                            {/* Patient Name */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Patient Name:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <User className="w-4 h-4 text-gray-600" />
-                                                                    <span className="font-medium">{item.patientName}</span>
+                                                        <div className="text-sm text-gray-800">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Issue ID:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Tag className='w-5 h-5 text-blue-500' />
+                                                                    <span className="ml-1">{item.issueId}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Patient Age */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Patient Age:</span>
-                                                                <span>{item.patientAge} years</span>
-                                                            </div>
-
-                                                            {/* Patient Gender */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Gender:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"
-                                                                }`}>
-                                                                    {item.patientGender}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Blood Product ID */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Blood Product ID:</span>
-                                                                <span className="font-medium text-purple-600">{item.bloodProductId}</span>
-                                                            </div>
-
-                                                            {/* Blood Type */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Blood Type:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
-                                                                    {item.bloodType}
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Component Type */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Component Type:</span>
-                                                                <span>{item.componentType}</span>
-                                                            </div>
-
-                                                            {/* Quantity Issued */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Quantity Issued:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.quantityIssued > 2 ? 'bg-red-100 text-red-800' : 
-                                                                    item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-green-100 text-green-800'
-                                                                }`}>
-                                                                    {item.quantityIssued} units
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Issue Date */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Issue Date:</span>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Calendar className="w-4 h-4 text-gray-600" />
-                                                                    <span>{item.issueDate}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Patient ID:</span>
+                                                                <div className='flex items-center'>
+                                                                    <User className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">{item.patientId}</span>
                                                                 </div>
                                                             </div>
-
-                                                            {/* Issued By */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Issued By:</span>
-                                                                <span>{item.issuedBy}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Patient Name:</span>
+                                                                <div className='flex items-center'>
+                                                                    <User className='w-5 h-5 text-purple-500' />
+                                                                    <span className="ml-1">{item.patientName}</span>
+                                                                </div>
                                                             </div>
-
-                                                            {/* Issue Reason */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Issue Reason:</span>
-                                                                <span>{item.issueReason}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Patient Age:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className="ml-1">{item.patientAge} years</span>
+                                                                </div>
                                                             </div>
-
-                                                            {/* Patient Blood Group */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Patient Blood Group:</span>
-                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                    item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' : 
-                                                                    item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
-                                                                    item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
-                                                                    'bg-purple-100 text-purple-800'
-                                                                }`}>
-                                                                    {item.patientBloodGroup}
-                                                                </span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Gender:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.patientGender === "Male" ? "bg-blue-100 text-blue-800" : "bg-pink-100 text-pink-800"}`}>
+                                                                        {item.patientGender}
+                                                                    </span>
+                                                                </div>
                                                             </div>
-
-                                                            {/* Doctor Name */}
-                                                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
-                                                                <span className="font-semibold w-32">Doctor Name:</span>
-                                                                <span>{item.doctorName}</span>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Blood Product ID:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Droplets className='w-5 h-5 text-red-500' />
+                                                                    <span className="ml-1">{item.bloodProductId}</span>
+                                                                </div>
                                                             </div>
-
-                                                            {/* Actions */}
-                                                            <div className="flex items-center gap-3 p-2">
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Blood Type:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.bloodType.includes('O') ? 'bg-red-100 text-red-800' : 
+                                                                        item.bloodType.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                        item.bloodType.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                        'bg-purple-100 text-purple-800'}`}>
+                                                                        {item.bloodType}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Component Type:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className="ml-1">{item.componentType}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Quantity Issued:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.quantityIssued > 2 ? 'bg-red-100 text-red-800' : 
+                                                                        item.quantityIssued > 1 ? 'bg-yellow-100 text-yellow-800' :
+                                                                        'bg-green-100 text-green-800'}`}>
+                                                                        {item.quantityIssued} units
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Issue Date:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Calendar className='w-5 h-5 text-blue-500' />
+                                                                    <span className="ml-1">{item.issueDate}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Issued By:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className="ml-1">{item.issuedBy}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Issue Reason:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className="ml-1">{item.issueReason}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Patient Blood Group:</span>
+                                                                <div className='flex items-center'>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs ${item.patientBloodGroup.includes('O') ? 'bg-red-100 text-red-800' : 
+                                                                        item.patientBloodGroup.includes('A') ? 'bg-blue-100 text-blue-800' :
+                                                                        item.patientBloodGroup.includes('B') ? 'bg-green-100 text-green-800' :
+                                                                        'bg-purple-100 text-purple-800'}`}>
+                                                                        {item.patientBloodGroup}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                                                <span className="font-semibold">Doctor Name:</span>
+                                                                <div className='flex items-center'>
+                                                                    <Stethoscope className='w-5 h-5 text-green-500' />
+                                                                    <span className="ml-1">{item.doctorName}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
@@ -727,7 +683,7 @@ export default function BloodIssuedPage() {
                                                                         <Edit className="w-5 h-5" />
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => deleteSelectedItem(item.id)}
+                                                                        onClick={() => removeData(item.id)}
                                                                         className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                     >
                                                                         <Trash2 className="w-5 h-5" />
@@ -751,263 +707,413 @@ export default function BloodIssuedPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <h2 className="text-lg font-semibold">
-                                Edit Blood Issued - {editingItem.issueId}
-                            </h2>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateItem} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Issue ID */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.issueId}
-                                        onChange={(e) => setEditingItem({...editingItem, issueId: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Issue ID*
-                                    </label>
-                                </div>
-
-                                {/* Patient ID */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.patientId}
-                                        onChange={(e) => setEditingItem({...editingItem, patientId: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient ID*
-                                    </label>
-                                </div>
-
-                                {/* Patient Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.patientName}
-                                        onChange={(e) => setEditingItem({...editingItem, patientName: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient Name*
-                                    </label>
-                                </div>
-
-                                {/* Patient Age */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        value={editingItem.patientAge}
-                                        onChange={(e) => setEditingItem({...editingItem, patientAge: parseInt(e.target.value)})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient Age*
-                                    </label>
-                                </div>
-
-                                {/* Patient Gender */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.patientGender}
-                                        onChange={(e) => setEditingItem({...editingItem, patientGender: e.target.value as "Male" | "Female"})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient Gender*
-                                    </label>
-                                </div>
-
-                                {/* Blood Product ID */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.bloodProductId}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodProductId: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Blood Product ID*
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Blood Type */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.bloodType}
-                                        onChange={(e) => setEditingItem({...editingItem, bloodType: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Blood Type*
-                                    </label>
-                                </div>
-
-                                {/* Component Type */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.componentType}
-                                        onChange={(e) => setEditingItem({...editingItem, componentType: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Whole Blood">Whole Blood</option>
-                                        <option value="Red Blood Cells">Red Blood Cells</option>
-                                        <option value="Platelets">Platelets</option>
-                                        <option value="Plasma">Plasma</option>
-                                        <option value="Cryoprecipitate">Cryoprecipitate</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Component Type*
-                                    </label>
-                                </div>
-
-                                {/* Quantity Issued */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        value={editingItem.quantityIssued}
-                                        onChange={(e) => setEditingItem({...editingItem, quantityIssued: parseInt(e.target.value)})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Quantity Issued*
-                                    </label>
-                                </div>
-
-                                {/* Issue Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.issueDate}
-                                        onChange={(e) => setEditingItem({...editingItem, issueDate: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Issue Date*
-                                    </label>
-                                </div>
-
-                                {/* Issued By */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.issuedBy}
-                                        onChange={(e) => setEditingItem({...editingItem, issuedBy: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Issued By*
-                                    </label>
-                                </div>
-
-                                {/* Patient Blood Group */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.patientBloodGroup}
-                                        onChange={(e) => setEditingItem({...editingItem, patientBloodGroup: e.target.value})}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Patient Blood Group*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Issue Reason */}
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    value={editingItem.issueReason}
-                                    onChange={(e) => setEditingItem({...editingItem, issueReason: e.target.value})}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                />
-                                <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Issue Reason*
-                                </label>
-                            </div>
-
-                            {/* Doctor Name */}
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    value={editingItem.doctorName}
-                                    onChange={(e) => setEditingItem({...editingItem, doctorName: e.target.value})}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                />
-                                <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Doctor Name*
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-4">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {/* Blood Issued Modal */}
+            {isModalOpen && (
+                <BloodIssuedModal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    initialData={editingItem}
+                    isEditMode={isEditMode}
+                />
             )}
 
             <style jsx>{`
-        @keyframes slideDown {
-          0% { transform: translateY(-20px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
-      `}</style>
+                @keyframes slideDown {
+                    0% { transform: translateY(-20px); opacity: 0; }
+                    100% { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+            `}</style>
         </>
     );
 }
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, options, required = false, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value="">Select {label}</option>
+                {options.map((option: string) => (
+                    <option key={option} value={option}>{option}</option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <div className="absolute right-3 top-3.5 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+// Modal Component
+interface BloodIssuedModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: BloodIssued) => void;
+    initialData?: BloodIssued | null;
+    isEditMode?: boolean;
+}
+
+const BloodIssuedModal: React.FC<BloodIssuedModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    isEditMode = false
+}) => {
+    const [formData, setFormData] = useState<BloodIssued>({
+        id: '',
+        issueId: '',
+        patientId: '',
+        patientName: '',
+        patientAge: 0,
+        patientGender: 'Male',
+        bloodProductId: '',
+        bloodType: 'O+',
+        componentType: 'Whole Blood',
+        quantityIssued: 0,
+        issueDate: new Date().toISOString().split('T')[0],
+        issuedBy: '',
+        issueReason: '',
+        patientBloodGroup: 'O+',
+        doctorName: '',
+        batchNumber: '',
+        doctorId: ''
+    });
+
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    const isFormValid =
+        formData.issueId.trim() !== '' &&
+        formData.patientId.trim() !== '' &&
+        formData.patientName.trim() !== '' &&
+        formData.patientAge > 0 &&
+        formData.patientGender.trim() !== '' &&
+        formData.bloodProductId.trim() !== '' &&
+        formData.bloodType.trim() !== '' &&
+        formData.componentType.trim() !== '' &&
+        formData.quantityIssued > 0 &&
+        formData.issueDate.trim() !== '' &&
+        formData.issuedBy.trim() !== '' &&
+        formData.issueReason.trim() !== '' &&
+        formData.patientBloodGroup.trim() !== '' &&
+        formData.doctorName.trim() !== '' &&
+        formData.batchNumber.trim() !== '' &&
+        formData.doctorId.trim() !== '';
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset form when adding new
+            setFormData({
+                id: '',
+                issueId: '',
+                patientId: '',
+                patientName: '',
+                patientAge: 0,
+                patientGender: 'Male',
+                bloodProductId: '',
+                bloodType: 'O+',
+                componentType: 'Whole Blood',
+                quantityIssued: 0,
+                issueDate: new Date().toISOString().split('T')[0],
+                issuedBy: '',
+                issueReason: '',
+                patientBloodGroup: 'O+',
+                doctorName: '',
+                batchNumber: '',
+                doctorId: ''
+            });
+        }
+    }, [initialData, isOpen]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'patientAge' || name === 'quantityIssued' ? parseInt(value) : value
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[800px] mx-4 max-h-[90vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                    <div className="flex items-center">
+                        <h2 className="font-semibold leading-[35px]">
+                            {isEditMode ? `${formData.issueId}` : 'New Blood Issued Record'}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="py-5 px-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Issue ID */}
+                            <FloatingInput
+                                label="Issue ID"
+                                name="issueId"
+                                value={formData.issueId}
+                                onChange={handleInputChange}
+                                icon={Tag}
+                                required
+                            />
+
+                            {/* Patient ID */}
+                            <FloatingInput
+                                label="Patient ID"
+                                name="patientId"
+                                value={formData.patientId}
+                                onChange={handleInputChange}
+                                icon={User}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Patient Name */}
+                            <FloatingInput
+                                label="Patient Name"
+                                name="patientName"
+                                value={formData.patientName}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Patient Age */}
+                            <FloatingInput
+                                label="Patient Age"
+                                name="patientAge"
+                                value={formData.patientAge}
+                                onChange={handleInputChange}
+                                type="number"
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Patient Gender */}
+                            <FloatingSelect
+                                label="Patient Gender"
+                                name="patientGender"
+                                value={formData.patientGender}
+                                onChange={handleInputChange}
+                                options={['Male', 'Female']}
+                                required
+                            />
+
+                            {/* Blood Product ID */}
+                            <FloatingInput
+                                label="Blood Product ID"
+                                name="bloodProductId"
+                                value={formData.bloodProductId}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Blood Type */}
+                            <FloatingSelect
+                                label="Blood Type"
+                                name="bloodType"
+                                value={formData.bloodType}
+                                onChange={handleInputChange}
+                                options={['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-']}
+                                required
+                            />
+
+                            {/* Component Type */}
+                            <FloatingSelect
+                                label="Component Type"
+                                name="componentType"
+                                value={formData.componentType}
+                                onChange={handleInputChange}
+                                options={['Whole Blood', 'Red Blood Cells', 'Platelets', 'Plasma', 'Cryoprecipitate']}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Quantity Issued */}
+                            <FloatingInput
+                                label="Quantity Issued (units)"
+                                name="quantityIssued"
+                                value={formData.quantityIssued}
+                                onChange={handleInputChange}
+                                type="number"
+                                required
+                            />
+
+                            {/* Issue Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Issue Date"
+                                name="issueDate"
+                                value={formData.issueDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Batch Number */}
+                            <FloatingInput
+                                label="Batch Number"
+                                name="batchNumber"
+                                value={formData.batchNumber}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Issued By */}
+                            <FloatingInput
+                                label="Issued By"
+                                name="issuedBy"
+                                value={formData.issuedBy}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Patient Blood Group */}
+                            <FloatingSelect
+                                label="Patient Blood Group"
+                                name="patientBloodGroup"
+                                value={formData.patientBloodGroup}
+                                onChange={handleInputChange}
+                                options={['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-']}
+                                required
+                            />
+
+                            {/* Doctor ID */}
+                            <FloatingInput
+                                label="Doctor ID"
+                                name="doctorId"
+                                value={formData.doctorId}
+                                onChange={handleInputChange}
+                                icon={Stethoscope}
+                                required
+                            />
+                        </div>
+
+                        {/* Issue Reason */}
+                        <FloatingInput
+                            label="Issue Reason"
+                            name="issueReason"
+                            value={formData.issueReason}
+                            onChange={handleInputChange}
+                            required
+                        />
+
+                        {/* Doctor Name */}
+                        <FloatingInput
+                            label="Doctor Name"
+                            name="doctorName"
+                            value={formData.doctorName}
+                            onChange={handleInputChange}
+                            required
+                        />
+
+                        {/* Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="submit"
+                                disabled={!isFormValid}
+                                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                    : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                    }`}
+                            >
+                                {isEditMode ? 'Update' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

@@ -14,6 +14,11 @@ interface LeaveRequest {
   reason: string;
   status: "Pending" | "Approved" | "Rejected";
   appliedDate: string;
+  employeeId: string;
+  department: string;
+  durationType: string;
+  requestedOn: string;
+  note: string;
 }
 
 export default function LeaveRequestComponent() {
@@ -21,8 +26,10 @@ export default function LeaveRequestComponent() {
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRequest, setEditingRequest] = useState<LeaveRequest | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([
     {
@@ -34,7 +41,12 @@ export default function LeaveRequestComponent() {
       days: 3,
       reason: "Medical appointment and recovery",
       status: "Pending",
-      appliedDate: "2024-11-01"
+      appliedDate: "2024-11-01",
+      employeeId: "EMP001",
+      department: "IT",
+      durationType: "Full Day",
+      requestedOn: "2024-11-01",
+      note: "Urgent medical requirement"
     },
     {
       id: 2,
@@ -45,7 +57,12 @@ export default function LeaveRequestComponent() {
       days: 6,
       reason: "Family vacation",
       status: "Approved",
-      appliedDate: "2024-10-28"
+      appliedDate: "2024-10-28",
+      employeeId: "EMP002",
+      department: "HR",
+      durationType: "Full Day",
+      requestedOn: "2024-10-28",
+      note: "Planned vacation"
     },
     {
       id: 3,
@@ -56,29 +73,12 @@ export default function LeaveRequestComponent() {
       days: 1,
       reason: "Personal work",
       status: "Rejected",
-      appliedDate: "2024-11-03"
-    },
-    {
-      id: 4,
-      employeeName: "Emily Davis",
-      leaveType: "Maternity Leave",
-      startDate: "2024-12-01",
-      endDate: "2025-02-28",
-      days: 90,
-      reason: "Maternity leave",
-      status: "Approved",
-      appliedDate: "2024-10-15"
-    },
-    {
-      id: 5,
-      employeeName: "David Wilson",
-      leaveType: "Sick Leave",
-      startDate: "2024-11-12",
-      endDate: "2024-11-13",
-      days: 2,
-      reason: "Flu symptoms",
-      status: "Pending",
-      appliedDate: "2024-11-04"
+      appliedDate: "2024-11-03",
+      employeeId: "EMP003",
+      department: "Finance",
+      durationType: "Full Day",
+      requestedOn: "2024-11-03",
+      note: "Personal commitment"
     }
   ]);
 
@@ -109,6 +109,11 @@ export default function LeaveRequestComponent() {
         "Reason": item.reason,
         "Status": item.status,
         "Applied Date": item.appliedDate,
+        "Employee ID": item.employeeId,
+        "Department": item.department,
+        "Duration Type": item.durationType,
+        "Requested On": item.requestedOn,
+        "Note": item.note,
       }))
     );
 
@@ -135,6 +140,58 @@ export default function LeaveRequestComponent() {
     }
   };
 
+  const handleAddClick = () => {
+    setEditingRequest({
+      id: 0,
+      employeeName: '',
+      leaveType: 'Sick Leave',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
+      days: 1,
+      reason: '',
+      status: 'Pending',
+      appliedDate: new Date().toISOString().split('T')[0],
+      employeeId: '',
+      department: '',
+      durationType: 'Full Day',
+      requestedOn: new Date().toISOString().split('T')[0],
+      note: ''
+    });
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (request: LeaveRequest) => {
+    setEditingRequest(request);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (formData: LeaveRequest) => {
+    if (isEditMode && editingRequest?.id) {
+      // Edit existing record
+      setLeaveRequests(prev =>
+        prev.map(item =>
+          item.id === editingRequest.id ? { ...formData, id: editingRequest.id } : item
+        )
+      );
+    } else {
+      // Add new record
+      const newItem = {
+        ...formData,
+        id: Math.max(0, ...leaveRequests.map(item => item.id)) + 1
+      };
+      setLeaveRequests(prev => [...prev, newItem]);
+    }
+    setIsModalOpen(false);
+    setEditingRequest(null);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingRequest(null);
+  };
+
   const handleCheckboxChange = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -153,38 +210,9 @@ export default function LeaveRequestComponent() {
     }
   }, [selectedIds, leaveRequests]);
 
-  const checkboxItems = [
-    { label: "Checkbox", checked: true },
-    { label: "Employee Name", checked: true },
-    { label: "Leave Type", checked: true },
-    { label: "Start Date", checked: true },
-    { label: "End Date", checked: true },
-    { label: "Days", checked: true },
-    { label: "Reason", checked: true },
-    { label: "Status", checked: true },
-    { label: "Applied Date", checked: true },
-    { label: "Actions", checked: true },
-  ];
-
   const deleteRequest = (id: number) => {
     if (window.confirm("Are you sure you want to delete this request?")) {
       setLeaveRequests(prev => prev.filter(r => r.id !== id));
-    }
-  };
-
-  const handleEditClick = (request: LeaveRequest) => {
-    setEditingRequest(request);
-    setIsEditModalOpen(true);
-  };
-
-  const handleUpdateRequest = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingRequest) {
-      setLeaveRequests(prev =>
-        prev.map(r => (r.id === editingRequest.id ? editingRequest : r))
-      );
-      setIsEditModalOpen(false);
-      alert("Leave request updated successfully!");
     }
   };
 
@@ -198,6 +226,19 @@ export default function LeaveRequestComponent() {
         return "bg-[#ffc10726] text-[#ffc107]";
     }
   };
+
+  const checkboxItems = [
+    { label: "Checkbox", checked: true },
+    { label: "Employee Name", checked: true },
+    { label: "Leave Type", checked: true },
+    { label: "Start Date", checked: true },
+    { label: "End Date", checked: true },
+    { label: "Days", checked: true },
+    { label: "Reason", checked: true },
+    { label: "Status", checked: true },
+    { label: "Applied Date", checked: true },
+    { label: "Actions", checked: true },
+  ];
 
   return (
     <>
@@ -279,7 +320,11 @@ export default function LeaveRequestComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add New Leave Request"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -325,7 +370,7 @@ export default function LeaveRequestComponent() {
 
                         <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                           {leaveRequests.map((item) => (
-                            <tr key={item.id} className="transition-colors duration-150">
+                            <tr key={item.id} className="transition-colors duration-150 hover:bg-gray-50">
                               <td className="px-4 py-3 pl-[37px]">
                                 <input
                                   type="checkbox"
@@ -342,6 +387,7 @@ export default function LeaveRequestComponent() {
                                   </div>
                                   <div className="ml-4">
                                     <div className="text-sm font-medium">{item.employeeName}</div>
+                                    <div className="text-xs text-gray-500">{item.employeeId}</div>
                                   </div>
                                 </div>
                               </td>
@@ -376,10 +422,16 @@ export default function LeaveRequestComponent() {
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button onClick={() => handleEditClick(item)} className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => deleteRequest(item.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => deleteRequest(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -389,11 +441,12 @@ export default function LeaveRequestComponent() {
                         </tbody>
                       </table>
 
+                      {/* Mobile View */}
                       <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                         {leaveRequests.map((item) => (
                           <div key={item.id} className="border-b border-gray-200 py-4">
                             {/* Checkbox Row */}
-                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                            <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
                               <input
                                 checked={selectedIds.includes(item.id)}
                                 onChange={() => handleCheckboxChange(item.id)}
@@ -403,26 +456,29 @@ export default function LeaveRequestComponent() {
                             </div>
 
                             {/* Request Info */}
-                            <div className="text-sm text-gray-800">
+                            <div className="space-y-2 text-sm">
                               {/* Employee Name */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Employee:</span>
                                 <div className="flex items-center">
                                   <div className="w-10 h-10 rounded-full bg-gray-200 border flex items-center justify-center">
                                     <User className="w-5 h-5 text-gray-500" />
                                   </div>
-                                  <span className="ml-2">{item.employeeName}</span>
+                                  <div className="ml-2">
+                                    <span className="block">{item.employeeName}</span>
+                                    <span className="text-xs text-gray-500">{item.employeeId}</span>
+                                  </div>
                                 </div>
                               </div>
 
                               {/* Leave Type */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Leave Type:</span>
                                 <span className="ml-1">{item.leaveType}</span>
                               </div>
 
                               {/* Start Date */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Start Date:</span>
                                 <div className="flex items-center">
                                   <Calendar className="w-4 h-4 text-[#198754] mr-2" />
@@ -431,7 +487,7 @@ export default function LeaveRequestComponent() {
                               </div>
 
                               {/* End Date */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">End Date:</span>
                                 <div className="flex items-center">
                                   <Calendar className="w-4 h-4 text-[#dc3545] mr-2" />
@@ -440,19 +496,19 @@ export default function LeaveRequestComponent() {
                               </div>
 
                               {/* Days */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Days:</span>
                                 <span className="ml-1 font-semibold">{item.days}</span>
                               </div>
 
                               {/* Reason */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Reason:</span>
                                 <span className="ml-1">{item.reason}</span>
                               </div>
 
                               {/* Status */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Status:</span>
                                 <span className={`ml-1 py-1 px-2 rounded-[4px] text-xs font-semibold ${getStatusColor(item.status)}`}>
                                   {item.status}
@@ -460,13 +516,13 @@ export default function LeaveRequestComponent() {
                               </div>
 
                               {/* Applied Date */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-32">Applied:</span>
                                 <span className="ml-1">{new Date(item.appliedDate).toLocaleDateString()}</span>
                               </div>
 
                               {/* Actions */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 p-2">
                                 <div className="flex space-x-2">
                                   <button
                                     onClick={() => handleEditClick(item)}
@@ -499,182 +555,15 @@ export default function LeaveRequestComponent() {
         </div>
       </div>
 
-      {isEditModalOpen && editingRequest && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <div className="flex items-center space-x-3">
-                <User className="w-10 h-10 p-2 rounded-full bg-gray-200" />
-                <h2 className="text-lg font-semibold">
-                  Edit Leave Request - {editingRequest.employeeName}
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateRequest} className="p-6 space-y-6 h-[450px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Employee Name */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="employeeName"
-                    value={editingRequest.employeeName}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, employeeName: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="employeeName"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingRequest.employeeName ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Employee Name*
-                  </label>
-                </div>
-
-                {/* Leave Type */}
-                <div className="relative">
-                  <select
-                    id="leaveType"
-                    value={editingRequest.leaveType}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, leaveType: e.target.value })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="Sick Leave">Sick Leave</option>
-                    <option value="Annual Leave">Annual Leave</option>
-                    <option value="Casual Leave">Casual Leave</option>
-                    <option value="Maternity Leave">Maternity Leave</option>
-                    <option value="Paternity Leave">Paternity Leave</option>
-                  </select>
-                  <label
-                    htmlFor="leaveType"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Leave Type*
-                  </label>
-                </div>
-
-                {/* Start Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={editingRequest.startDate}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, startDate: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="startDate"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Start Date*
-                  </label>
-                </div>
-
-                {/* End Date */}
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={editingRequest.endDate}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, endDate: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="endDate"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    End Date*
-                  </label>
-                </div>
-
-                {/* Days */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="days"
-                    value={editingRequest.days}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, days: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="days"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingRequest.days ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Days*
-                  </label>
-                </div>
-
-                {/* Status */}
-                <div className="relative">
-                  <select
-                    id="status"
-                    value={editingRequest.status}
-                    onChange={(e) => setEditingRequest({ ...editingRequest, status: e.target.value as "Pending" | "Approved" | "Rejected" })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                  <label
-                    htmlFor="status"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Status*
-                  </label>
-                </div>
-              </div>
-
-              {/* Reason */}
-              <div className="relative">
-                <textarea
-                  id="reason"
-                  rows={4}
-                  value={editingRequest.reason}
-                  onChange={(e) => setEditingRequest({ ...editingRequest, reason: e.target.value })}
-                  placeholder=" "
-                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                ></textarea>
-                <label
-                  htmlFor="reason"
-                  className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingRequest.reason ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                >
-                  Reason
-                </label>
-              </div>
-
-              {/* Submit */}
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* Add/Edit Modal */}
+      {isModalOpen && (
+        <LeaveRequestModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          initialData={editingRequest}
+          isEditMode={isEditMode}
+        />
       )}
 
       <style jsx>{`
@@ -689,6 +578,363 @@ export default function LeaveRequestComponent() {
     </>
   );
 }
+
+// Modal Component
+interface LeaveRequestModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: LeaveRequest) => void;
+  initialData?: LeaveRequest | null;
+  isEditMode?: boolean;
+}
+
+const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditMode = false
+}) => {
+  const [formData, setFormData] = useState<LeaveRequest>({
+    id: 0,
+    employeeName: '',
+    leaveType: 'Sick Leave',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    days: 1,
+    reason: '',
+    status: 'Pending',
+    appliedDate: new Date().toISOString().split('T')[0],
+    employeeId: '',
+    department: '',
+    durationType: 'Full Day',
+    requestedOn: new Date().toISOString().split('T')[0],
+    note: ''
+  });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      // Reset form when adding new
+      setFormData({
+        id: 0,
+        employeeName: '',
+        leaveType: 'Sick Leave',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0],
+        days: 1,
+        reason: '',
+        status: 'Pending',
+        appliedDate: new Date().toISOString().split('T')[0],
+        employeeId: '',
+        department: '',
+        durationType: 'Full Day',
+        requestedOn: new Date().toISOString().split('T')[0],
+        note: ''
+      });
+    }
+  }, [initialData, isOpen]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'days' ? parseInt(value) : value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[800px] mx-4 max-h-[90vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center py-[5px] px-[15px] border-b border-gray-300">
+          <div className="flex items-center space-x-3">
+            <div className="w-[35px] h-[35px] rounded-full bg-gray-200 border flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-500" />
+            </div>
+            <h2 className="font-semibold">
+              {isEditMode ? `Edit Leave Request - ${formData.employeeName}` : 'New Leave Request'}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6 max-h-[75vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Employee Name */}
+              <div className="relative">
+                <input
+                  type="text"
+                  name="employeeName"
+                  value={formData.employeeName}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Employee Name*
+                </label>
+              </div>
+
+              {/* Leave Type */}
+              <div className="relative">
+                <select
+                  name="leaveType"
+                  value={formData.leaveType}
+                  onChange={handleInputChange}
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300 appearance-none"
+                >
+                  <option value="Sick Leave">Sick Leave</option>
+                  <option value="Annual Leave">Annual Leave</option>
+                  <option value="Casual Leave">Casual Leave</option>
+                  <option value="Maternity Leave">Maternity Leave</option>
+                  <option value="Paternity Leave">Paternity Leave</option>
+                  <option value="Emergency Leave">Emergency Leave</option>
+                </select>
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Leave Type*
+                </label>
+                <div className="absolute right-3 top-3.5 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Start Date */}
+              <div className="relative">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Start Date*
+                </label>
+              </div>
+
+              {/* End Date */}
+              <div className="relative">
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleInputChange}
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  End Date*
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Employee ID */}
+              <div className="relative">
+                <input
+                  type="text"
+                  name="employeeId"
+                  value={formData.employeeId}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.employeeId ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Employee ID
+                </label>
+              </div>
+
+              {/* Department */}
+              <div className="relative">
+                <input
+                  type="text"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.department ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Department
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Days */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="days"
+                  value={formData.days}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Number of Days*
+                </label>
+              </div>
+
+              {/* Status */}
+              <div className="relative">
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300 appearance-none"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Status*
+                </label>
+                <div className="absolute right-3 top-3.5 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Duration Type */}
+              <div className="relative">
+                <select
+                  name="durationType"
+                  value={formData.durationType}
+                  onChange={handleInputChange}
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300 appearance-none"
+                >
+                  <option value="Full Day">Full Day</option>
+                  <option value="Half Day">Half Day</option>
+                  <option value="Hours">Hours</option>
+                </select>
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Duration Type
+                </label>
+                <div className="absolute right-3 top-3.5 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Requested On */}
+              <div className="relative">
+                <input
+                  type="date"
+                  name="requestedOn"
+                  value={formData.requestedOn}
+                  onChange={handleInputChange}
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Requested On
+                </label>
+              </div>
+            </div>
+
+            {/* Reason */}
+            <div className="relative">
+              <textarea
+                name="reason"
+                value={formData.reason}
+                onChange={handleInputChange}
+                placeholder=" "
+                rows={3}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300 resize-none"
+              />
+              <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                Reason
+              </label>
+            </div>
+
+            {/* Note */}
+            <div className="relative">
+              <textarea
+                name="note"
+                value={formData.note}
+                onChange={handleInputChange}
+                placeholder=" "
+                rows={2}
+                className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300 resize-none"
+              />
+              <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                Note
+              </label>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex space-x-3 pt-4">
+              <button
+                type="submit"
+                className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99] cursor-pointer"
+              >
+                {isEditMode ? 'Update' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515] cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

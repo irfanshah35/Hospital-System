@@ -1,6 +1,6 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Settings } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit } from 'lucide-react';
 import React, { useState, useRef, useEffect } from "react";
 import * as XLSX from "xlsx";
 
@@ -23,8 +23,10 @@ export default function LeaveBalanceComponent() {
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBalance, setEditingBalance] = useState<LeaveBalance | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>([
     {
@@ -57,58 +59,6 @@ export default function LeaveBalanceComponent() {
       id: 3,
       employeeName: "Edna Gilbert",
       avatar: "EG",
-      previousBalance: 10,
-      currentBalance: 15,
-      totalBalance: 25,
-      usedLeave: 15,
-      acceptedLeave: 10,
-      rejectedLeave: 2,
-      expiredLeave: 5,
-      carryOverBalance: 5
-    },
-    {
-      id: 4,
-      employeeName: "Shelia Oster",
-      avatar: "SO",
-      previousBalance: 10,
-      currentBalance: 15,
-      totalBalance: 25,
-      usedLeave: 15,
-      acceptedLeave: 10,
-      rejectedLeave: 2,
-      expiredLeave: 5,
-      carryOverBalance: 5
-    },
-    {
-      id: 5,
-      employeeName: "Barbara Graham",
-      avatar: "BG",
-      previousBalance: 10,
-      currentBalance: 15,
-      totalBalance: 25,
-      usedLeave: 15,
-      acceptedLeave: 10,
-      rejectedLeave: 2,
-      expiredLeave: 5,
-      carryOverBalance: 5
-    },
-    {
-      id: 6,
-      employeeName: "Sarah Smith",
-      avatar: "SS",
-      previousBalance: 10,
-      currentBalance: 15,
-      totalBalance: 25,
-      usedLeave: 15,
-      acceptedLeave: 10,
-      rejectedLeave: 2,
-      expiredLeave: 5,
-      carryOverBalance: 5
-    },
-    {
-      id: 7,
-      employeeName: "Marie Brown",
-      avatar: "MB",
       previousBalance: 10,
       currentBalance: 15,
       totalBalance: 25,
@@ -174,6 +124,56 @@ export default function LeaveBalanceComponent() {
     }
   };
 
+  const handleAddClick = () => {
+    setEditingBalance({
+      id: 0,
+      employeeName: '',
+      avatar: '',
+      previousBalance: 0,
+      currentBalance: 0,
+      totalBalance: 0,
+      usedLeave: 0,
+      acceptedLeave: 0,
+      rejectedLeave: 0,
+      expiredLeave: 0,
+      carryOverBalance: 0
+    });
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (balance: LeaveBalance) => {
+    setEditingBalance(balance);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (formData: LeaveBalance) => {
+    if (isEditMode && editingBalance?.id) {
+      // Edit existing record
+      setLeaveBalances(prev =>
+        prev.map(item =>
+          item.id === editingBalance.id ? { ...formData, id: editingBalance.id } : item
+        )
+      );
+    } else {
+      // Add new record
+      const newItem = {
+        ...formData,
+        id: Math.max(0, ...leaveBalances.map(item => item.id)) + 1,
+        avatar: formData.employeeName.split(' ').map(n => n[0]).join('').toUpperCase()
+      };
+      setLeaveBalances(prev => [...prev, newItem]);
+    }
+    setIsModalOpen(false);
+    setEditingBalance(null);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingBalance(null);
+  };
+
   const handleCheckboxChange = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -192,39 +192,9 @@ export default function LeaveBalanceComponent() {
     }
   }, [selectedIds, leaveBalances]);
 
-  const checkboxItems = [
-    { label: "Checkbox", checked: true },
-    { label: "Employee Name", checked: true },
-    { label: "Previous Balance", checked: true },
-    { label: "Current Balance", checked: true },
-    { label: "Total Balance", checked: true },
-    { label: "Used Leave", checked: true },
-    { label: "Accepted Leave", checked: true },
-    { label: "Rejected Leave", checked: true },
-    { label: "Expired Leave", checked: true },
-    { label: "Carry Over Balance", checked: true },
-    { label: "Actions", checked: true },
-  ];
-
   const deleteBalance = (id: number) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       setLeaveBalances(prev => prev.filter(r => r.id !== id));
-    }
-  };
-
-  const handleEditClick = (balance: LeaveBalance) => {
-    setEditingBalance(balance);
-    setIsEditModalOpen(true);
-  };
-
-  const handleUpdateBalance = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingBalance) {
-      setLeaveBalances(prev =>
-        prev.map(r => (r.id === editingBalance.id ? editingBalance : r))
-      );
-      setIsEditModalOpen(false);
-      alert("Leave balance updated successfully!");
     }
   };
 
@@ -240,6 +210,20 @@ export default function LeaveBalanceComponent() {
     ];
     return colors[index % colors.length];
   };
+
+  const checkboxItems = [
+    { label: "Checkbox", checked: true },
+    { label: "Employee Name", checked: true },
+    { label: "Previous Balance", checked: true },
+    { label: "Current Balance", checked: true },
+    { label: "Total Balance", checked: true },
+    { label: "Used Leave", checked: true },
+    { label: "Accepted Leave", checked: true },
+    { label: "Rejected Leave", checked: true },
+    { label: "Expired Leave", checked: true },
+    { label: "Carry Over Balance", checked: true },
+    { label: "Actions", checked: true },
+  ];
 
   return (
     <>
@@ -321,7 +305,11 @@ export default function LeaveBalanceComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add New Leave Balance"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -406,7 +394,6 @@ export default function LeaveBalanceComponent() {
                                   <button onClick={() => deleteBalance(item.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer" title="Delete">
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-
                                 </div>
                               </td>
                             </tr>
@@ -418,7 +405,7 @@ export default function LeaveBalanceComponent() {
                         {leaveBalances.map((item, index) => (
                           <div key={item.id} className="border-b border-gray-200 py-4">
                             {/* Checkbox Row */}
-                            <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
+                            <div className="flex items-center justify-between mb-3 border-b border-gray-200 p-2">
                               <input
                                 checked={selectedIds.includes(item.id)}
                                 onChange={() => handleCheckboxChange(item.id)}
@@ -428,9 +415,9 @@ export default function LeaveBalanceComponent() {
                             </div>
 
                             {/* Employee Info */}
-                            <div className="text-sm text-gray-800">
+                            <div className="space-y-2 text-sm">
                               {/* Employee Name */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4 py-3">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Employee:</span>
                                 <div className="flex items-center">
                                   <div className={`w-10 h-10 rounded-full ${getAvatarColor(index)} flex items-center justify-center text-white font-semibold text-sm`}>
@@ -441,55 +428,55 @@ export default function LeaveBalanceComponent() {
                               </div>
 
                               {/* Previous Balance */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Previous Balance:</span>
                                 <span className="ml-1">{item.previousBalance}</span>
                               </div>
 
                               {/* Current Balance */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Current Balance:</span>
                                 <span className="ml-1">{item.currentBalance}</span>
                               </div>
 
                               {/* Total Balance */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Total Balance:</span>
                                 <span className="ml-1 font-semibold">{item.totalBalance}</span>
                               </div>
 
                               {/* Used Leave */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Used Leave:</span>
                                 <span className="ml-1">{item.usedLeave}</span>
                               </div>
 
                               {/* Accepted Leave */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Accepted Leave:</span>
                                 <span className="ml-1">{item.acceptedLeave}</span>
                               </div>
 
                               {/* Rejected Leave */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Rejected Leave:</span>
                                 <span className="ml-1">{item.rejectedLeave}</span>
                               </div>
 
                               {/* Expired Leave */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Expired Leave:</span>
                                 <span className="ml-1">{item.expiredLeave}</span>
                               </div>
 
                               {/* Carry Over Balance */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 p-2">
                                 <span className="font-semibold w-40">Carry Over:</span>
                                 <span className="ml-1">{item.carryOverBalance}</span>
                               </div>
 
                               {/* Actions */}
-                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center gap-3 p-2">
                                 <div className="flex space-x-2">
                                   <button
                                     onClick={() => handleEditClick(item)}
@@ -503,7 +490,6 @@ export default function LeaveBalanceComponent() {
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-
                                 </div>
                               </div>
                             </div>
@@ -523,219 +509,15 @@ export default function LeaveBalanceComponent() {
         </div>
       </div>
 
-      {isEditModalOpen && editingBalance && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[700px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-full ${getAvatarColor(editingBalance.id - 1)} flex items-center justify-center text-white font-semibold`}>
-                  {editingBalance.avatar}
-                </div>
-                <h2 className="text-lg font-semibold">
-                  Edit Leave Balance - {editingBalance.employeeName}
-                </h2>
-              </div>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateBalance} className="p-6 space-y-6 h-[500px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Employee Name */}
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="employeeName"
-                    value={editingBalance.employeeName}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, employeeName: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="employeeName"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingBalance.employeeName ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Employee Name*
-                  </label>
-                </div>
-
-                {/* Previous Balance */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="previousBalance"
-                    value={editingBalance.previousBalance}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, previousBalance: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="previousBalance"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB] peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Previous Balance*
-                  </label>
-                </div>
-
-                {/* Current Balance */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="currentBalance"
-                    value={editingBalance.currentBalance}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, currentBalance: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="currentBalance"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Current Balance*
-                  </label>
-                </div>
-
-                {/* Total Balance */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="totalBalance"
-                    value={editingBalance.totalBalance}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, totalBalance: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="totalBalance"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Total Balance*
-                  </label>
-                </div>
-
-                {/* Used Leave */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="usedLeave"
-                    value={editingBalance.usedLeave}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, usedLeave: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="usedLeave"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Used Leave*
-                  </label>
-                </div>
-
-                {/* Accepted Leave */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="acceptedLeave"
-                    value={editingBalance.acceptedLeave}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, acceptedLeave: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="acceptedLeave"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Accepted Leave*
-                  </label>
-                </div>
-
-                {/* Rejected Leave */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="rejectedLeave"
-                    value={editingBalance.rejectedLeave}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, rejectedLeave: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="rejectedLeave"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Rejected Leave*
-                  </label>
-                </div>
-
-                {/* Expired Leave */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="expiredLeave"
-                    value={editingBalance.expiredLeave}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, expiredLeave: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="expiredLeave"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Expired Leave*
-                  </label>
-                </div>
-
-                {/* Carry Over Balance */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="carryOverBalance"
-                    value={editingBalance.carryOverBalance}
-                    onChange={(e) => setEditingBalance({ ...editingBalance, carryOverBalance: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="carryOverBalance"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Carry Over Balance*
-                  </label>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* Add/Edit Modal */}
+      {isModalOpen && (
+        <LeaveBalanceModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          initialData={editingBalance}
+          isEditMode={isEditMode}
+        />
       )}
 
       <style jsx>{`
@@ -750,6 +532,288 @@ export default function LeaveBalanceComponent() {
     </>
   );
 }
+
+// Modal Component
+interface LeaveBalanceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: LeaveBalance) => void;
+  initialData?: LeaveBalance | null;
+  isEditMode?: boolean;
+}
+
+const LeaveBalanceModal: React.FC<LeaveBalanceModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditMode = false
+}) => {
+  const [formData, setFormData] = useState<LeaveBalance>({
+    id: 0,
+    employeeName: '',
+    avatar: '',
+    previousBalance: 0,
+    currentBalance: 0,
+    totalBalance: 0,
+    usedLeave: 0,
+    acceptedLeave: 0,
+    rejectedLeave: 0,
+    expiredLeave: 0,
+    carryOverBalance: 0
+  });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const isFormValid = formData.employeeName.trim() !== '';
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      // Reset form when adding new
+      setFormData({
+        id: 0,
+        employeeName: '',
+        avatar: '',
+        previousBalance: 0,
+        currentBalance: 0,
+        totalBalance: 0,
+        usedLeave: 0,
+        acceptedLeave: 0,
+        rejectedLeave: 0,
+        expiredLeave: 0,
+        carryOverBalance: 0
+      });
+    }
+  }, [initialData, isOpen]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'employeeName' ? value : parseInt(value) || 0
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isFormValid) {
+      onSubmit(formData);
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[700px] mx-4 max-h-[90vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gray-200 border flex items-center justify-center">
+              <span className="text-gray-500 font-semibold">
+                {formData.employeeName ? formData.employeeName.split(' ').map(n => n[0]).join('').toUpperCase() : 'NB'}
+              </span>
+            </div>
+            <h2 className="font-semibold text-lg">
+              {isEditMode ? `Edit Leave Balance - ${formData.employeeName}` : 'New Leave Balance'}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6 max-h-[75vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Employee Name */}
+              <div className="relative col-span-2">
+                <input
+                  type="text"
+                  name="employeeName"
+                  value={formData.employeeName}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  required
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className="absolute left-3 px-1 bg-white -top-2 text-xs text-[#005CBB]">
+                  Employee Name*
+                </label>
+              </div>
+
+              {/* Previous Balance */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="previousBalance"
+                  value={formData.previousBalance}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.previousBalance ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Previous Balance
+                </label>
+              </div>
+
+              {/* Current Balance */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="currentBalance"
+                  value={formData.currentBalance}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.currentBalance ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Current Balance
+                </label>
+              </div>
+
+              {/* Total Balance */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="totalBalance"
+                  value={formData.totalBalance}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.totalBalance ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Total Balance
+                </label>
+              </div>
+
+              {/* Used Leave */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="usedLeave"
+                  value={formData.usedLeave}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.usedLeave ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Used Leave
+                </label>
+              </div>
+
+              {/* Accepted Leave */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="acceptedLeave"
+                  value={formData.acceptedLeave}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.acceptedLeave ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Accepted Leave
+                </label>
+              </div>
+
+              {/* Rejected Leave */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="rejectedLeave"
+                  value={formData.rejectedLeave}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.rejectedLeave ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Rejected Leave
+                </label>
+              </div>
+
+              {/* Expired Leave */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="expiredLeave"
+                  value={formData.expiredLeave}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.expiredLeave ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Expired Leave
+                </label>
+              </div>
+
+              {/* Carry Over Balance */}
+              <div className="relative">
+                <input
+                  type="number"
+                  name="carryOverBalance"
+                  value={formData.carryOverBalance}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                  className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all border-gray-300"
+                />
+                <label className={`absolute left-3 px-1 bg-white transition-all duration-200 ${formData.carryOverBalance ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}>
+                  Carry Over Balance
+                </label>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex space-x-3 pt-4">
+              <button
+                type="submit"
+                disabled={!isFormValid}
+                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                  ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                  }`}
+              >
+                {isEditMode ? 'Update' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {
