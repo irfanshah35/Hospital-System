@@ -13,6 +13,7 @@ import {
   Minus,
   GripVertical,
   ChevronRight,
+  X,
 } from "lucide-react";
 
 // ✅ Define Task interface
@@ -76,6 +77,7 @@ export default function TasksPage() {
   ]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   // Floating input form data
@@ -85,11 +87,10 @@ export default function TasksPage() {
     priority: "",
     dueDate: "",
     details: "",
+    markComplete: false,
   });
 
-  const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>({});
 
   // ✅ Update formData whenever sidebar opens with selectedTask
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function TasksPage() {
         priority: selectedTask.priority,
         dueDate: selectedTask.date,
         details: "",
+        markComplete: selectedTask.completed,
       });
     }
   }, [selectedTask]);
@@ -107,6 +109,11 @@ export default function TasksPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData({ ...formData, [name]: checked });
   };
 
   const handleFocus = (field: string) => {
@@ -131,6 +138,40 @@ export default function TasksPage() {
   const openTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsSidebarOpen(true);
+  };
+
+  const openAddModal = () => {
+    setFormData({
+      title: "",
+      assignedName: "",
+      priority: "",
+      dueDate: "",
+      details: "",
+      markComplete: false,
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleAddTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Add new task logic here
+    const newTask: Task = {
+      id: `#A${Math.floor(Math.random() * 1000)}`,
+      title: formData.title,
+      createdBy: formData.assignedName,
+      date: formData.dueDate,
+      priority: formData.priority as "high" | "normal" | "low",
+      completed: formData.markComplete,
+      userImg: "/assets/patient-1.jpg",
+    };
+
+    setTasks(prev => [...prev, newTask]);
+    setIsAddModalOpen(false);
+    alert("Task added successfully!");
   };
 
   const getPriorityIcon = (priority: Task["priority"]) => {
@@ -183,7 +224,10 @@ export default function TasksPage() {
                 {tasks.length} Total tasks
               </p>
             </div>
-            <button className="bg-[#faf9fd] shadow-md hover:bg-[#E6ECF8] cursor-pointer text-blue-600 py-3 px-6 rounded-full transition-colors text-sm font-semibold">
+            <button
+              onClick={openAddModal}
+              className="bg-[#faf9fd] shadow-md hover:bg-[#E6ECF8] cursor-pointer text-blue-600 py-3 px-6 rounded-full transition-colors text-sm font-semibold"
+            >
               Add Task
             </button>
           </div>
@@ -249,27 +293,27 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* Sidebar */}
+      {/* Edit Task Sidebar */}
       {isSidebarOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-opacity-40"
+            className="absolute inset-0 bg-black/50 bg-opacity-40"
             onClick={() => setIsSidebarOpen(false)}
           ></div>
 
-          <div className="absolute right-0 top-0 h-full w-96 bg-white shadow-xl overflow-y-auto">
+          <div className="absolute max-h-[65vh] w-[60vw] rounded-[8px] bg-white shadow-xl overflow-y-auto scrollbar-hide">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between py-2 px-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold">Task Details</h3>
               <div className="flex items-center gap-2">
-                <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
+                <button className="p-2 hover:bg-red-50 rounded-lg transition-colors cursor-pointer">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </button>
-                <button className="p-2 hover:bg-green-50 rounded-lg transition-colors">
+                <button className="p-2 hover:bg-green-50 rounded-lg transition-colors cursor-pointer">
                   <Save className="w-5 h-5 text-green-500" />
                 </button>
                 <button
-                  className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   ✕
@@ -289,6 +333,21 @@ export default function TasksPage() {
                 onBlur={handleBlur}
                 shouldLabelFloat={shouldLabelFloat}
               />
+
+              {/* Mark as Complete Checkbox */}
+              <div className="flex items-center gap-3 mb-3">
+                <input
+                  type="checkbox"
+                  id="markComplete"
+                  name="markComplete"
+                  checked={formData.markComplete}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <label htmlFor="markComplete" className="text-sm text-gray-700">
+                  Mark as complete
+                </label>
+              </div>
 
               {/* Assigned Name */}
               <FloatingSelect
@@ -345,13 +404,165 @@ export default function TasksPage() {
           </div>
         </div>
       )}
+
+      {/* Add Task Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 bg-opacity-40 "
+            onClick={closeAddModal}
+          ></div>
+
+          <div className="absolute max-h-[65vh] w-[60vw] rounded-[8px] bg-white shadow-xl overflow-y-auto scrollbar-hide">
+            {/* Header */}
+            <div className="flex items-center justify-between py-2 px-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold">New Task</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAddTask}
+                  className="p-2 hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
+                  title="Save Task"
+                >
+                  <Save className="w-5 h-5 text-green-500" />
+                </button>
+                <button
+                  className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                  onClick={closeAddModal}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleAddTask} className="p-4 space-y-6">
+              {/* Title with Icon */}
+              <div className="relative">
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  required
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  onFocus={() => handleFocus("title")}
+                  onBlur={() => handleBlur("title")}
+                  className="peer w-full px-4 pt-6 pb-2 pr-12 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
+                  placeholder="Title"
+                />
+                <label
+                  htmlFor="title"
+                  className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat("title")
+                    ? "-top-2 text-xs text-blue-600"
+                    : "top-4 text-base text-gray-600"
+                    }`}
+                >
+                  Title
+                </label>
+              </div>
+
+              {/* Mark as Complete Checkbox */}
+              <div className="flex items-center gap-3 mb-3">
+                <input
+                  type="checkbox"
+                  id="markComplete"
+                  name="markComplete"
+                  checked={formData.markComplete}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <label htmlFor="markComplete" className="text-sm text-gray-700">
+                  Mark as complete
+                </label>
+              </div>
+
+              {/* Assigned Name */}
+              <FloatingSelect
+                label="Assigned Name"
+                name="assignedName"
+                value={formData.assignedName}
+                onChange={handleInputChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                shouldLabelFloat={shouldLabelFloat}
+                options={[
+                  "Dr. Jacob Ryan",
+                  "Dr. Rajesh",
+                  "Dr. Jay Soni",
+                  "Dr. John Deo",
+                  "Dr. Megha Trivedi",
+                ]}
+              />
+
+              {/* Priority and Due Date in Row */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Priority */}
+                <FloatingSelect
+                  label="Priority"
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  shouldLabelFloat={shouldLabelFloat}
+                  options={["high", "normal", "low"]}
+                />
+
+                {/* Due Date with Calendar Icon */}
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="dueDate"
+                    name="dueDate"
+                    required
+                    value={formData.dueDate}
+                    onChange={handleInputChange}
+                    onFocus={() => handleFocus("dueDate")}
+                    onBlur={() => handleBlur("dueDate")}
+                    className="peer w-full px-4 py-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
+                    placeholder="Due date"
+                  />
+                  <label
+                    htmlFor="dueDate"
+                    className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat("dueDate")
+                      ? "-top-2 text-xs text-blue-600"
+                      : "top-4 text-base text-gray-600"
+                      }`}
+                  >
+                    Due date
+                  </label>
+                </div>
+              </div>
+
+              {/* Event Details */}
+              <FloatingTextarea
+                label="Event Details"
+                name="details"
+                value={formData.details}
+                onChange={handleInputChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                shouldLabelFloat={shouldLabelFloat}
+              />
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Save Task
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ✅ Reusable Floating Input Components */
 
-function FloatingInput({ label, name, value, onChange, onFocus, onBlur, shouldLabelFloat, type = "text", icon }: any) {
+function FloatingInput({ label, name, value, onChange, onFocus, onBlur, shouldLabelFloat, type = "text" }: any) {
   return (
     <div className="relative">
       <input
@@ -366,7 +577,6 @@ function FloatingInput({ label, name, value, onChange, onFocus, onBlur, shouldLa
         className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all placeholder-transparent"
         placeholder={label}
       />
-      {icon}
       <label
         htmlFor={name}
         className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat(name)
@@ -375,7 +585,6 @@ function FloatingInput({ label, name, value, onChange, onFocus, onBlur, shouldLa
           }`}
       >
         {label}
-        <span className="text-red-500">*</span>
       </label>
     </div>
   );
@@ -394,7 +603,7 @@ function FloatingSelect({ label, name, value, onChange, onFocus, onBlur, shouldL
         onBlur={() => onBlur(name)}
         className="peer w-full px-4 pt-6 pb-2 pr-10 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-all bg-transparent capitalize appearance-none"
       >
-        <option value=""></option>
+        <option hidden></option>
         {options.map((opt: string) => (
           <option key={opt} value={opt}>
             {opt}
@@ -411,13 +620,12 @@ function FloatingSelect({ label, name, value, onChange, onFocus, onBlur, shouldL
           }`}
       >
         {label}
-        <span className="text-red-500">*</span>
       </label>
 
-      {/* Icon (shifted slightly left from right edge) */}
+      {/* Icon */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute right-5 top-4 w-5 h-5 text-gray-400 pointer-events-none"
+        className="absolute right-4 top-4 w-5 h-5 text-gray-400 pointer-events-none"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -425,7 +633,6 @@ function FloatingSelect({ label, name, value, onChange, onFocus, onBlur, shouldL
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     </div>
-
   );
 }
 
@@ -452,7 +659,6 @@ function FloatingTextarea({ label, name, value, onChange, onFocus, onBlur, shoul
           }`}
       >
         {label}
-        <span className="text-red-500">*</span>
       </label>
     </div>
   );

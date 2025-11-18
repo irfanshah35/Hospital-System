@@ -191,6 +191,169 @@ export default function AddDoctorComponent() {
     </div>
   );
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   const newErrors: FormErrors = {};
+  //   const requiredFields: Record<string, string> = {
+  //     firstname: "First name is required",
+  //     gender: "Gender is required",
+  //     dateofbirth: "Date of birth is required",
+  //     email: "Email is required",
+  //     mobile: "Mobile number is required",
+  //     password: "Password must be at least 6 characters",
+  //     designation: "Designation is required",
+  //     department: "Department is required",
+  //     specialization: "Specialization is required",
+  //     experience: "Experience is required",
+  //     licensenumber: "License number is required",
+  //     licenseexpirydate: "License expiry date is required",
+  //     education: "Education is required",
+  //     joiningdate: "Joining date is required",
+  //     employeeid: "Employee ID is required",
+  //     availabledays: "Available days is required",
+  //     starttime: "Start time is required",
+  //     endtime: "End time is required",
+  //   };
+
+  //   Object.entries(requiredFields).forEach(([field, message]) => {
+  //     const value = formData[field as keyof typeof formData];
+  //     if (!value || String(value).trim().length === 0) {
+  //       newErrors[field] = message;
+  //     }
+  //   });
+
+  //   if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+  //     newErrors.email = "Invalid email format";
+  //   }
+
+  //   if (formData.mobile) {
+  //     const digitsOnly = formData.mobile.replace(/\D/g, "");
+  //     if (digitsOnly.length < 8 || digitsOnly.length > 20) {
+  //       newErrors.mobile = "Mobile number must contain 8–20 digits";
+  //     }
+  //   }
+
+  //   if (formData.password && formData.password.length < 6) {
+  //     newErrors.password = "Password must be at least 6 characters";
+  //   }
+
+  //   if (formData.password !== formData.reenterpassword) {
+  //     newErrors.reenterpassword = "Passwords do not match";
+  //   }
+
+  //   if (Object.keys(newErrors).length > 0) {
+  //     setErrors(newErrors);
+  //     setMessage({ type: "error", text: "⚠️ Please fix the errors below" });
+  //     setIsSubmitting(false);
+  //     window.scrollTo({ top: 0, behavior: "smooth" });
+  //     return;
+  //   }
+
+  //   try {
+  //     console.log("📤 Submitting doctor data to API...");
+
+  //     // ✅ Use FormData for both text + file fields
+  //     const formDataToSend = new FormData();
+
+  //     // Append all text fields
+  //     Object.entries(formData).forEach(([key, value]) => {
+  //       if (value !== null && value !== undefined && typeof value !== "object") {
+  //         formDataToSend.append(key, value);
+  //       }
+  //     });
+
+  //     // ✅ Append file fields (check before adding)
+  //     if (isFile(formData.profilephoto)) {
+  //       formDataToSend.append("profilephoto", formData.profilephoto);
+  //     }
+  //     if (isFile(formData.licensedocument)) {
+  //       formDataToSend.append("licensedocument", formData.licensedocument);
+  //     }
+  //     if (isFile(formData.educationcertificates)) {
+  //       formDataToSend.append("educationcertificates", formData.educationcertificates);
+  //     }
+  //     if (isFile(formData.additionaldocuments)) {
+  //       formDataToSend.append("additionaldocuments", formData.additionaldocuments);
+  //     }
+
+  //     // ✅ Send as multipart/form-data
+  //     const response = await fetch("/api/doctors", {
+  //       method: "POST",
+  //       body: formDataToSend,
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("✅ Doctor registered successfully:", result);
+
+  //     setMessage({ type: "success", text: "✅ Doctor registered successfully!" });
+  //     setIsSubmitting(false);
+
+  //     // ✅ Reset form
+  //     setFormData({
+  //       firstname: "",
+  //       middlename: "",
+  //       lastname: "",
+  //       gender: "",
+  //       dateofbirth: "",
+  //       bloodgroup: "",
+  //       email: "",
+  //       mobile: "",
+  //       alternativecontact: "",
+  //       address: "",
+  //       city: "",
+  //       state: "",
+  //       postalcode: "",
+  //       password: "",
+  //       reenterpassword: "",
+  //       designation: "",
+  //       department: "",
+  //       specialization: "",
+  //       experience: "",
+  //       licensenumber: "",
+  //       licenseexpirydate: "",
+  //       education: "",
+  //       certifications: "",
+  //       joiningdate: "",
+  //       employeeid: "",
+  //       roomcabinnumber: "",
+  //       availabledays: "",
+  //       starttime: "",
+  //       endtime: "",
+  //       emergencycontactname: "",
+  //       emergencycontactnumber: "",
+  //       relationship: "",
+  //       profilephoto: null,
+  //       licensedocument: null,
+  //       educationcertificates: null,
+  //       additionaldocuments: null,
+  //     });
+
+  //     setFieldStates({});
+  //     setShowPassword(false);
+  //     setShowConfirmPassword(false);
+  //     setErrors({});
+  //     window.scrollTo({ top: 0, behavior: "smooth" });
+
+  //   } catch (error: any) {
+  //     console.error("❌ Error submitting form:", error);
+  //     setMessage({
+  //       type: "error",
+  //       text: `❌ Failed to register doctor: ${error.message}`,
+  //     });
+  //     setIsSubmitting(false);
+  //     window.scrollTo({ top: 0, behavior: "smooth" });
+  //   }
+  // };
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -254,34 +417,21 @@ export default function AddDoctorComponent() {
     try {
       console.log("📤 Submitting doctor data to API...");
 
-      // ✅ Use FormData for both text + file fields
-      const formDataToSend = new FormData();
+      // ✅ Convert fields to JSON (remove all file objects)
+      const payload = {
+        ...formData,
+        profilephoto: null,
+        licensedocument: null,
+        educationcertificates: null,
+        additionaldocuments: null,
+      };
 
-      // Append all text fields
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && typeof value !== "object") {
-          formDataToSend.append(key, value);
-        }
-      });
-
-      // ✅ Append file fields (check before adding)
-      if (isFile(formData.profilephoto)) {
-        formDataToSend.append("profilephoto", formData.profilephoto);
-      }
-      if (isFile(formData.licensedocument)) {
-        formDataToSend.append("licensedocument", formData.licensedocument);
-      }
-      if (isFile(formData.educationcertificates)) {
-        formDataToSend.append("educationcertificates", formData.educationcertificates);
-      }
-      if (isFile(formData.additionaldocuments)) {
-        formDataToSend.append("additionaldocuments", formData.additionaldocuments);
-      }
-
-      // ✅ Send as multipart/form-data
       const response = await fetch("/api/doctors", {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -295,7 +445,7 @@ export default function AddDoctorComponent() {
       setMessage({ type: "success", text: "✅ Doctor registered successfully!" });
       setIsSubmitting(false);
 
-      // ✅ Reset form
+      // Reset form
       setFormData({
         firstname: "",
         middlename: "",
