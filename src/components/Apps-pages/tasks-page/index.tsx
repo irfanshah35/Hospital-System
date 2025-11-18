@@ -206,8 +206,8 @@ export default function TasksPage() {
                       toggleTaskCompletion(task.id);
                     }}
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${task.completed
-                        ? "bg-blue-600 border-blue-600 text-white"
-                        : "border-gray-300 hover:border-blue-600"
+                      ? "bg-blue-600 border-blue-600 text-white"
+                      : "border-gray-300 hover:border-blue-600"
                       }`}
                   >
                     {task.completed && <Check className="w-3 h-3" />}
@@ -216,8 +216,8 @@ export default function TasksPage() {
                   {/* Title */}
                   <div
                     className={`flex-1 text-sm ${task.completed
-                        ? "line-through text-gray-400"
-                        : "text-gray-700"
+                      ? "line-through text-gray-400"
+                      : "text-gray-700"
                       }`}
                   >
                     {task.title}
@@ -370,8 +370,8 @@ function FloatingInput({ label, name, value, onChange, onFocus, onBlur, shouldLa
       <label
         htmlFor={name}
         className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat(name)
-            ? "-top-2 text-xs text-blue-600"
-            : "top-4 text-base text-gray-600"
+          ? "-top-2 text-xs text-blue-600"
+          : "top-4 text-base text-gray-600"
           }`}
       >
         {label}
@@ -406,8 +406,8 @@ function FloatingSelect({ label, name, value, onChange, onFocus, onBlur, shouldL
       <label
         htmlFor={name}
         className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat(name)
-            ? "-top-2 text-xs text-blue-600"
-            : "top-4 text-base text-gray-600"
+          ? "-top-2 text-xs text-blue-600"
+          : "top-4 text-base text-gray-600"
           }`}
       >
         {label}
@@ -447,8 +447,8 @@ function FloatingTextarea({ label, name, value, onChange, onFocus, onBlur, shoul
       <label
         htmlFor={name}
         className={`absolute left-4 bg-white px-1 transition-all duration-200 ${shouldLabelFloat(name)
-            ? "-top-2 text-xs text-blue-600"
-            : "top-4 text-base text-gray-600"
+          ? "-top-2 text-xs text-blue-600"
+          : "top-4 text-base text-gray-600"
           }`}
       >
         {label}

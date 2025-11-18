@@ -122,11 +122,10 @@ export default function AddDepartmentPage() {
                 />
                 <label
                   htmlFor="departmentno"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("departmentno")
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("departmentno")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-600"
-                  }`}
+                    }`}
                 >
                   Department No<span className="text-red-500">*</span>
                 </label>
@@ -148,11 +147,10 @@ export default function AddDepartmentPage() {
                 />
                 <label
                   htmlFor="departmentname"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("departmentname")
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("departmentname")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-600"
-                  }`}
+                    }`}
                 >
                   Department Name<span className="text-red-500">*</span>
                 </label>
@@ -174,11 +172,10 @@ export default function AddDepartmentPage() {
                 />
                 <label
                   htmlFor="departmentdate"
-                  className={`absolute left-4 py-1 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("departmentdate")
+                  className={`absolute left-4 py-1 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("departmentdate")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-600"
-                  }`}
+                    }`}
                 >
                   Department Date<span className="text-red-500">*</span>
                 </label>
@@ -200,11 +197,10 @@ export default function AddDepartmentPage() {
                 />
                 <label
                   htmlFor="departmenthead"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("departmenthead")
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("departmenthead")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-600"
-                  }`}
+                    }`}
                 >
                   Department Head<span className="text-red-500">*</span>
                 </label>
@@ -229,11 +225,10 @@ export default function AddDepartmentPage() {
                 </select>
                 <label
                   htmlFor="status"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("status")
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("status")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-500"
-                  }`}
+                    }`}
                 >
                   Status <span className="text-red-500">*</span>
                 </label>
@@ -255,11 +250,10 @@ export default function AddDepartmentPage() {
                 />
                 <label
                   htmlFor="description"
-                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${
-                    shouldLabelFloat("description")
+                  className={`absolute left-4 transition-all duration-200 bg-white px-1 ${shouldLabelFloat("description")
                       ? "-top-2 text-xs text-blue-600"
                       : "top-4 text-base text-gray-600"
-                  }`}
+                    }`}
                 >
                   Description <span className="text-red-500">*</span>
                 </label>
@@ -268,11 +262,10 @@ export default function AddDepartmentPage() {
               {/* Message */}
               {message && (
                 <div
-                  className={`p-4 rounded-lg mb-4 ${
-                    message.type === "success"
+                  className={`p-4 rounded-lg mb-4 ${message.type === "success"
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {message.text}
                 </div>

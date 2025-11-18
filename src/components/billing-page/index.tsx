@@ -28,7 +28,7 @@ export default function BillingPage() {
     {
       id: "#A873",
       createdBy: "Dr. Jay Soni",
-      date: "12/05/2016", 
+      date: "12/05/2016",
       disease: "Jaundice",
       diseaseColor: "text-purple-600 border-purple-600",
       amount: "$180.00",
@@ -41,7 +41,7 @@ export default function BillingPage() {
       createdBy: "Dr. John Deo",
       date: "12/05/2016",
       disease: "Typhoid",
-      diseaseColor: "text-purple-600 border-purple-600", 
+      diseaseColor: "text-purple-600 border-purple-600",
       amount: "$220.00",
       tax: "$22.00",
       discount: "$18.00",
@@ -55,12 +55,12 @@ export default function BillingPage() {
       diseaseColor: "text-orange-500 border-orange-500",
       amount: "$170.00",
       tax: "$17.00",
-      discount: "$13.00", 
+      discount: "$13.00",
       total: "$174.00"
     },
     {
       id: "#A345",
-      createdBy: "Dr. Sarah Smith", 
+      createdBy: "Dr. Sarah Smith",
       date: "12/05/2016",
       disease: "Infection",
       diseaseColor: "text-cyan-500 border-cyan-500",
@@ -128,19 +128,19 @@ export default function BillingPage() {
                     <td className="px-6 py-4 text-sm font-bold text-blue-600">{item.total}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <button 
+                        <button
                           className="w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer"
                           title="Download Invoice"
                         >
                           <CloudDownload className="w-5 h-5 text-purple-600" />
                         </button>
-                        <button 
+                        <button
                           className="w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer"
                           title="View Details"
                         >
                           <Eye size={20} className="text-[#4CAF50]" />
                         </button>
-                        <button 
+                        <button
                           className="w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer"
                           title="Print"
                         >
@@ -154,7 +154,7 @@ export default function BillingPage() {
             </table>
           </div>
 
-          
+
         </div>
       </div>
     </div>

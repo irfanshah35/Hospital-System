@@ -538,6 +538,8 @@ export default function BloodIssuedPage() {
                                                                 <div className="flex space-x-2">
                                                                     <button
                                                                         onClick={() => handleEditClick(item)}
+                                                                    <button
+                                                                        onClick={() => handleEditClick(item)}
                                                                         className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                                                         title="Edit"
                                                                     >

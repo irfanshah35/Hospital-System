@@ -576,7 +576,7 @@ export default function ContactsPage() {
                                 </h2>
                             </div>
                             <button
-                                onClick={()=> setIsEditModalOpen(!isEditModalOpen)}
+                                onClick={() => setIsEditModalOpen(!isEditModalOpen)}
                                 className="text-gray-500 hover:text-gray-800 transition"
                             >
                                 <X className="w-6 h-6" />

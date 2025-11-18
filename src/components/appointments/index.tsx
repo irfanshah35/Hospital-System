@@ -11,7 +11,7 @@ const data = [
 ];
 
 export default function Appointments() {
- const [time, setTime] = useState<number>(Date.now());
+  const [time, setTime] = useState<number>(Date.now());
 
   useEffect(() => {
     setTime(Date.now());
@@ -144,11 +144,10 @@ export default function Appointments() {
           {Array.from({ length: 31 }, (_, i) => (
             <div
               key={i}
-              className={`py-2 rounded-lg ${
-                i + 1 === 16
+              className={`py-2 rounded-lg ${i + 1 === 16
                   ? "border border-blue-500 text-blue-600"
                   : ""
-              }`}
+                }`}
             >
               {i + 1}
             </div>

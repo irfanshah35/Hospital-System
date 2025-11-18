@@ -335,11 +335,10 @@ export default function DepartmentListPage() {
                               </td>
 
                               <td className="px-4 text-sm">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                  item.status === 'Active' ? 'bg-green-100 text-green-800' :
-                                  item.status === 'Inactive' ? 'bg-red-100 text-red-800' :
-                                  'bg-yellow-100 text-yellow-800'
-                                }`}>
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                    item.status === 'Inactive' ? 'bg-red-100 text-red-800' :
+                                      'bg-yellow-100 text-yellow-800'
+                                  }`}>
                                   {item.status}
                                 </span>
                               </td>
@@ -386,11 +385,10 @@ export default function DepartmentListPage() {
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="font-semibold">Status:</span>
-                                <span className={`px-2 py-1 text-xs rounded ${
-                                  item.status === 'Active' ? 'bg-green-100 text-green-800' :
-                                  item.status === 'Inactive' ? 'bg-red-100 text-red-800' :
-                                  'bg-yellow-100 text-yellow-800'
-                                }`}>
+                                <span className={`px-2 py-1 text-xs rounded ${item.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                    item.status === 'Inactive' ? 'bg-red-100 text-red-800' :
+                                      'bg-yellow-100 text-yellow-800'
+                                  }`}>
                                   {item.status}
                                 </span>
                               </div>
@@ -453,7 +451,7 @@ export default function DepartmentListPage() {
                     type="number"
                     id="departmentno"
                     value={editingDepartment.departmentno}
-                    onChange={(e) => setEditingDepartment({...editingDepartment, departmentno: parseInt(e.target.value)})}
+                    onChange={(e) => setEditingDepartment({ ...editingDepartment, departmentno: parseInt(e.target.value) })}
                     placeholder=" "
                     required
                     className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
@@ -475,7 +473,7 @@ export default function DepartmentListPage() {
                     type="text"
                     id="departmentname"
                     value={editingDepartment.departmentname}
-                    onChange={(e) => setEditingDepartment({...editingDepartment, departmentname: e.target.value})}
+                    onChange={(e) => setEditingDepartment({ ...editingDepartment, departmentname: e.target.value })}
                     placeholder=" "
                     required
                     className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
@@ -499,7 +497,7 @@ export default function DepartmentListPage() {
                     type="date"
                     id="departmentdate"
                     value={editingDepartment.departmentdate}
-                    onChange={(e) => setEditingDepartment({...editingDepartment, departmentdate: e.target.value})}
+                    onChange={(e) => setEditingDepartment({ ...editingDepartment, departmentdate: e.target.value })}
                     placeholder=" "
                     className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
                       text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}
@@ -520,7 +518,7 @@ export default function DepartmentListPage() {
                     type="text"
                     id="departmenthead"
                     value={editingDepartment.departmenthead}
-                    onChange={(e) => setEditingDepartment({...editingDepartment, departmenthead: e.target.value})}
+                    onChange={(e) => setEditingDepartment({ ...editingDepartment, departmenthead: e.target.value })}
                     placeholder=" "
                     required
                     className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm 
@@ -542,7 +540,7 @@ export default function DepartmentListPage() {
                 <select
                   id="status"
                   value={editingDepartment.status}
-                  onChange={(e) => setEditingDepartment({...editingDepartment, status: e.target.value})}
+                  onChange={(e) => setEditingDepartment({ ...editingDepartment, status: e.target.value })}
                   className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
                 >
                   <option value="" disabled hidden></option>
@@ -566,7 +564,7 @@ export default function DepartmentListPage() {
                   id="description"
                   rows={3}
                   value={editingDepartment.description}
-                  onChange={(e) => setEditingDepartment({...editingDepartment, description: e.target.value})}
+                  onChange={(e) => setEditingDepartment({ ...editingDepartment, description: e.target.value })}
                   placeholder=" "
                   className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm resize-none
                     text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all`}

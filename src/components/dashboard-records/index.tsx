@@ -108,29 +108,28 @@ export default function DashboardRecords() {
             <button className="text-blue-600 font-semibold hover:text-blue-700">View All</button>
           </div>
 
-            <div className='flex items-center justify-between border-b border-gray-100 last:border-0'>
-                  <div className="text-left p-2 font-semibold  w-1/2">Doctor Name</div>
-                  <div className="text-right p-2 font-semibold w-1/2">Status</div>
-            </div>
+          <div className='flex items-center justify-between border-b border-gray-100 last:border-0'>
+            <div className="text-left p-2 font-semibold  w-1/2">Doctor Name</div>
+            <div className="text-right p-2 font-semibold w-1/2">Status</div>
+          </div>
 
           <div className="space-y-4">
             {doctors.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-2xl">
-                        <img src={doc.image} alt={doc.image} className="w-10 h-10 rounded-full object-cover" />
-                    
+                    <img src={doc.image} alt={doc.image} className="w-10 h-10 rounded-full object-cover" />
+
                   </div>
                   <div>
                     <div className="font-semibold text-blue-600">{doc.name}</div>
                     <div className="text-sm">{doc.qualification}</div>
                   </div>
                 </div>
-                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-                  doc.status === 'Available' 
-                    ? 'bg-green-100 text-green-700' 
+                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${doc.status === 'Available'
+                    ? 'bg-green-100 text-green-700'
                     : 'bg-orange-100 text-orange-700'
-                }`}>
+                  }`}>
                   {doc.status}
                 </span>
               </div>
@@ -174,9 +173,9 @@ export default function DashboardRecords() {
                     <td className="py-4 px-3">
                       <div className="flex items-center">
                         {op.doctors.slice(0, 2).map((doctor, idx) => (
-                          <img 
-                            key={idx} 
-                            src={doctor.img} 
+                          <img
+                            key={idx}
+                            src={doctor.img}
                             alt={`Doctor ${idx + 1}`}
                             className={`w-8 h-8 rounded-full object-cover border-2 border-white ${idx > 0 ? '-ml-2' : ''}`}
                           />

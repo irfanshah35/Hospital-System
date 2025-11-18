@@ -136,7 +136,7 @@ export default function AllStaffComponent() {
         const response = await fetch(`/api/staff/${id}`, {
           method: "DELETE",
         });
-        
+
         if (response.ok) {
           setStaffs(prev => prev.filter(staff => staff.id !== id));
           setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
@@ -314,11 +314,10 @@ export default function AllStaffComponent() {
                               <td className="px-4 text-sm whitespace-nowrap">{item.department}</td>
 
                               <td className="px-4 whitespace-nowrap">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${
-                                  item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
-                                  item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
-                                  "bg-[#ffc10726] text-[#ffc107]"
-                                }`}>
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" :
+                                    item.gender === "Male" ? "bg-[#19875426] text-[#198754]" :
+                                      "bg-[#ffc10726] text-[#ffc107]"
+                                  }`}>
                                   {item.gender}
                                 </span>
                               </td>
@@ -347,14 +346,14 @@ export default function AllStaffComponent() {
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button 
-                                    onClick={() => handleEditClick(item)} 
+                                  <button
+                                    onClick={() => handleEditClick(item)}
                                     className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                   >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button 
-                                    onClick={() => deleteStaff(item.id)} 
+                                  <button
+                                    onClick={() => deleteStaff(item.id)}
                                     className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                   >
                                     <Trash2 className="w-5 h-5" />
@@ -374,11 +373,11 @@ export default function AllStaffComponent() {
                               <input
                                 checked={selectedIds.includes(item.id)}
                                 onChange={() => handleCheckboxChange(item.id)}
-                                type="checkbox" 
-                                className="w-4 h-4 text-blue-600 rounded" 
+                                type="checkbox"
+                                className="w-4 h-4 text-blue-600 rounded"
                               />
                             </div>
-                            
+
                             <div className="space-y-2 text-sm">
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                 <span className="font-semibold w-24">Name:</span>
@@ -405,11 +404,10 @@ export default function AllStaffComponent() {
 
                               <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
                                 <span className="font-semibold w-24">Gender:</span>
-                                <span className={`px-2 py-1 text-xs font-semibold rounded ${
-                                  item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : 
-                                  item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : 
-                                  "bg-[#ffc10726] text-[#ffc107]"
-                                }`}>
+                                <span className={`px-2 py-1 text-xs font-semibold rounded ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" :
+                                    item.gender === "Male" ? "bg-[#19875426] text-[#198754]" :
+                                      "bg-[#ffc10726] text-[#ffc107]"
+                                  }`}>
                                   {item.gender}
                                 </span>
                               </div>
@@ -443,14 +441,14 @@ export default function AllStaffComponent() {
                               <div className="flex items-center gap-3 pt-2">
                                 <span className="font-semibold w-24">Actions:</span>
                                 <div className="flex space-x-2">
-                                  <button 
-                                    onClick={() => handleEditClick(item)} 
+                                  <button
+                                    onClick={() => handleEditClick(item)}
                                     className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full"
                                   >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button 
-                                    onClick={() => deleteStaff(item.id)} 
+                                  <button
+                                    onClick={() => deleteStaff(item.id)}
                                     className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full"
                                   >
                                     <Trash2 className="w-5 h-5" />
