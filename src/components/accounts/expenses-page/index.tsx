@@ -476,10 +476,10 @@ export default function ExpensesPage() {
                                                                 <span className="font-semibold w-32">Approval Status:</span>
                                                                 <span
                                                                     className={`px-2 py-1 text-xs font-semibold rounded ${item.approvalStatus === "Approved"
-                                                                            ? "bg-[#19875426] text-[#198754]"
-                                                                            : item.approvalStatus === "Pending"
-                                                                                ? "bg-[#ffc10726] text-[#ffc107]"
-                                                                                : "bg-[#dc354526] text-[#dc3545]"
+                                                                        ? "bg-[#19875426] text-[#198754]"
+                                                                        : item.approvalStatus === "Pending"
+                                                                            ? "bg-[#ffc10726] text-[#ffc107]"
+                                                                            : "bg-[#dc354526] text-[#dc3545]"
                                                                         }`}
                                                                 >
                                                                     {item.approvalStatus || "—"}
@@ -491,8 +491,8 @@ export default function ExpensesPage() {
                                                                 <span className="font-semibold w-32">Payment Status:</span>
                                                                 <span
                                                                     className={`px-2 py-1 text-xs font-semibold rounded ${item.paymentStatus === "Paid"
-                                                                            ? "bg-[#19875426] text-[#198754]"
-                                                                            : "bg-[#ffc10726] text-[#ffc107]"
+                                                                        ? "bg-[#19875426] text-[#198754]"
+                                                                        : "bg-[#ffc10726] text-[#ffc107]"
                                                                         }`}
                                                                 >
                                                                     {item.paymentStatus || "—"}

@@ -198,8 +198,8 @@ export default function AddStaffPage() {
 
                 {submitMessage.text && (
                     <div className={`mb-4 p-3 rounded-md text-xs md:text-sm ${submitMessage.type === 'success'
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : "bg-red-50 text-red-700 border border-red-200"
+                        ? "bg-green-50 text-green-700 border border-green-200"
+                        : "bg-red-50 text-red-700 border border-red-200"
                         }`}>
                         {submitMessage.text}
                     </div>
@@ -442,8 +442,8 @@ function AccountInfo({ formData, handleChange, prevStep, agreed, setAgreed, erro
                 </button>
                 <button type="submit" disabled={!agreed || isSubmitting}
                     className={`px-6 md:px-8 py-2 rounded-full flex items-center gap-2 transition text-sm md:text-base ${agreed && !isSubmitting
-                            ? "bg-green-600 text-white hover:bg-green-700"
-                            : "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        ? "bg-green-600 text-white hover:bg-green-700"
+                        : "bg-gray-400 text-gray-600 cursor-not-allowed"
                         }`}>
                     <Check className="w-4 h-4 md:w-5 md:h-5" />
                     {isSubmitting ? "Submitting..." : "Submit"}

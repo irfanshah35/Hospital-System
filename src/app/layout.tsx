@@ -47,9 +47,8 @@ export default function RootLayout({
         `}</style>
       </head>
       <body
-        className={`${roboto.variable} font-roboto antialiased ${
-          websiteTheme === "dark" ? "dark-theme" : "light-theme"
-        }`}
+        className={`${roboto.variable} font-roboto antialiased ${websiteTheme === "dark" ? "dark-theme" : "light-theme"
+          }`}
       >
         <Suspense fallback={<div>Loading...</div>}>
           {/* Hidden Google Translate Element */}

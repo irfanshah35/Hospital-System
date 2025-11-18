@@ -88,7 +88,7 @@ export default function InvoicePage() {
                                     <div className="">
                                         <img className='max-w-[147px] h-[48px]' src="/invoice_logo.png" alt="" />
                                     </div>
-                                    
+
                                 </div>
                                 <div className="text-gray-600">
                                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Cliniva Hospital</h3>
@@ -181,7 +181,7 @@ export default function InvoicePage() {
                                     ))}
                                 </tbody>
                                 <tfoot>
-                                    
+
                                     <tr className="">
                                         <td></td>
                                         <td colSpan={5} className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -244,15 +244,15 @@ export default function InvoicePage() {
                     <div className="p-6 px-8">
                         <div className="flex flex-col md:flex-row gap-3 text-sm font-medium">
                             <button className="flex items-center justify-center gap-2 bg-[#005cbb] hover:[#1469C0] text-white px-4 py-2 rounded-[4px] text-center cursor-pointer">
-                               <Printer className='w-5 h-5'/>
+                                <Printer className='w-5 h-5' />
                                 Print
                             </button>
                             <button className="flex items-center justify-center gap-2 bg-[#005cbb] hover:[#1469C0] text-white px-4 py-2 rounded-[4px] cursor-pointer">
-                                <ArrowDownToLine className='w-5 h-5'/>
+                                <ArrowDownToLine className='w-5 h-5' />
                                 Download PDF
                             </button>
                             <button className="flex items-center justify-center gap-2 text-[#005cbb] border border-gray-300 hover:bg-gray-50  px-4 py-2 rounded-[4px] cursor-pointer">
-                                <Mail className='w-5 h-5'/>
+                                <Mail className='w-5 h-5' />
                                 Email Invoice
                             </button>
                         </div>

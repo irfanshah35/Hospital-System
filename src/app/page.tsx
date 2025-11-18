@@ -306,8 +306,8 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setSelectedRole("patient")}
                 className={`px-4 py-2 rounded-full font-semibold text-white transition text-sm ${selectedRole === "patient"
-                    ? "bg-[#3C6EFD]"
-                    : "bg-[#3C6EFD]/70"
+                  ? "bg-[#3C6EFD]"
+                  : "bg-[#3C6EFD]/70"
                   }`}
               >
                 Patient
@@ -368,8 +368,8 @@ export default function LoginPage() {
                   <div className="space-y-1">
                     <div
                       className={`text-xs ${password.length >= 8 && password.length <= 20
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                         }`}
                     >
                       • 8-20 characters{" "}
@@ -379,8 +379,8 @@ export default function LoginPage() {
                     </div>
                     <div
                       className={`text-xs ${/[a-zA-Z]/.test(password)
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                         }`}
                     >
                       • At least 1 letter{" "}
@@ -388,16 +388,16 @@ export default function LoginPage() {
                     </div>
                     <div
                       className={`text-xs ${/\d/.test(password)
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                         }`}
                     >
                       • At least 1 number {/\d/.test(password) ? "✓" : "✗"}
                     </div>
                     <div
                       className={`text-xs ${/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                         }`}
                     >
                       • At least 1 special character{" "}
@@ -431,8 +431,8 @@ export default function LoginPage() {
                 type="submit"
                 disabled={!isFormValid || isLoading}
                 className={`w-full bg-gradient-to-r from-[#807160] via-[#796D7B] to-[#806B8D] text-white font-semibold py-3.5 rounded-lg transition mb-5 text-sm ${isFormValid && !isLoading
-                    ? "hover:opacity-90"
-                    : "opacity-50 cursor-not-allowed"
+                  ? "hover:opacity-90"
+                  : "opacity-50 cursor-not-allowed"
                   }`}
               >
                 {isLoading ? "Logging in..." : "Login"}
@@ -448,12 +448,12 @@ export default function LoginPage() {
                 </a>
               </p>
 
-              <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-4">
                 <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-                <span className="text-gray-500 dark:text-gray-400 text-sm">
+                <span className="dark:text-gray-400 ">
                   OR
                 </span>
-                <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+                <div className="flex-1 dark:bg-gray-600"></div>
               </div>
 
               <div className="flex justify-center gap-3">

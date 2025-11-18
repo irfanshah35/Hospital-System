@@ -185,7 +185,7 @@ export default function AddBillPage() {
                                         Doctor Name<span className="text-red-500">*</span>
                                     </label>
                                     <span className="absolute top-4 right-4">
-                                        <ChevronDown className="w-5 h-5"/>
+                                        <ChevronDown className="w-5 h-5" />
                                     </span>
                                 </div>
 
@@ -211,7 +211,7 @@ export default function AddBillPage() {
                                         >
                                             Admit Date<span className="text-red-500">*</span>
                                         </label>
-                                        
+
                                     </div>
                                 </div>
 
@@ -311,7 +311,7 @@ export default function AddBillPage() {
                                         Payment Method<span className="text-red-500">*</span>
                                     </label>
                                     <span className="absolute top-4 right-4">
-                                        <ChevronDown className="w-5 h-5"/>
+                                        <ChevronDown className="w-5 h-5" />
                                     </span>
                                 </div>
 
@@ -342,7 +342,7 @@ export default function AddBillPage() {
                                     </label>
 
                                     <span className="absolute top-4 right-4">
-                                        <ChevronDown className="w-5 h-5"/>
+                                        <ChevronDown className="w-5 h-5" />
                                     </span>
                                 </div>
                             </div>

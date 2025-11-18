@@ -8,12 +8,12 @@ import PatientAppointmentsReports from "@/components/PatientAppointmentsReports"
 
 export default function PatientDashboard() {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <PatientWelcomeSection />
-      <PatientStatsCards/>
-            <PatientAppointmentsReports/>
+      <PatientStatsCards />
+      <PatientAppointmentsReports />
     </div>
   );
 }
