@@ -1,7 +1,7 @@
 "use client";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useThemeStore } from "@/store/store";
 import { useGoogleTranslate } from "@/useGoogleTranslate";
 
@@ -51,22 +51,24 @@ export default function RootLayout({
           websiteTheme === "dark" ? "dark-theme" : "light-theme"
         }`}
       >
-        {/* Hidden Google Translate Element */}
-        <div
-          id="google_translate_element"
-          style={{
-            display: "none",
-            position: "absolute",
-            zIndex: -1,
-            opacity: 0,
-          }}
-        ></div>
+        <Suspense fallback={<div>Loading...</div>}>
+          {/* Hidden Google Translate Element */}
+          <div
+            id="google_translate_element"
+            style={{
+              display: "none",
+              position: "absolute",
+              zIndex: -1,
+              opacity: 0,
+            }}
+          ></div>
 
-        {/* Remove AuthCheck wrapper - middleware handles authentication */}
-        <div className="min-h-screen">{children}</div>
+          {/* Remove AuthCheck wrapper - middleware handles authentication */}
+          <div className="min-h-screen">{children}</div>
 
-        {/* Load the config script */}
-        <script src="/lang-config.js" async />
+          {/* Load the config script */}
+          <script src="/lang-config.js" async />
+        </Suspense>
       </body>
     </html>
   );

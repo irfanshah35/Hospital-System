@@ -1,14 +1,14 @@
-// app/api/patients/[id]/route.ts
+// app/api/patients/[id]/route.js
 import { patientCreateSchema } from "@/lib/schema/patient-schema";
 import { supabaseServer } from "@/lib/supabase-server";
-import { Patient } from "@/types/interface";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// =========================
+//         GET PATIENT
+// =========================
+export async function GET(req, { params }) {
   const id = Number(params.id);
+
   const { data, error } = await supabaseServer
     .from("patients")
     .select("*")
@@ -18,21 +18,24 @@ export async function GET(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 404 });
   }
-  return NextResponse.json(data as Patient, { status: 200 });
+
+  return NextResponse.json(data, { status: 200 });
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// =========================
+//      UPDATE PATIENT
+// =========================
+export async function PUT(req, { params }) {
   try {
     const id = Number(params.id);
-    const body = await request.json();
-    const parsed = patientCreateSchema.partial().parse(body); // allow partial updates
+    const body = await req.json();
 
-    // map fields from parsed to DB column names (only provided)
-    const updateRow: Record<string, any> = {};
-    const map: Record<string, string> = {
+    // Validate + allow partial updates
+    const parsed = patientCreateSchema.partial().parse(body);
+
+    // Map schema keys → database column names
+    const updateRow = {};
+    const map = {
       firstName: "first_name",
       lastName: "last_name",
       gender: "gender",
@@ -69,7 +72,9 @@ export async function PUT(
     };
 
     for (const key of Object.keys(parsed)) {
-      if (map[key]) updateRow[map[key]] = (parsed as any)[key];
+      if (map[key]) {
+        updateRow[map[key]] = parsed[key];
+      }
     }
 
     const { data, error } = await supabaseServer
@@ -82,20 +87,22 @@ export async function PUT(
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json(data as Patient, { status: 200 });
-  } catch (err: any) {
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (err) {
     return NextResponse.json(
-      { error: err.message ?? "Invalid data" },
+      { error: err?.message || "Invalid data" },
       { status: 400 }
     );
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// =========================
+//      DELETE PATIENT
+// =========================
+export async function DELETE(req, { params }) {
   const id = Number(params.id);
+
   const { data, error } = await supabaseServer
     .from("patients")
     .delete()
@@ -106,5 +113,9 @@ export async function DELETE(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ message: "Deleted", data }, { status: 200 });
+
+  return NextResponse.json(
+    { message: "Deleted", data },
+    { status: 200 }
+  );
 }

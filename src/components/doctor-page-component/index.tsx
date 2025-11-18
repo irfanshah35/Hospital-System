@@ -62,7 +62,7 @@ export default function DoctorPageComponent() {
     }
   ];
 
-  const renderStars = (rating) => {
+  const renderStars = (rating:any) => {
     return (
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (

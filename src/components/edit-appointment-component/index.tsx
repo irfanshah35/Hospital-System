@@ -1,7 +1,7 @@
 "use client";
+import { useSearchParams, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Home, User } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
 
 interface FormErrors {
   firstname?: string;
