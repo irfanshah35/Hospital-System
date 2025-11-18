@@ -13,14 +13,358 @@ interface LeaveType {
   duration: number;
   createdBy: string;
   notificationPeriod: string;
+  note: string;
+  carryOver: number;
+  maxLeaves: number;
+  annualLimit: number;
 }
+
+// Reusable Input Component
+interface ReusableInputProps {
+  label: string;
+  type?: "text" | "number" | "email" | "password";
+  value: string | number;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = ""
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${
+          value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Textarea Component
+interface ReusableTextareaProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+  rows?: number;
+}
+
+const ReusableTextarea: React.FC<ReusableTextareaProps> = ({
+  label,
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = "",
+  rows = 3
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <textarea
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${
+          value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+  className = ""
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <label
+        className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Modal Component
+interface LeaveTypeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: 'add' | 'edit';
+  leaveType?: LeaveType | null;
+  onSubmit: (leaveType: Omit<LeaveType, 'id'>) => void;
+}
+
+const LeaveTypeModal: React.FC<LeaveTypeModalProps> = ({
+  isOpen,
+  onClose,
+  mode,
+  leaveType,
+  onSubmit
+}) => {
+  const [formData, setFormData] = useState<Omit<LeaveType, 'id'>>({
+    leaveName: '',
+    leaveType: 'Paid',
+    leaveUnit: 'Days',
+    status: 'Active',
+    duration: 0,
+    createdBy: '',
+    notificationPeriod: '',
+    note: '',
+    carryOver: 0,
+    maxLeaves: 0,
+    annualLimit: 0
+  });
+
+  useEffect(() => {
+    if (mode === 'edit' && leaveType) {
+      const { id, ...rest } = leaveType;
+      setFormData(rest);
+    } else {
+      setFormData({
+        leaveName: '',
+        leaveType: 'Paid',
+        leaveUnit: 'Days',
+        status: 'Active',
+        duration: 0,
+        createdBy: '',
+        notificationPeriod: '',
+        note: '',
+        carryOver: 0,
+        maxLeaves: 0,
+        annualLimit: 0
+      });
+    }
+  }, [mode, leaveType, isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+      <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+          <div className="flex items-center space-x-3">
+            
+            <h2 className="text-lg font-semibold">
+              {mode === 'add' ? 'New Leave Type' : `Edit Leave Type - ${leaveType?.leaveName}`}
+            </h2>
+          </div>
+         <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-8 max-h-[75vh] overflow-y-auto scrollbar-hide">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Leave Name */}
+            <ReusableInput
+              label="Leave Name"
+              value={formData.leaveName}
+              onChange={(value) => setFormData({ ...formData, leaveName: value })}
+              required
+              className="col-span-2"
+            />
+
+            {/* Leave Type */}
+            <ReusableSelect
+              label="Leave Type"
+              value={formData.leaveType}
+              onChange={(value) => setFormData({ ...formData, leaveType: value as "Paid" | "Unpaid" })}
+              options={[
+                { value: "Paid", label: "Paid" },
+                { value: "Unpaid", label: "Unpaid" }
+              ]}
+              required
+            />
+
+            {/* Leave Unit */}
+            <ReusableSelect
+              label="Leave Unit"
+              value={formData.leaveUnit}
+              onChange={(value) => setFormData({ ...formData, leaveUnit: value as "Days" | "Hours" })}
+              options={[
+                { value: "Days", label: "Days" },
+                { value: "Hours", label: "Hours" }
+              ]}
+              required
+            />
+
+            {/* Status */}
+            <ReusableSelect
+              label="Status"
+              value={formData.status}
+              onChange={(value) => setFormData({ ...formData, status: value as "Active" | "Deactive" })}
+              options={[
+                { value: "Active", label: "Active" },
+                { value: "Deactive", label: "Deactive" }
+              ]}
+            />
+
+            {/* Duration */}
+            <ReusableInput
+              label="Duration"
+              type="number"
+              value={formData.duration}
+              onChange={(value) => setFormData({ ...formData, duration: parseInt(value) || 0 })}
+              required
+            />
+
+            {/* Created By */}
+            <ReusableInput
+              label="Created By"
+              value={formData.createdBy}
+              onChange={(value) => setFormData({ ...formData, createdBy: value })}
+              required
+            />
+
+            {/* Carry Over */}
+            <ReusableInput
+              label="Carry Over"
+              type="number"
+              value={formData.carryOver}
+              onChange={(value) => setFormData({ ...formData, carryOver: parseInt(value) || 0 })}
+            />
+
+            {/* Notification Period */}
+            <ReusableInput
+              label="Notification Period"
+              value={formData.notificationPeriod}
+              onChange={(value) => setFormData({ ...formData, notificationPeriod: value })}
+              required
+            />
+
+            {/* Max Leaves */}
+            <ReusableInput
+              label="Max Leaves"
+              type="number"
+              value={formData.maxLeaves}
+              onChange={(value) => setFormData({ ...formData, maxLeaves: parseInt(value) || 0 })}
+              required
+            />
+
+            {/* Annual Limit */}
+            <ReusableInput
+              label="Annual Limit"
+              type="number"
+              value={formData.annualLimit}
+              onChange={(value) => setFormData({ ...formData, annualLimit: parseInt(value) || 0 })}
+              required
+            />
+
+            {/* Note - Full Width */}
+            <ReusableTextarea
+              label="Note"
+              value={formData.note}
+              onChange={(value) => setFormData({ ...formData, note: value })}
+              className="col-span-2"
+              rows={4}
+            />
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-2 pt-3">
+            <button
+              type="submit"
+              className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+            >
+              {mode === 'add' ? 'Add Leave Type' : 'Save Changes'}
+            </button>
+            <button
+              onClick={onClose}
+              type="button"
+              className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default function LeaveTypesComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [editingLeaveType, setEditingLeaveType] = useState<LeaveType | null>(null);
 
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([
@@ -32,7 +376,11 @@ export default function LeaveTypesComponent() {
       status: "Deactive",
       duration: 5,
       createdBy: "HR Department",
-      notificationPeriod: "48 hours prior"
+      notificationPeriod: "48 hours prior",
+      note: "Work from home policy for remote work",
+      carryOver: 2,
+      maxLeaves: 10,
+      annualLimit: 15
     },
     {
       id: 2,
@@ -42,57 +390,53 @@ export default function LeaveTypesComponent() {
       status: "Active",
       duration: 8,
       createdBy: "HR Department",
-      notificationPeriod: "24 hours prior"
+      notificationPeriod: "24 hours prior",
+      note: "Casual leave for personal work",
+      carryOver: 5,
+      maxLeaves: 12,
+      annualLimit: 20
     },
     {
       id: 3,
-      leaveName: "Emergency Leave",
-      leaveType: "Unpaid",
-      leaveUnit: "Days",
-      status: "Active",
-      duration: 3,
-      createdBy: "HR Department",
-      notificationPeriod: "Immediate"
-    },
-    {
-      id: 4,
-      leaveName: "Family Leave",
-      leaveType: "Unpaid",
-      leaveUnit: "Hours",
-      status: "Deactive",
-      duration: 12,
-      createdBy: "HR Department",
-      notificationPeriod: "48 hours prior"
-    },
-    {
-      id: 5,
       leaveName: "Sick Leave",
-      leaveType: "Unpaid",
+      leaveType: "Paid",
       leaveUnit: "Days",
       status: "Active",
       duration: 10,
       createdBy: "HR Department",
-      notificationPeriod: "48 hours prior"
+      notificationPeriod: "Immediate",
+      note: "Sick leave with medical certificate",
+      carryOver: 3,
+      maxLeaves: 15,
+      annualLimit: 25
     },
     {
-      id: 6,
-      leaveName: "Casual Leave",
-      leaveType: "Unpaid",
-      leaveUnit: "Days",
-      status: "Active",
-      duration: 8,
-      createdBy: "HR Department",
-      notificationPeriod: "24 hours prior"
-    },
-    {
-      id: 7,
+      id: 4,
       leaveName: "Maternity Leave",
       leaveType: "Paid",
       leaveUnit: "Days",
-      status: "Deactive",
+      status: "Active",
       duration: 90,
       createdBy: "HR Department",
-      notificationPeriod: "1 month prior"
+      notificationPeriod: "1 month prior",
+      note: "Maternity leave for expecting mothers",
+      carryOver: 0,
+      maxLeaves: 90,
+      annualLimit: 90
+    },
+    {
+      id: 5,
+      leaveName: "Paternity Leave",
+      leaveType: "Paid",
+      leaveUnit: "Days",
+      status: "Active",
+      duration: 15,
+      createdBy: "HR Department",
+      notificationPeriod: "2 weeks prior",
+      note: "Paternity leave for new fathers",
+      carryOver: 0,
+      maxLeaves: 15,
+      annualLimit: 15
     }
   ]);
 
@@ -119,9 +463,13 @@ export default function LeaveTypesComponent() {
         "Leave Type": item.leaveType,
         "Leave Unit": item.leaveUnit,
         "Status": item.status,
-        "Duration (Days)": item.duration,
+        "Duration": item.duration,
         "Created By": item.createdBy,
         "Notification Period": item.notificationPeriod,
+        "Carry Over": item.carryOver,
+        "Max Leaves": item.maxLeaves,
+        "Annual Limit": item.annualLimit,
+        "Note": item.note
       }))
     );
 
@@ -175,6 +523,9 @@ export default function LeaveTypesComponent() {
     { label: "Duration", checked: true },
     { label: "Created By", checked: true },
     { label: "Notification Period", checked: true },
+    { label: "Carry Over", checked: true },
+    { label: "Max Leaves", checked: true },
+    { label: "Annual Limit", checked: true },
     { label: "Actions", checked: true },
   ];
 
@@ -184,20 +535,33 @@ export default function LeaveTypesComponent() {
     }
   };
 
-  const handleEditClick = (leaveType: LeaveType) => {
-    setEditingLeaveType(leaveType);
-    setIsEditModalOpen(true);
+  const handleAddClick = () => {
+    setModalMode('add');
+    setEditingLeaveType(null);
+    setIsModalOpen(true);
   };
 
-  const handleUpdateLeaveType = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingLeaveType) {
+  const handleEditClick = (leaveType: LeaveType) => {
+    setModalMode('edit');
+    setEditingLeaveType(leaveType);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (leaveTypeData: Omit<LeaveType, 'id'>) => {
+    if (modalMode === 'add') {
+      const newLeaveType: LeaveType = {
+        ...leaveTypeData,
+        id: Math.max(...leaveTypes.map(lt => lt.id), 0) + 1
+      };
+      setLeaveTypes(prev => [...prev, newLeaveType]);
+      alert("Leave type added successfully!");
+    } else if (modalMode === 'edit' && editingLeaveType) {
       setLeaveTypes(prev =>
-        prev.map(r => (r.id === editingLeaveType.id ? editingLeaveType : r))
+        prev.map(r => r.id === editingLeaveType.id ? { ...leaveTypeData, id: editingLeaveType.id } : r)
       );
-      setIsEditModalOpen(false);
       alert("Leave type updated successfully!");
     }
+    setIsModalOpen(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -286,7 +650,11 @@ export default function LeaveTypesComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button 
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" 
+                    title="Add"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -322,7 +690,7 @@ export default function LeaveTypesComponent() {
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Leave Type</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Leave Unit</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Duration (Days)</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Duration</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Created By</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Notification Period</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
@@ -370,6 +738,7 @@ export default function LeaveTypesComponent() {
                         </tbody>
                       </table>
 
+                      {/* Mobile View */}
                       <div className={`px-4 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
                         {leaveTypes.map((item) => (
                           <div key={item.id} className="border-b border-gray-200 py-4">
@@ -414,7 +783,7 @@ export default function LeaveTypesComponent() {
                               {/* Duration */}
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold w-40">Duration:</span>
-                                <span className="ml-1">{item.duration} days</span>
+                                <span className="ml-1">{item.duration}</span>
                               </div>
 
                               {/* Created By */}
@@ -427,6 +796,12 @@ export default function LeaveTypesComponent() {
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold w-40">Notification:</span>
                                 <span className="ml-1">{item.notificationPeriod}</span>
+                              </div>
+
+                              {/* Note */}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-40">Note:</span>
+                                <span className="ml-1 text-xs">{item.note}</span>
                               </div>
 
                               {/* Actions */}
@@ -463,177 +838,14 @@ export default function LeaveTypesComponent() {
         </div>
       </div>
 
-      {isEditModalOpen && editingLeaveType && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <h2 className="text-lg font-semibold">
-                Edit Leave Type - {editingLeaveType.leaveName}
-              </h2>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateLeaveType} className="p-6 space-y-6 h-[500px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Leave Name */}
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="leaveName"
-                    value={editingLeaveType.leaveName}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, leaveName: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="leaveName"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingLeaveType.leaveName ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Leave Name*
-                  </label>
-                </div>
-
-                {/* Leave Type */}
-                <div className="relative">
-                  <select
-                    id="leaveType"
-                    value={editingLeaveType.leaveType}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, leaveType: e.target.value as "Paid" | "Unpaid" })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="Paid">Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                  </select>
-                  <label
-                    htmlFor="leaveType"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Leave Type*
-                  </label>
-                </div>
-
-                {/* Leave Unit */}
-                <div className="relative">
-                  <select
-                    id="leaveUnit"
-                    value={editingLeaveType.leaveUnit}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, leaveUnit: e.target.value as "Days" | "Hours" })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="Days">Days</option>
-                    <option value="Hours">Hours</option>
-                  </select>
-                  <label
-                    htmlFor="leaveUnit"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Leave Unit*
-                  </label>
-                </div>
-
-                {/* Status */}
-                <div className="relative">
-                  <select
-                    id="status"
-                    value={editingLeaveType.status}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, status: e.target.value as "Active" | "Deactive" })}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Deactive">Deactive</option>
-                  </select>
-                  <label
-                    htmlFor="status"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Status*
-                  </label>
-                </div>
-
-                {/* Duration */}
-                <div className="relative">
-                  <input
-                    type="number"
-                    id="duration"
-                    value={editingLeaveType.duration}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, duration: parseInt(e.target.value) })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="duration"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Duration*
-                  </label>
-                </div>
-
-                {/* Created By */}
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="createdBy"
-                    value={editingLeaveType.createdBy}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, createdBy: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="createdBy"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingLeaveType.createdBy ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Created By*
-                  </label>
-                </div>
-
-                {/* Notification Period */}
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="notificationPeriod"
-                    value={editingLeaveType.notificationPeriod}
-                    onChange={(e) => setEditingLeaveType({ ...editingLeaveType, notificationPeriod: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="notificationPeriod"
-                    className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${editingLeaveType.notificationPeriod ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
-                  >
-                    Notification Period*
-                  </label>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Reusable Modal */}
+      <LeaveTypeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        leaveType={editingLeaveType}
+        onSubmit={handleModalSubmit}
+      />
 
       <style jsx>{`
         @keyframes slideDown {

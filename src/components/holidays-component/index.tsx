@@ -14,14 +14,334 @@ interface Holiday {
   creationDate: string;
   approvalStatus: 'Approved' | 'Rejected' | 'Pending';
   details: string;
+  location: string;
 }
+
+// Reusable Input Component
+interface ReusableInputProps {
+  label: string;
+  type?: "text" | "number" | "email" | "password" | "date";
+  value: string | number;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = ""
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+          } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Textarea Component
+interface ReusableTextareaProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+  rows?: number;
+}
+
+const ReusableTextarea: React.FC<ReusableTextareaProps> = ({
+  label,
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = "",
+  rows = 3
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <textarea
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all resize-none"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+          } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+  className = ""
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <label
+        className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Modal Component
+interface HolidayModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: 'add' | 'edit';
+  holiday?: Holiday | null;
+  onSubmit: (holiday: Omit<Holiday, 'id'>) => void;
+}
+
+const HolidayModal: React.FC<HolidayModalProps> = ({
+  isOpen,
+  onClose,
+  mode,
+  holiday,
+  onSubmit
+}) => {
+  const [formData, setFormData] = useState<Omit<Holiday, 'id'>>({
+    holidayName: '',
+    shift: 'All Shifts',
+    date: '',
+    holidayType: 'National',
+    createdBy: '',
+    creationDate: '',
+    approvalStatus: 'Pending',
+    details: '',
+    location: ''
+  });
+
+  useEffect(() => {
+    if (mode === 'edit' && holiday) {
+      const { id, ...rest } = holiday;
+      setFormData(rest);
+    } else {
+      setFormData({
+        holidayName: '',
+        shift: 'All Shifts',
+        date: '',
+        holidayType: 'National',
+        createdBy: '',
+        creationDate: '',
+        approvalStatus: 'Pending',
+        details: '',
+        location: ''
+      });
+    }
+  }, [mode, holiday, isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+      <div className="bg-white rounded-lg shadow-lg w-[800px] max-w-[90%] max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+          <div className="flex items-center space-x-3">
+
+            <h2 className="text-lg font-semibold">
+              {mode === 'add' ? 'Add New Holiday' : `Edit Holiday - ${holiday?.holidayName}`}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Holiday Name */}
+            <ReusableInput
+              label="Holiday Name"
+              value={formData.holidayName}
+              onChange={(value) => setFormData({ ...formData, holidayName: value })}
+              required
+              className=""
+            />
+
+            {/* Date */}
+            <ReusableInput
+              label="Date"
+              type="date"
+              value={formData.date}
+              onChange={(value) => setFormData({ ...formData, date: value })}
+              required
+            />
+
+            {/* Location */}
+            <ReusableInput
+              label="Location"
+              value={formData.location}
+              onChange={(value) => setFormData({ ...formData, location: value })}
+            />
+
+            {/* Shift */}
+            <ReusableSelect
+              label="Shift"
+              value={formData.shift}
+              onChange={(value) => setFormData({ ...formData, shift: value })}
+              options={[
+                { value: "All Shifts", label: "All Shifts" },
+                { value: "Day Shifts", label: "Day Shifts" },
+                { value: "Night Shifts", label: "Night Shifts" }
+              ]}
+            />
+
+            {/* Details - Full Width */}
+            <ReusableTextarea
+              label="Details"
+              value={formData.details}
+              onChange={(value) => setFormData({ ...formData, details: value })}
+              className="col-span-2"
+              rows={4}
+            />
+
+            {/* Holiday Type */}
+            <ReusableSelect
+              label="Holiday Type"
+              value={formData.holidayType}
+              onChange={(value) => setFormData({ ...formData, holidayType: value })}
+              options={[
+                { value: "National", label: "National" },
+                { value: "Religious", label: "Religious" },
+                { value: "Cultural", label: "Cultural" },
+                { value: "Awareness", label: "Awareness" },
+                { value: "Environmental", label: "Environmental" }
+              ]}
+            />
+
+            {/* Created By */}
+            <ReusableInput
+              label="Created By"
+              value={formData.createdBy}
+              onChange={(value) => setFormData({ ...formData, createdBy: value })}
+            />
+
+            {/* Creation Date */}
+            <ReusableInput
+              label="Creation Date"
+              type="date"
+              value={formData.creationDate}
+              onChange={(value) => setFormData({ ...formData, creationDate: value })}
+            />
+
+            {/* Approval Status */}
+            <ReusableSelect
+              label="Approval Status"
+              value={formData.approvalStatus}
+              onChange={(value) => setFormData({ ...formData, approvalStatus: value as 'Approved' | 'Rejected' | 'Pending' })}
+              options={[
+                { value: "Approved", label: "Approved" },
+                { value: "Rejected", label: "Rejected" },
+                { value: "Pending", label: "Pending" }
+              ]}
+            />
+
+            
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-2 pt-3">
+            <button
+              type="submit"
+              className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+            >
+              {mode === 'add' ? 'Add Holiday' : 'Save Changes'}
+            </button>
+            <button
+              onClick={onClose}
+              type="button"
+              className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default function HolidaysComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [editingHoliday, setEditingHoliday] = useState<Holiday | null>(null);
 
   const [holidays, setHolidays] = useState<Holiday[]>([
@@ -29,78 +349,85 @@ export default function HolidaysComponent() {
       id: 1,
       holidayName: "New Year",
       shift: "All Shifts",
-      date: "12/31/2021",
+      date: "2021-12-31",
       holidayType: "National",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "New Year celebration holiday",
+      location: "All Locations"
     },
     {
       id: 2,
       holidayName: "World Aids Day",
       shift: "Day Shifts",
-      date: "12/10/2021",
+      date: "2021-12-10",
       holidayType: "Awareness",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "World AIDS Day awareness holiday",
+      location: "All Locations"
     },
     {
       id: 3,
       holidayName: "World Milk Day",
       shift: "Night Shifts",
-      date: "06/01/2021",
+      date: "2021-06-01",
       holidayType: "Awareness",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "World Milk Day celebration",
+      location: "All Locations"
     },
     {
       id: 4,
       holidayName: "Diwali",
       shift: "All Shifts",
-      date: "11/04/2021",
+      date: "2021-11-04",
       holidayType: "Religious",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "Diwali festival celebration",
+      location: "All Locations"
     },
     {
       id: 5,
       holidayName: "Global Family Day",
       shift: "Night Shifts",
-      date: "01/01/2021",
+      date: "2021-01-01",
       holidayType: "Cultural",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Rejected",
-      details: "This festival..."
+      details: "Global Family Day celebration",
+      location: "All Locations"
     },
     {
       id: 6,
       holidayName: "Earth Hour",
       shift: "All Shifts",
-      date: "03/27/2021",
+      date: "2021-03-27",
       holidayType: "Environmental",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "Earth Hour environmental awareness",
+      location: "All Locations"
     },
     {
       id: 7,
       holidayName: "Independence Day",
       shift: "All Shifts",
-      date: "08/14/2021",
+      date: "2021-08-14",
       holidayType: "National",
       createdBy: "Admin",
-      creationDate: "11/01/2021",
+      creationDate: "2021-11-01",
       approvalStatus: "Approved",
-      details: "This festival..."
+      details: "Independence Day national holiday",
+      location: "All Locations"
     }
   ]);
 
@@ -126,6 +453,7 @@ export default function HolidaysComponent() {
         "Holiday Name": item.holidayName,
         "Shift": item.shift,
         "Date": item.date,
+        "Location": item.location,
         "Holiday Type": item.holidayType,
         "Created By": item.createdBy,
         "Creation Date": item.creationDate,
@@ -180,6 +508,7 @@ export default function HolidaysComponent() {
     { label: "Holiday Name", checked: true },
     { label: "Shift", checked: true },
     { label: "Date", checked: true },
+    { label: "Location", checked: true },
     { label: "Holiday Type", checked: true },
     { label: "Created By", checked: true },
     { label: "Creation Date", checked: true },
@@ -194,20 +523,33 @@ export default function HolidaysComponent() {
     }
   };
 
-  const handleEditClick = (holiday: Holiday) => {
-    setEditingHoliday(holiday);
-    setIsEditModalOpen(true);
+  const handleAddClick = () => {
+    setModalMode('add');
+    setEditingHoliday(null);
+    setIsModalOpen(true);
   };
 
-  const handleUpdateHoliday = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingHoliday) {
+  const handleEditClick = (holiday: Holiday) => {
+    setModalMode('edit');
+    setEditingHoliday(holiday);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (holidayData: Omit<Holiday, 'id'>) => {
+    if (modalMode === 'add') {
+      const newHoliday: Holiday = {
+        ...holidayData,
+        id: Math.max(...holidays.map(h => h.id), 0) + 1
+      };
+      setHolidays(prev => [...prev, newHoliday]);
+      alert("Holiday added successfully!");
+    } else if (modalMode === 'edit' && editingHoliday) {
       setHolidays(prev =>
-        prev.map(r => (r.id === editingHoliday.id ? editingHoliday : r))
+        prev.map(r => r.id === editingHoliday.id ? { ...holidayData, id: editingHoliday.id } : r)
       );
-      setIsEditModalOpen(false);
       alert("Holiday updated successfully!");
     }
+    setIsModalOpen(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -221,6 +563,15 @@ export default function HolidaysComponent() {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
   };
 
   return (
@@ -303,7 +654,11 @@ export default function HolidaysComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -338,6 +693,7 @@ export default function HolidaysComponent() {
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Holiday Name</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Shift</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Location</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Holiday Type</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Created By</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Creation Date</th>
@@ -361,16 +717,17 @@ export default function HolidaysComponent() {
 
                               <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{item.holidayName}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">{item.shift}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{item.date}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900">{formatDate(item.date)}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900">{item.location}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">{item.holidayType}</td>
                               <td className="px-4 py-3 text-sm text-gray-900">{item.createdBy}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{item.creationDate}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900">{formatDate(item.creationDate)}</td>
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(item.approvalStatus)}`}>
                                   {item.approvalStatus}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{item.details}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 max-w-xs truncate">{item.details}</td>
 
                               <td className="px-4 py-3 text-sm font-medium">
                                 <div className="flex space-x-2">
@@ -414,7 +771,12 @@ export default function HolidaysComponent() {
 
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold w-40">Date:</span>
-                                <span className="ml-1">{item.date}</span>
+                                <span className="ml-1">{formatDate(item.date)}</span>
+                              </div>
+
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold w-40">Location:</span>
+                                <span className="ml-1">{item.location}</span>
                               </div>
 
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
@@ -429,7 +791,7 @@ export default function HolidaysComponent() {
 
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <span className="font-semibold w-40">Creation Date:</span>
-                                <span className="ml-1">{item.creationDate}</span>
+                                <span className="ml-1">{formatDate(item.creationDate)}</span>
                               </div>
 
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
@@ -477,204 +839,14 @@ export default function HolidaysComponent() {
         </div>
       </div>
 
-      {isEditModalOpen && editingHoliday && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg shadow-lg w-[700px] max-w-[90%]">
-            <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-              <h2 className="text-lg font-semibold">
-                Edit Holiday - {editingHoliday.holidayName}
-              </h2>
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateHoliday} className="p-6 space-y-6 h-[500px] overflow-y-auto scrollbar-hide">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Holiday Name */}
-                <div className="relative col-span-2">
-                  <input
-                    type="text"
-                    id="holidayName"
-                    value={editingHoliday.holidayName}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, holidayName: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="holidayName"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Holiday Name*
-                  </label>
-                </div>
-
-                {/* Shift */}
-                <div className="relative">
-                  <select
-                    id="shift"
-                    value={editingHoliday.shift}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, shift: e.target.value })}
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  >
-                    <option value="All Shifts">All Shifts</option>
-                    <option value="Day Shifts">Day Shifts</option>
-                    <option value="Night Shifts">Night Shifts</option>
-                  </select>
-                  <label
-                    htmlFor="shift"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Shift*
-                  </label>
-                </div>
-
-                {/* Date */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="date"
-                    value={editingHoliday.date}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, date: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="date"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Date*
-                  </label>
-                </div>
-
-                {/* Holiday Type */}
-                <div className="relative">
-                  <select
-                    id="holidayType"
-                    value={editingHoliday.holidayType}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, holidayType: e.target.value })}
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  >
-                    <option value="National">National</option>
-                    <option value="Religious">Religious</option>
-                    <option value="Cultural">Cultural</option>
-                    <option value="Awareness">Awareness</option>
-                    <option value="Environmental">Environmental</option>
-                  </select>
-                  <label
-                    htmlFor="holidayType"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Holiday Type*
-                  </label>
-                </div>
-
-                {/* Created By */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="createdBy"
-                    value={editingHoliday.createdBy}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, createdBy: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="createdBy"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Created By*
-                  </label>
-                </div>
-
-                {/* Creation Date */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="creationDate"
-                    value={editingHoliday.creationDate}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, creationDate: e.target.value })}
-                    placeholder=" "
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="creationDate"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Creation Date*
-                  </label>
-                </div>
-
-                {/* Approval Status */}
-                <div className="relative">
-                  <select
-                    id="approvalStatus"
-                    value={editingHoliday.approvalStatus}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, approvalStatus: e.target.value as 'Approved' | 'Rejected' | 'Pending' })}
-                    required
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  >
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Pending">Pending</option>
-                  </select>
-                  <label
-                    htmlFor="approvalStatus"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Approval Status*
-                  </label>
-                </div>
-
-                {/* Details */}
-                <div className="relative col-span-2">
-                  <textarea
-                    id="details"
-                    value={editingHoliday.details}
-                    onChange={(e) => setEditingHoliday({ ...editingHoliday, details: e.target.value })}
-                    placeholder=" "
-                    required
-                    rows={3}
-                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                  />
-                  <label
-                    htmlFor="details"
-                    className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
-                  >
-                    Details*
-                  </label>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="submit"
-                  className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  type="button"
-                  className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Reusable Modal */}
+      <HolidayModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        holiday={editingHoliday}
+        onSubmit={handleModalSubmit}
+      />
 
       <style jsx>{`
         @keyframes slideDown {

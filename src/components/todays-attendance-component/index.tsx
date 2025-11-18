@@ -15,11 +15,265 @@ interface AttendanceRecord {
   shift: "Day Shift" | "Night Shift";
 }
 
+// Reusable Input Component
+interface ReusableInputProps {
+  label: string;
+  type?: "text" | "number" | "email" | "password" | "time";
+  value: string | number;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableInput: React.FC<ReusableInputProps> = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder = " ",
+  required = false,
+  className = ""
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
+      />
+      <label
+        className={`absolute left-3 px-[4px] bg-white transition-all duration-200 ${value || isFocused ? "-top-2 text-xs text-[#005CBB]" : "top-3 text-gray-500"
+          } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#005CBB]`}
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Select Component
+interface ReusableSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  required?: boolean;
+  className?: string;
+}
+
+const ReusableSelect: React.FC<ReusableSelectProps> = ({
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+  className = ""
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all appearance-none"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <label
+        className="absolute left-3 px-[4px] bg-white -top-2 text-xs text-[#005CBB]"
+      >
+        {label}{required && "*"}
+      </label>
+    </div>
+  );
+};
+
+// Reusable Modal Component
+interface AttendanceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: 'add' | 'edit';
+  attendance?: AttendanceRecord | null;
+  onSubmit: (attendance: Omit<AttendanceRecord, 'id'>) => void;
+}
+
+const AttendanceModal: React.FC<AttendanceModalProps> = ({
+  isOpen,
+  onClose,
+  mode,
+  attendance,
+  onSubmit
+}) => {
+  const [formData, setFormData] = useState<Omit<AttendanceRecord, 'id'>>({
+    employeeName: '',
+    firstIn: '',
+    break: '',
+    lastOut: '',
+    totalHours: '',
+    status: 'present',
+    shift: 'Day Shift'
+  });
+
+  useEffect(() => {
+    if (mode === 'edit' && attendance) {
+      const { id, ...rest } = attendance;
+      setFormData(rest);
+    } else {
+      setFormData({
+        employeeName: '',
+        firstIn: '',
+        break: '',
+        lastOut: '',
+        totalHours: '',
+        status: 'present',
+        shift: 'Day Shift'
+      });
+    }
+  }, [mode, attendance, isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+      <div className="bg-white rounded-lg shadow-lg w-[700px] max-w-[90%] max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gray-200 border flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-500" />
+            </div>
+            <h2 className="text-lg font-semibold">
+              {mode === 'add' ? 'Add New Attendance' : `Edit Attendance - ${attendance?.employeeName}`}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Employee Name */}
+            <ReusableInput
+              label="Employee Name"
+              value={formData.employeeName}
+              onChange={(value) => setFormData({ ...formData, employeeName: value })}
+              required
+              className=""
+            />
+
+            {/* First In */}
+            <ReusableInput
+              label="First In"
+              type="time"
+              value={formData.firstIn}
+              onChange={(value) => setFormData({ ...formData, firstIn: value })}
+              required
+            />
+
+            {/* Break */}
+            <ReusableInput
+              label="Break"
+              type="time"
+              value={formData.break}
+              onChange={(value) => setFormData({ ...formData, break: value })}
+              required
+            />
+
+            {/* Last Out */}
+            <ReusableInput
+              label="Last Out"
+              type="time"
+              value={formData.lastOut}
+              onChange={(value) => setFormData({ ...formData, lastOut: value })}
+              required
+            />
+
+            {/* Total Hours */}
+            <ReusableInput
+              label="Total Hours"
+              type="time"
+              value={formData.totalHours}
+              onChange={(value) => setFormData({ ...formData, totalHours: value })}
+            />
+
+            {/* Status */}
+            <ReusableSelect
+              label="Status"
+              value={formData.status}
+              onChange={(value) => setFormData({ ...formData, status: value as "present" | "absent" })}
+              options={[
+                { value: "present", label: "Present" },
+                { value: "absent", label: "Absent" }
+              ]}
+              required
+            />
+
+            {/* Shift */}
+            <ReusableSelect
+              label="Shift"
+              value={formData.shift}
+              onChange={(value) => setFormData({ ...formData, shift: value as "Day Shift" | "Night Shift" })}
+              options={[
+                { value: "Day Shift", label: "Day Shift" },
+                { value: "Night Shift", label: "Night Shift" }
+              ]}
+              required
+            />
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-2 pt-3">
+            <button
+              type="submit"
+              className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#004a99]"
+            >
+              {mode === 'add' ? 'Add Attendance' : 'Save Changes'}
+            </button>
+            <button
+              onClick={onClose}
+              type="button"
+              className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition hover:bg-[#9a1515]"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 export default function TodaysAttendanceComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [animate, setAnimate] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [editingAttendance, setEditingAttendance] = useState<AttendanceRecord | null>(null);
 
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([
     {
@@ -182,6 +436,35 @@ export default function TodaysAttendanceComponent() {
     }
   };
 
+  const handleAddClick = () => {
+    setModalMode('add');
+    setEditingAttendance(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (attendance: AttendanceRecord) => {
+    setModalMode('edit');
+    setEditingAttendance(attendance);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (attendanceData: Omit<AttendanceRecord, 'id'>) => {
+    if (modalMode === 'add') {
+      const newAttendance: AttendanceRecord = {
+        ...attendanceData,
+        id: Math.max(...attendanceRecords.map(a => a.id), 0) + 1
+      };
+      setAttendanceRecords(prev => [...prev, newAttendance]);
+      alert("Attendance record added successfully!");
+    } else if (modalMode === 'edit' && editingAttendance) {
+      setAttendanceRecords(prev =>
+        prev.map(r => r.id === editingAttendance.id ? { ...attendanceData, id: editingAttendance.id } : r)
+      );
+      alert("Attendance record updated successfully!");
+    }
+    setIsModalOpen(false);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "present":
@@ -284,7 +567,11 @@ export default function TodaysAttendanceComponent() {
                     )}
                   </div>
 
-                  <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add"
+                  >
                     <CirclePlus className='w-[22px] h-[22px]' />
                   </button>
 
@@ -369,10 +656,16 @@ export default function TodaysAttendanceComponent() {
 
                               <td className="px-4 text-sm font-medium">
                                 <div className="flex space-x-2">
-                                  <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button onClick={() => deleteRecord(item.id)} className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => deleteRecord(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -451,7 +744,10 @@ export default function TodaysAttendanceComponent() {
                               {/* Actions */}
                               <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <div className="flex space-x-2">
-                                  <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
                                   <button
@@ -478,6 +774,15 @@ export default function TodaysAttendanceComponent() {
           <Paginator totalItems={attendanceRecords.length} />
         </div>
       </div>
+
+      {/* Reusable Modal */}
+      <AttendanceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        attendance={editingAttendance}
+        onSubmit={handleModalSubmit}
+      />
 
       <style jsx>{`
         @keyframes slideDown {

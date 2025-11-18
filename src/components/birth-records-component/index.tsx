@@ -1,53 +1,86 @@
 'use client';
 
-import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Clock, Phone, Mail, PhoneCall, MapPin } from 'lucide-react';
+import { CirclePlus, Download, Home, RotateCw, Trash2, Edit, Phone, MapPin, User, Receipt, Calendar, PhoneCall, CircleUserRound, Baby } from 'lucide-react';
 import React, { useEffect, useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
-interface Appointment {
+interface BirthRecord {
   id: string;
-  firstname: string;
-  lastname: string;
+  caseno: string;
+  childname: string;
   gender: "Male" | "Female" | "Other";
+  birthdate: string;
+  mothername: string;
+  fathername: string;
   mobile: string;
-  email: string;
-  consultingdoctor: string;
-  appointmentdate: string;
-  appointmenttime: string;
-  created_at: string;
+  address: string;
+  notes: string;
 }
 
 export default function BirthRecordsComponent() {
   const [detailDropdown, setDetailDropdown] = useState(false);
   const detailref = useRef<HTMLDivElement | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [birthRecords, setBirthRecords] = useState<BirthRecord[]>([]);
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<BirthRecord | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Sample data
+  const sampleRecords: BirthRecord[] = [
+    {
+      id: "1",
+      caseno: "1527",
+      childname: "Arham",
+      gender: "Male",
+      birthdate: "2024-10-25",
+      mothername: "Olivia",
+      fathername: "David",
+      mobile: "+1234567890",
+      address: "123 Main Street, New York",
+      notes: "Normal Delivery"
+    },
+    {
+      id: "2",
+      caseno: "1528",
+      childname: "Sophia",
+      gender: "Female",
+      birthdate: "2024-11-15",
+      mothername: "Emma",
+      fathername: "Michael",
+      mobile: "+1234567891",
+      address: "456 Oak Avenue, Los Angeles",
+      notes: "C-Section"
+    }
+  ];
 
   // Fetch data from API
-  const fetchAppointments = async () => {
+  const fetchBirthRecords = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/appointments");
-      const data = await res.json();
-      setAppointments(data);
-      console.log(data, 'dsa');
+      // Yahan aap actual API call kar sakte hain
+      // const res = await fetch("/api/birth-records");
+      // const data = await res.json();
+      // setBirthRecords(data);
 
-
+      // Temporary sample data
+      setTimeout(() => {
+        setBirthRecords(sampleRecords);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
-      console.error("Failed to fetch appointments:", error);
-    } finally {
+      console.error("Failed to fetch birth records:", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAppointments();
+    fetchBirthRecords();
   }, []);
 
   // Click outside dropdown
@@ -64,79 +97,114 @@ export default function BirthRecordsComponent() {
 
   const handleRefresh = () => {
     setAnimate(true);
-    fetchAppointments().then(() => {
+    fetchBirthRecords().then(() => {
       setTimeout(() => setAnimate(false), 300);
     });
   };
 
   const handleDownloadXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      appointments.map((item) => ({
-        Name: `${item.firstname} ${item.lastname}`,
-        Doctor: item.consultingdoctor || "-",
-        Gender: item.gender,
-        Date: item.appointmentdate || "-",
-        Time: item.appointmenttime || "-",
-        Mobile: item.mobile,
-        Email: item.email,
-        "Appointment Status": "Confirmed",
-        "Visit Type": "General",
+      birthRecords.map((item) => ({
+        "Case Number": item.caseno,
+        "Child Name": item.childname,
+        "Gender": item.gender,
+        "Birth Date": item.birthdate,
+        "Mother Name": item.mothername,
+        "Father Name": item.fathername,
+        "Mobile": item.mobile,
+        "Address": item.address,
+        "Notes": item.notes,
       }))
     );
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Appointments");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Birth Records");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "appointments.xlsx");
+    saveAs(blob, "birth-records.xlsx");
   };
 
   const removeData = async (id: string) => {
-    {
+    if (window.confirm("Are you sure you want to delete this birth record?")) {
       try {
-        const response = await fetch(`/api/appointments/${id}`, {
-          method: "DELETE",
-        });
+        // Yahan aap actual API call kar sakte hain
+        // const response = await fetch(`/api/birth-records/${id}`, {
+        //   method: "DELETE",
+        // });
 
-        if (response.ok) {
-          setAppointments(prev => prev.filter(p => p.id !== id));
-          setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-        } else {
-          alert("Failed to delete appointment");
-        }
+        // Temporary: Frontend se delete
+        setBirthRecords(prev => prev.filter(record => record.id !== id));
+        setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+        console.log("Birth record deleted:", id);
       } catch (error) {
         console.error("Delete error:", error);
-        alert("Error deleting appointment");
+        alert("Error deleting birth record");
       }
     }
   };
 
   const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) {
-      alert("Please select at least one appointment to delete.");
+      alert("Please select at least one record to delete.");
       return;
     }
-    if (window.confirm(`Delete ${selectedIds.length} appointment(s)?`)) {
+    if (window.confirm(`Delete ${selectedIds.length} record(s)?`)) {
       try {
-        for (const id of selectedIds) {
-          const response = await fetch(`/api/appointments/${id}`, {
-            method: "DELETE",
-          });
-          if (!response.ok) {
-            throw new Error(`Failed to delete appointment ${id}`);
-          }
-        }
-        setAppointments(prev => prev.filter(p => !selectedIds.includes(p.id)));
+        setBirthRecords(prev => prev.filter(record => !selectedIds.includes(record.id)));
         setSelectedIds([]);
       } catch (error) {
         console.error("Delete error:", error);
-        alert("Error deleting appointments");
+        alert("Error deleting records");
       }
     }
   };
 
-  const handleEdit = (id: string) => {
-    router.push(`/admin/appointment/edit-appointment?id=${id}`);
+  const handleAddClick = () => {
+    setEditingRecord({
+      id: '',
+      caseno: '',
+      childname: '',
+      gender: "Male",
+      birthdate: new Date().toISOString().split('T')[0],
+      mothername: '',
+      fathername: '',
+      mobile: '',
+      address: '',
+      notes: ''
+    });
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (record: BirthRecord) => {
+    setEditingRecord(record);
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (formData: BirthRecord) => {
+    if (isEditMode && editingRecord?.id) {
+      // Edit existing record
+      setBirthRecords(prev =>
+        prev.map(record =>
+          record.id === editingRecord.id ? { ...formData, id: editingRecord.id } : record
+        )
+      );
+    } else {
+      // Add new record
+      const newRecord = {
+        ...formData,
+        id: Math.random().toString(36).substr(2, 9)
+      };
+      setBirthRecords(prev => [...prev, newRecord]);
+    }
+    setIsModalOpen(false);
+    setEditingRecord(null);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingRecord(null);
   };
 
   const handleCheckboxChange = (id: string) => {
@@ -146,33 +214,28 @@ export default function BirthRecordsComponent() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedIds(checked ? appointments.map(p => p.id) : []);
+    setSelectedIds(checked ? birthRecords.map(record => record.id) : []);
   };
 
   useEffect(() => {
-    console.log(appointments);
     const selectAllCheckbox = document.getElementById("selectAll") as HTMLInputElement;
     if (selectAllCheckbox) {
       selectAllCheckbox.indeterminate =
-        selectedIds.length > 0 && selectedIds.length < appointments.length;
+        selectedIds.length > 0 && selectedIds.length < birthRecords.length;
     }
-  }, [selectedIds, appointments]);
+  }, [selectedIds, birthRecords]);
 
   const checkboxItems = [
     { label: "Checkbox", checked: true },
-    { label: "Name", checked: true },
-    { label: "Doctor", checked: true },
+    { label: "Case Number", checked: true },
+    { label: "Child Name", checked: true },
     { label: "Gender", checked: true },
-    { label: "Date", checked: true },
-    { label: "Time", checked: true },
+    { label: "Birth Date", checked: true },
+    { label: "Mother Name", checked: true },
+    { label: "Father Name", checked: true },
     { label: "Mobile", checked: true },
-    { label: "Injury", checked: false },
-    { label: "Email", checked: true },
-    { label: "Appointment Status", checked: true },
-    { label: "Visit Type", checked: true },
-    { label: "Payment Status", checked: false },
-    { label: "Insurance Provider", checked: false },
-    { label: "Notes", checked: false },
+    { label: "Address", checked: true },
+    { label: "Notes", checked: true },
     { label: "Actions", checked: true },
   ];
 
@@ -256,11 +319,13 @@ export default function BirthRecordsComponent() {
                     )}
                   </div>
 
-                  <Link href="/add-patient">
-                    <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                      <CirclePlus className='w-[22px] h-[22px]' />
-                    </button>
-                  </Link>
+                  <button
+                    onClick={handleAddClick}
+                    className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                    title="Add New Birth Record"
+                  >
+                    <CirclePlus className='w-[22px] h-[22px]' />
+                  </button>
 
                   <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                     <RotateCw className='w-[20px] h-[20px]' />
@@ -276,9 +341,9 @@ export default function BirthRecordsComponent() {
               <div className='overflow-auto scrollbar-hide'>
                 <div className="overflow-x-auto scrollbar-hide">
                   {loading ? (
-                    <div className="p-8 text-center text-gray-500">Loading appointments...</div>
-                  ) : appointments.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No appointments found</div>
+                    <div className="p-8 text-center text-gray-500">Loading birth records...</div>
+                  ) : birthRecords.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">No birth records found</div>
                   ) : (
                     <>
                       <table className="min-w-full divide-y divide-gray-200 hidden md:table">
@@ -293,9 +358,9 @@ export default function BirthRecordsComponent() {
                               />
                             </th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Case Number</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Patient Name</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Child Name</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Gender</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Death Date</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Birth Date</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mother Name</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Father Name</th>
                             <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Mobile</th>
@@ -306,7 +371,7 @@ export default function BirthRecordsComponent() {
                         </thead>
 
                         <tbody className={`bg-white divide-y divide-gray-200 transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-                          {appointments.map((item) => (
+                          {birthRecords.map((item) => (
                             <tr key={item.id} className="transition-colors duration-150">
                               <td className="px-4 py-3 pl-[37px]">
                                 <input
@@ -319,7 +384,7 @@ export default function BirthRecordsComponent() {
 
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="text-sm font-medium text-gray-900">
-                                  1527
+                                  {item.caseno}
                                 </div>
                               </td>
 
@@ -328,29 +393,29 @@ export default function BirthRecordsComponent() {
                                   <div className="h-[30px] w-[30px] rounded-full bg-gray-200 border-2 border-dashed border-gray-400" />
                                   <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">
-                                      arham
+                                      {item.childname}
                                     </div>
                                   </div>
                                 </div>
                               </td>
 
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : "bg-[#19875426] text-[#198754]"
+                                <span className={`px-[10px] py-[2px] inline-flex text-xs leading-5 font-semibold rounded-[6px] ${item.gender === "Female" ? "bg-[#6f42c126] text-[#6f42c1]" : item.gender === "Male" ? "bg-[#19875426] text-[#198754]" : "bg-[#fd7e1426] text-[#fd7e14]"
                                   }`}>
                                   {item.gender}
                                 </span>
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
-                                25/10/2025
+                                {item.birthdate}
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
-                                oliva
+                                {item.mothername}
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
-                                David
+                                {item.fathername}
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
@@ -361,17 +426,17 @@ export default function BirthRecordsComponent() {
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
-                                njurwif
+                                {item.address}
                               </td>
 
                               <td className="px-4 py-3 text-sm whitespace-nowrap">
-                                normal
+                                {item.notes}
                               </td>
 
                               <td className="px-4 py-3 text-sm font-medium">
                                 <div className="flex space-x-2">
                                   <button
-                                    onClick={() => handleEdit(item.id)}
+                                    onClick={() => handleEditClick(item)}
                                     className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
                                     title="Edit"
                                   >
@@ -384,7 +449,6 @@ export default function BirthRecordsComponent() {
                                   >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
-
                                 </div>
                               </td>
                             </tr>
@@ -392,11 +456,10 @@ export default function BirthRecordsComponent() {
                         </tbody>
                       </table>
 
-
+                      {/* Mobile View */}
                       <div className={`px-6 md:hidden shadow-sm bg-white transition-all duration-500 ${animate ? "animate-slideDown" : ""}`}>
-
-                        {appointments.map((item) => (
-                          <div className={``}>
+                        {birthRecords.map((item) => (
+                          <div key={item.id} className="border-b border-gray-200 py-4">
                             <div className="flex items-center h-13 justify-start py-2 border-b border-[#dadada]">
                               <input
                                 checked={selectedIds.includes(item.id)}
@@ -404,70 +467,81 @@ export default function BirthRecordsComponent() {
                                 type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
                             </div>
                             <div className="text-sm text-gray-800">
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Case Number:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Case Number:</span>
                                 <div className='flex items-center'>
-                                  <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full object-cover"
-                                  />
-                                  <span className="ml-1"> 3453</span>
+                                  <Receipt className='w-5 h-5 text-blue-500' />
+                                  <span className="ml-1">{item.caseno}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Child Name:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Child Name:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1">Jenson</span>
+                                  <User className='w-5 h-5 text-green-500' />
+                                  <span className="ml-1">{item.childname}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Gender:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Gender:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1">Male</span>
+                                  <span className={`px-2 py-1 rounded-full text-xs ${item.gender === "Female" ? "bg-pink-100 text-pink-800" : item.gender === "Male" ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"}`}>
+                                    {item.gender}
+                                  </span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Birth Date:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Birth Date:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1"> 10/01/2024 </span>
+                                  <Calendar className='w-5 h-5 text-purple-500' />
+                                  <span className="ml-1">{item.birthdate}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Mother Name:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mother Name:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1">Eva Willis</span>
+                                  <User className='w-5 h-5 text-red-500' />
+                                  <span className="ml-1">{item.mothername}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Father Name:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Father Name:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1">Laurel Maxwell</span>
+                                  <User className='w-5 h-5 text-indigo-500' />
+                                  <span className="ml-1">{item.fathername}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Mobile:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Mobile:</span>
                                 <div className='flex items-center'>
                                   <Phone className='w-5 h-5 text-green-500' />
-                                  <span className="ml-1"> 1234567890</span>
+                                  <span className="ml-1">{item.mobile}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Address:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Address:</span>
                                 <div className='flex items-center'>
                                   <MapPin className='w-5 h-5 text-blue-500' />
-                                  <span className="ml-1">  76 E. Lower River St. </span>
+                                  <span className="ml-1">{item.address}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
-                                <span className="font-semibold">Notes:</span>{" "}
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                                <span className="font-semibold">Notes:</span>
                                 <div className='flex items-center'>
-                                  <span className="ml-1"> Normal Delivery</span>
+                                  <span className="ml-1">{item.notes}</span>
                                 </div>
                               </div>
-                              <div className=" flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
+                              <div className="flex items-center h-13 space-x-3 border-b border-[#dadada] gap-4">
                                 <div className="flex space-x-2">
-                                  <button className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => handleEditClick(item)}
+                                    className="text-[#6777ef] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Edit className="w-5 h-5" />
                                   </button>
-                                  <button className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer">
+                                  <button
+                                    onClick={() => removeData(item.id)}
+                                    className="text-[#ff5200] hover:bg-[#E0E1E3] p-1 rounded-full cursor-pointer"
+                                  >
                                     <Trash2 className="w-5 h-5" />
                                   </button>
                                 </div>
@@ -476,7 +550,6 @@ export default function BirthRecordsComponent() {
                           </div>
                         ))}
                       </div>
-
                     </>
                   )}
                 </div>
@@ -486,9 +559,20 @@ export default function BirthRecordsComponent() {
         </div>
 
         <div>
-          <Paginator totalItems={appointments.length} />
+          <Paginator totalItems={birthRecords.length} />
         </div>
       </div>
+
+      {/* Birth Record Modal */}
+      {isModalOpen && (
+        <BirthRecordModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          initialData={editingRecord}
+          isEditMode={isEditMode}
+        />
+      )}
 
       <style jsx>{`
         @keyframes slideDown {
@@ -500,6 +584,326 @@ export default function BirthRecordsComponent() {
     </>
   );
 }
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+  const isDate = type === "date";
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+      />
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  )
+}
+
+function FloatingTextarea({ label, name, value, onChange, icon: Icon, required = false, rows = 3, error }: any) {
+  return (
+    <div className="relative">
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        required={required}
+        rows={rows}
+        className={`peer w-full rounded-md border bg-white px-3 pt-5 pb-3 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+      />
+      <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {Icon && <Icon className="absolute top-6 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+      {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+    </div>
+  )
+}
+
+// Modal Component
+interface BirthRecordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: BirthRecord) => void;
+  initialData?: BirthRecord | null;
+  isEditMode?: boolean;
+}
+
+const BirthRecordModal: React.FC<BirthRecordModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditMode = false
+}) => {
+  const [formData, setFormData] = useState<BirthRecord>({
+    id: '',
+    caseno: '',
+    childname: '',
+    gender: "Male",
+    birthdate: new Date().toISOString().split('T')[0],
+    mothername: '',
+    fathername: '',
+    mobile: '',
+    address: '',
+    notes: ''
+  });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const isFormValid =
+    formData.caseno.trim() !== '' &&
+    formData.childname.trim() !== '' &&
+    formData.birthdate.trim() !== '' &&
+    formData.mothername.trim() !== '' &&
+    formData.fathername.trim() !== '';
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      // Reset form when adding new
+      setFormData({
+        id: '',
+        caseno: '',
+        childname: '',
+        gender: "Male",
+        birthdate: new Date().toISOString().split('T')[0],
+        mothername: '',
+        fathername: '',
+        mobile: '',
+        address: '',
+        notes: ''
+      });
+    }
+  }, [initialData, isOpen]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isFormValid) {
+      onSubmit(formData);
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[646.8px] mx-4 max-h-[80vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex items-center">
+            {isEditMode && (
+              <div className="relative w-10 h-10 mr-3">
+                <img
+                  src="/assets/images/user/new.jpg"
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            )}
+            <h2 className="font-semibold leading-[35px]">
+              {isEditMode ? 'Edit Birth Record' : 'New Birth Record'}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="py-5 px-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Case No */}
+              <FloatingInput
+                label="Case No"
+                name="caseno"
+                value={formData.caseno}
+                onChange={handleInputChange}
+                icon={Receipt}
+                required
+              />
+
+              {/* Child Name */}
+              <FloatingInput
+                label="Child Name"
+                name="childname"
+                value={formData.childname}
+                onChange={handleInputChange}
+                icon={Baby}
+                required
+              />
+            </div>
+
+            {/* Gender */}
+            <div className=" flex items-center gap-8">
+              <label className="text-sm font-medium text-gray-700">Gender <span className="text-red-500">*</span></label>
+              <div className="flex space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Male"
+                    checked={formData.gender === "Male"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500  border-gray-300 "
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Female"
+                    checked={formData.gender === "Female"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Female</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Other"
+                    checked={formData.gender === "Other"}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 accent-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Birth Date */}
+              <FloatingInput
+                type="date"
+                label="Birth Date"
+                name="birthdate"
+                value={formData.birthdate}
+                onChange={handleInputChange}
+                required
+              />
+
+              {/* Mother Name */}
+              <FloatingInput
+                label="Mother Name"
+                name="mothername"
+                value={formData.mothername}
+                onChange={handleInputChange}
+                icon={CircleUserRound}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Father Name */}
+              <FloatingInput
+                label="Father Name"
+                name="fathername"
+                value={formData.fathername}
+                onChange={handleInputChange}
+                icon={CircleUserRound}
+                required
+              />
+
+              {/* Mobile */}
+              <FloatingInput
+                label="Mobile"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleInputChange}
+                icon={Phone}
+                type="tel"
+              />
+            </div>
+
+            {/* Address */}
+            <FloatingTextarea
+              label="Address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              icon={MapPin}
+              rows={2}
+            />
+
+            {/* Notes */}
+            <FloatingTextarea
+              label="Notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleInputChange}
+              rows={2}
+            />
+
+            {/* Buttons */}
+            <div className="flex space-x-3 pt-4">
+              <button
+                type="submit"
+                disabled={!isFormValid}
+                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                  ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                  }`}
+              >
+                {isEditMode ? 'Update' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Paginator Component
 function Paginator({ totalItems = 0 }: { totalItems: number }) {

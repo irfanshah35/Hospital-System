@@ -25,8 +25,9 @@ export default function IssuedItemsPage() {
     const [animate, setAnimate] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<IssuedItem | null>(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // Issued Items Data Array
     const issuedItemsData: IssuedItem[] = [
@@ -59,76 +60,6 @@ export default function IssuedItemsPage() {
             issuedTo: "Dr. Michael Brown",
             quantity: 2,
             status: "Issued"
-        },
-        {
-            id: 4,
-            itemName: "IV Stand",
-            category: "Medical Equipment",
-            issueDate: "2024-10-18",
-            returnDate: "2024-10-25",
-            issuedTo: "Ward A - Floor 2",
-            quantity: 3,
-            status: "Overdue"
-        },
-        {
-            id: 5,
-            itemName: "Thermometer Digital",
-            category: "Medical Devices",
-            issueDate: "2024-10-19",
-            returnDate: "2024-10-26",
-            issuedTo: "Emergency Department",
-            quantity: 5,
-            status: "Returned"
-        },
-        {
-            id: 6,
-            itemName: "First Aid Kit",
-            category: "Emergency",
-            issueDate: "2024-10-20",
-            returnDate: "2024-10-27",
-            issuedTo: "Ambulance #5",
-            quantity: 2,
-            status: "Issued"
-        },
-        {
-            id: 7,
-            itemName: "Oxygen Cylinder",
-            category: "Life Support",
-            issueDate: "2024-10-21",
-            returnDate: "2024-10-28",
-            issuedTo: "ICU Ward",
-            quantity: 1,
-            status: "Overdue"
-        },
-        {
-            id: 8,
-            itemName: "Wheelchair",
-            category: "Mobility Aids",
-            issueDate: "2024-10-22",
-            returnDate: "2024-10-29",
-            issuedTo: "Patient Transport",
-            quantity: 1,
-            status: "Returned"
-        },
-        {
-            id: 9,
-            itemName: "Defibrillator",
-            category: "Emergency Equipment",
-            issueDate: "2024-10-23",
-            returnDate: "2024-10-30",
-            issuedTo: "Cardiac Unit",
-            quantity: 1,
-            status: "Issued"
-        },
-        {
-            id: 10,
-            itemName: "Patient Monitor",
-            category: "Monitoring Devices",
-            issueDate: "2024-10-24",
-            returnDate: "2024-10-31",
-            issuedTo: "Surgery Ward",
-            quantity: 2,
-            status: "Overdue"
         }
     ];
 
@@ -200,6 +131,52 @@ export default function IssuedItemsPage() {
         }
     };
 
+    const handleAddClick = () => {
+        setEditingItem({
+            id: 0,
+            itemName: '',
+            category: 'Medical Devices',
+            issueDate: new Date().toISOString().split('T')[0],
+            returnDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            issuedTo: '',
+            quantity: 1,
+            status: 'Issued'
+        });
+        setIsEditMode(false);
+        setIsModalOpen(true);
+    };
+
+    const handleEditClick = (item: IssuedItem) => {
+        setEditingItem(item);
+        setIsEditMode(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = (formData: IssuedItem) => {
+        if (isEditMode && editingItem?.id) {
+            // Edit existing record
+            setIssuedItems(prev =>
+                prev.map(item =>
+                    item.id === editingItem.id ? { ...formData, id: editingItem.id } : item
+                )
+            );
+        } else {
+            // Add new record
+            const newItem = {
+                ...formData,
+                id: Math.max(0, ...issuedItems.map(item => item.id)) + 1
+            };
+            setIssuedItems(prev => [...prev, newItem]);
+        }
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingItem(null);
+    };
+
     const handleCheckboxChange = (id: number) => {
         setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -218,18 +195,6 @@ export default function IssuedItemsPage() {
         }
     }, [selectedIds, issuedItems]);
 
-    const checkboxItems = [
-        { label: "Checkbox", checked: true },
-        { label: "Item Name", checked: true },
-        { label: "Category", checked: true },
-        { label: "Issue Date", checked: true },
-        { label: "Return Date", checked: true },
-        { label: "Issued To", checked: true },
-        { label: "Quantity", checked: true },
-        { label: "Status", checked: true },
-        { label: "Actions", checked: true },
-    ];
-
     const deleteSelectedItem = async (id: any) => {
         try {
             // Simulate API call
@@ -241,30 +206,17 @@ export default function IssuedItemsPage() {
         }
     };
 
-    const handleEditClick = (item: IssuedItem) => {
-        setEditingItem(item);
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateItem = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            setIssuedItems(prev =>
-                prev.map(item =>
-                    item.id === editingItem?.id ? editingItem : item
-                )
-            );
-
-            alert("Issued item updated successfully!");
-            setIsEditModalOpen(false);
-        } catch (error) {
-            console.error("Error updating issued item:", error);
-            alert("An unexpected error occurred.");
-        }
-    };
+    const checkboxItems = [
+        { label: "Checkbox", checked: true },
+        { label: "Item Name", checked: true },
+        { label: "Category", checked: true },
+        { label: "Issue Date", checked: true },
+        { label: "Return Date", checked: true },
+        { label: "Issued To", checked: true },
+        { label: "Quantity", checked: true },
+        { label: "Status", checked: true },
+        { label: "Actions", checked: true },
+    ];
 
     return (
         <>
@@ -346,11 +298,13 @@ export default function IssuedItemsPage() {
                                         )}
                                     </div>
 
-                                    <Link href="/add-issued-item">
-                                        <button className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer" title="Add">
-                                            <CirclePlus className='w-[22px] h-[22px]' />
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={handleAddClick}
+                                        className="flex justify-center items-center w-10 h-10 rounded-full text-[#4caf50] hover:bg-[#CED5E6] transition cursor-pointer"
+                                        title="Add New Issued Item"
+                                    >
+                                        <CirclePlus className='w-[22px] h-[22px]' />
+                                    </button>
 
                                     <button onClick={handleRefresh} className="flex justify-center items-center w-10 h-10 rounded-full text-[#795548] hover:bg-[#CED5E6] transition cursor-pointer" title="Refresh">
                                         <RotateCw className='w-[20px] h-[20px]' />
@@ -600,158 +554,292 @@ export default function IssuedItemsPage() {
                 </div>
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-lg shadow-lg w-[600px] max-w-[90%] max-h-[90vh] overflow-hidden">
-                        <div className="flex items-center justify-between border-b !border-gray-300 px-5 py-3">
-                            <h2 className="text-lg font-semibold">
-                                Edit Issued Item - {editingItem.itemName}
-                            </h2>
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 hover:text-gray-900 text-xl font-bold"
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleUpdateItem} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Item Name */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.itemName}
-                                        onChange={(e) => setEditingItem({ ...editingItem, itemName: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Item Name*
-                                    </label>
-                                </div>
-
-                                {/* Category */}
-                                <div className="relative">
-                                    <select
-                                        value={editingItem.category}
-                                        onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    >
-                                        <option value="Medical Devices">Medical Devices</option>
-                                        <option value="Medical Supplies">Medical Supplies</option>
-                                        <option value="Diagnostic Tools">Diagnostic Tools</option>
-                                        <option value="Medical Equipment">Medical Equipment</option>
-                                        <option value="Emergency">Emergency</option>
-                                        <option value="Life Support">Life Support</option>
-                                        <option value="Mobility Aids">Mobility Aids</option>
-                                        <option value="Emergency Equipment">Emergency Equipment</option>
-                                        <option value="Monitoring Devices">Monitoring Devices</option>
-                                    </select>
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Category*
-                                    </label>
-                                </div>
-
-                                {/* Issue Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.issueDate}
-                                        onChange={(e) => setEditingItem({ ...editingItem, issueDate: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Issue Date*
-                                    </label>
-                                </div>
-
-                                {/* Return Date */}
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={editingItem.returnDate}
-                                        onChange={(e) => setEditingItem({ ...editingItem, returnDate: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Return Date*
-                                    </label>
-                                </div>
-
-                                {/* Issued To */}
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={editingItem.issuedTo}
-                                        onChange={(e) => setEditingItem({ ...editingItem, issuedTo: e.target.value })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Issued To*
-                                    </label>
-                                </div>
-
-                                {/* Quantity */}
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        value={editingItem.quantity}
-                                        onChange={(e) => setEditingItem({ ...editingItem, quantity: parseInt(e.target.value) })}
-                                        className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                    />
-                                    <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                        Quantity*
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Status */}
-                            <div className="relative">
-                                <select
-                                    value={editingItem.status}
-                                    onChange={(e) => setEditingItem({ ...editingItem, status: e.target.value as "Issued" | "Returned" | "Overdue" })}
-                                    className="peer w-full rounded-md border bg-white px-3 pt-5 pb-2 text-sm text-gray-800 focus:border-[#005CBB] focus:ring-2 focus:ring-[#005CBB] outline-none transition-all"
-                                >
-                                    <option value="Issued">Issued</option>
-                                    <option value="Returned">Returned</option>
-                                    <option value="Overdue">Overdue</option>
-                                </select>
-                                <label className="absolute left-3 px-1 bg-white transition-all duration-200 -top-2 text-xs text-[#005CBB]">
-                                    Status*
-                                </label>
-                            </div>
-
-                            {/* Submit Buttons */}
-                            <div className="flex gap-2 pt-4">
-                                <button
-                                    type="submit"
-                                    className="bg-[#005cbb] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
-                                    type="button"
-                                    className="bg-[#ba1a1a] text-white px-6 py-2 rounded-full text-sm font-medium transition"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            {/* Add/Edit Modal */}
+            {isModalOpen && (
+                <IssuedItemModal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    onSubmit={handleModalSubmit}
+                    initialData={editingItem}
+                    isEditMode={isEditMode}
+                />
             )}
 
             <style jsx>{`
-        @keyframes slideDown {
-          0% { transform: translateY(-20px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
-      `}</style>
+                @keyframes slideDown {
+                    0% { transform: translateY(-20px); opacity: 0; }
+                    100% { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slideDown { animation: slideDown 0.4s ease-in-out; }
+            `}</style>
         </>
     );
+}
+
+// Modal Component
+interface IssuedItemModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: IssuedItem) => void;
+    initialData?: IssuedItem | null;
+    isEditMode?: boolean;
+}
+
+const IssuedItemModal: React.FC<IssuedItemModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    isEditMode = false
+}) => {
+    const [formData, setFormData] = useState<IssuedItem>({
+        id: 0,
+        itemName: '',
+        category: 'Medical Devices',
+        issueDate: new Date().toISOString().split('T')[0],
+        returnDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        issuedTo: '',
+        quantity: 1,
+        status: 'Issued'
+    });
+
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    const isFormValid =
+        formData.itemName.trim() !== '' &&
+        formData.category.trim() !== '' &&
+        formData.issueDate.trim() !== '' &&
+        formData.returnDate.trim() !== '' &&
+        formData.issuedTo.trim() !== '' &&
+        formData.quantity > 0;
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            // Reset form when adding new
+            setFormData({
+                id: 0,
+                itemName: '',
+                category: 'Medical Devices',
+                issueDate: new Date().toISOString().split('T')[0],
+                returnDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                issuedTo: '',
+                quantity: 1,
+                status: 'Issued'
+            });
+        }
+    }, [initialData, isOpen]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'quantity' ? parseInt(value) : value
+        }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isFormValid) {
+            onSubmit(formData);
+        }
+    };
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-[99999]">
+            <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-[600px] mx-4 max-h-[90vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                    <div className="flex items-center">
+                        <h2 className="font-semibold leading-[35px]">
+                            {isEditMode ? `Edit Issued Item - ${formData.itemName}` : 'New Item Issue'}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                        type="button"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="py-5 px-6 max-h-[75vh] overflow-y-auto scrollbar-hide">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Item Name */}
+                            <FloatingInput
+                                label="Item Name"
+                                name="itemName"
+                                value={formData.itemName}
+                                onChange={handleInputChange}
+                                icon={Package}
+                                required
+                            />
+
+                            {/* Category */}
+                            <FloatingSelect
+                                label="Category"
+                                name="category"
+                                value={formData.category}
+                                onChange={handleInputChange}
+                                options={['Medical Devices', 'Medical Supplies', 'Diagnostic Tools', 'Medical Equipment', 'Emergency', 'Life Support', 'Mobility Aids', 'Emergency Equipment', 'Monitoring Devices']}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Issue Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Issue Date"
+                                name="issueDate"
+                                value={formData.issueDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+
+                            {/* Return Date */}
+                            <FloatingInput
+                                type="date"
+                                label="Return Date"
+                                name="returnDate"
+                                value={formData.returnDate}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Issued To */}
+                            <FloatingInput
+                                label="Issued To"
+                                name="issuedTo"
+                                value={formData.issuedTo}
+                                onChange={handleInputChange}
+                                icon={User}
+                                required
+                            />
+
+                            {/* Quantity */}
+                            <FloatingInput
+                                label="Quantity"
+                                name="quantity"
+                                value={formData.quantity}
+                                onChange={handleInputChange}
+                                type="number"
+                                required
+                            />
+                        </div>
+
+                        {/* Status */}
+                        <FloatingSelect
+                            label="Status"
+                            name="status"
+                            value={formData.status}
+                            onChange={handleInputChange}
+                            options={['Issued', 'Returned', 'Overdue']}
+                            required
+                        />
+
+                        {/* Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="submit"
+                                disabled={!isFormValid}
+                                className={`px-4 py-2 rounded-full transition-colors ${isFormValid
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                    : "bg-gray-300 text-[#44474e] cursor-not-allowed"
+                                    }`}
+                            >
+                                {isEditMode ? 'Update' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 rounded-full text-white bg-[#ba1a1a] transition-colors text-sm font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Reusable Floating Input Components
+function FloatingInput({ label, name, value, onChange, type = "text", icon: Icon, required = false, error }: any) {
+    const isDate = type === "date";
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all ${isDate ? '!px-3' : 'px-10'} ${error ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {Icon && !isDate && <Icon className="absolute top-3.5 right-3 w-4 h-4 md:w-5 md:h-5 text-gray-500" />}
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
+}
+
+function FloatingSelect({ label, name, value, onChange, options, required = false, error }: any) {
+    return (
+        <div className="relative">
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required={required}
+                className={`peer w-full rounded-md border bg-white px-3 pt-4 pb-4 text-xs md:text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none ${error ? 'border-red-500' : 'border-gray-300'}`}
+            >
+                <option value="">Select {label}</option>
+                {options.map((option: string) => (
+                    <option key={option} value={option}>{option}</option>
+                ))}
+            </select>
+            <label className={`absolute left-3 px-1 bg-white transition-all duration-200 text-xs md:text-sm ${value ? "-top-2 text-xs text-blue-600" : "top-3.5 text-gray-500"} peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-600`}>
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <div className="absolute right-3 top-3.5 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+            {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
+        </div>
+    )
 }
 
 // Paginator Component
