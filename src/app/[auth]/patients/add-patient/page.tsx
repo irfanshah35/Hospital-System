@@ -470,7 +470,7 @@ export default function PatientRegistrationForm() {
       <div className="min-h-screen bg-[#ECF0F9]  px-4 sm:px-6 lg:px-8 py-3">
         <div className="bg-white rounded-xl shadow-lg sm:p-8">
           <div className="px-6 py-3 border-b border-gray-300">
-            <h1 className="text-[17x] font-bold text-gray-900 mb-1">
+            <h1 className="text-[17x] font-bold mb-1">
               Patient Registration Form
             </h1>
             <p className="text-gray-600 text-[14px]">
